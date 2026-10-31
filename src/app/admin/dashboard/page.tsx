@@ -348,6 +348,7 @@ export default function AdminDashboardPage() {
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
   const [editingItem, setEditingItem] = useState<any>({});
   const [savingItem, setSavingItem] = useState(false);
+  const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
   const initialSyncDone = useRef(false);
 
   useEffect(() => {
@@ -614,11 +615,12 @@ export default function AdminDashboardPage() {
           border-right: 1px solid #EAEFF4;
           box-shadow: 0 0 20px rgba(145, 158, 171, 0.05);
         }
-        @media (max-width: 1023px) {
-          #cms-enterprise-root .cms-sidebar {
-            width: 100%;
-            border-right: none;
-            border-bottom: 1px solid #EAEFF4;
+        @media (max-width: 639px) {
+          #cms-enterprise-root .cms-action-edit,
+          #cms-enterprise-root .cms-action-delete {
+            padding: 7px 12px !important;
+            font-size: 11.5px;
+            min-height: 36px;
           }
         }
         #cms-enterprise-root .cms-nav-btn {
@@ -808,7 +810,7 @@ export default function AdminDashboardPage() {
       {/* ============================================================
           SIDEBAR NAVIGATION (MaterialPro Enterprise Left Rail)
           ============================================================ */}
-      <aside className="cms-sidebar lg:h-screen lg:sticky lg:top-0 flex flex-col justify-between shrink-0 z-40">
+      <aside className="hidden lg:flex cms-sidebar lg:h-screen lg:sticky lg:top-0 flex-col justify-between shrink-0 z-40">
         <div>
           {/* Brand Logo Header */}
           <div
@@ -996,13 +998,378 @@ export default function AdminDashboardPage() {
       </aside>
 
       {/* ============================================================
+          MOBILE SLIDE-OVER NAVIGATION DRAWER
+          ============================================================ */}
+      {isMobileDrawerOpen && (
+        <div className="lg:hidden fixed inset-0 z-50 flex">
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity"
+            onClick={() => setIsMobileDrawerOpen(false)}
+          />
+
+          {/* Drawer Panel */}
+          <div className="relative w-72 max-w-[85vw] bg-white h-full shadow-2xl flex flex-col justify-between z-10 overflow-y-auto">
+            <div>
+              <div
+                style={{ padding: "14px 18px" }}
+                className="border-b border-[#EAEFF4] flex items-center justify-between bg-[#FAFBFD]"
+              >
+                <div className="flex items-center gap-2.5">
+                  <div
+                    style={{ width: "28px", height: "28px" }}
+                    className="rounded-lg bg-[#5D87FF] flex items-center justify-center text-white font-serif italic font-bold text-sm shadow-xs"
+                  >
+                    S
+                  </div>
+                  <div>
+                    <span className="block font-bold text-[13px] text-[#2A3547] leading-none">
+                      ShutterScape
+                    </span>
+                    <span className="block text-[9.5px] font-medium text-[#7C8FAC] mt-0.5">
+                      Darkroom CMS v4.0
+                    </span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setIsMobileDrawerOpen(false)}
+                  className="w-7 h-7 rounded-lg bg-white border border-[#DFE5EF] text-[#5A6A85] flex items-center justify-center text-xs font-bold hover:bg-slate-50 transition-colors"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div style={{ padding: "12px 14px" }}>
+                <div
+                  style={{ padding: "0 10px", marginBottom: "6px" }}
+                  className="text-[10px] font-bold uppercase tracking-wider text-[#7C8FAC]"
+                >
+                  Content Archives
+                </div>
+
+                {TABS.filter((t) => t.group === "ARCHIVES").map((tab) => {
+                  const isActive = activeTab === tab.id;
+                  const count = getTabCount(tab.id);
+                  return (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      onClick={() => {
+                        setActiveTab(tab.id);
+                        setSearchQuery("");
+                        setFilterCategory("ALL");
+                        setIsMobileDrawerOpen(false);
+                      }}
+                      className={`cms-nav-btn ${isActive ? "active" : ""}`}
+                    >
+                      <div className="flex items-center gap-3">
+                        {getTabIcon(tab.id, "w-4 h-4")}
+                        <span>{tab.label}</span>
+                      </div>
+                      <span
+                        style={{ padding: "2px 8px" }}
+                        className={`rounded-full text-[11px] font-bold ${
+                          isActive
+                            ? "bg-white/20 text-white"
+                            : "bg-[#ECF2FF] text-[#5D87FF]"
+                        }`}
+                      >
+                        {count}
+                      </span>
+                    </button>
+                  );
+                })}
+
+                <div
+                  style={{
+                    padding: "0 10px",
+                    marginTop: "16px",
+                    marginBottom: "6px",
+                  }}
+                  className="text-[10px] font-bold uppercase tracking-wider text-[#7C8FAC]"
+                >
+                  Cinematic Scenes
+                </div>
+
+                {TABS.filter((t) => t.group === "SCENES").map((tab) => {
+                  const isActive = activeTab === tab.id;
+                  const count = getTabCount(tab.id);
+                  return (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      onClick={() => {
+                        setActiveTab(tab.id);
+                        setSearchQuery("");
+                        setFilterCategory("ALL");
+                        setIsMobileDrawerOpen(false);
+                      }}
+                      className={`cms-nav-btn ${isActive ? "active" : ""}`}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        {getTabIcon(tab.id, "w-3.5 h-3.5")}
+                        <span>{tab.label}</span>
+                      </div>
+                      <span
+                        style={{ padding: "1.5px 7px" }}
+                        className={`rounded-full text-[10px] font-bold ${
+                          isActive
+                            ? "bg-white/20 text-white"
+                            : "bg-[#ECF2FF] text-[#5D87FF]"
+                        }`}
+                      >
+                        {count}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div
+              style={{ padding: "12px 14px" }}
+              className="border-t border-[#EAEFF4] bg-[#FAFBFD]"
+            >
+              <Link
+                href="/"
+                target="_blank"
+                style={{ padding: "8px 12px", marginBottom: "10px" }}
+                className="w-full flex items-center justify-center gap-2 rounded-lg bg-[#ECF2FF] hover:bg-[#5D87FF] text-[#5D87FF] hover:text-white text-[11px] font-bold transition-all"
+              >
+                <svg
+                  className="w-3.5 h-3.5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                  />
+                </svg>
+                <span>Open Public Website</span>
+              </Link>
+
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div
+                    style={{ width: "28px", height: "28px" }}
+                    className="rounded-full bg-[#5D87FF] text-white flex items-center justify-center font-bold text-[10px]"
+                  >
+                    AD
+                  </div>
+                  <div>
+                    <span className="block text-[11px] font-bold text-[#2A3547]">
+                      Admin Lead
+                    </span>
+                    <span className="block text-[9.5px] text-[#7C8FAC]">
+                      GCU ShutterScape
+                    </span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  style={{ padding: "4px 8px" }}
+                  className="rounded-md bg-[#FDEDE8] hover:bg-[#FA896B] text-[#FA896B] hover:text-white text-[11px] font-bold transition-colors cursor-pointer"
+                >
+                  Sign Out
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================
           MAIN WORKSPACE CANVAS
           ============================================================ */}
       <div className="flex-1 min-w-0 min-h-screen flex flex-col">
-        {/* Top Enterprise Header Bar */}
+        {/* Mobile Sticky Top Header Bar */}
+        <div className="lg:hidden sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#EAEFF4] px-3.5 py-2.5 flex items-center justify-between shadow-xs">
+          <div className="flex items-center gap-2.5">
+            <button
+              type="button"
+              onClick={() => setIsMobileDrawerOpen(true)}
+              className="p-1.5 -ml-1 text-[#2A3547] hover:text-[#5D87FF] rounded-lg hover:bg-slate-50 transition-colors"
+              aria-label="Open Navigation Drawer"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded-md bg-[#5D87FF] flex items-center justify-center text-white font-serif italic font-bold text-xs shadow-xs">
+                S
+              </div>
+              <div>
+                <span className="block font-bold text-xs text-[#2A3547] leading-none">
+                  ShutterScape
+                </span>
+                <span className="block text-[9px] text-[#7C8FAC] mt-0.5 font-medium">
+                  Darkroom CMS
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span
+              style={{ padding: "3px 7px" }}
+              className={`rounded-full text-[9px] font-bold uppercase tracking-wider flex items-center gap-1.5 ${
+                dbSource === "database"
+                  ? "bg-[#E6FFFA] text-[#13DEB9]"
+                  : "bg-[#FEF5E5] text-[#FFAE1F]"
+              }`}
+            >
+              <span
+                className={`h-1.5 w-1.5 rounded-full ${
+                  dbSource === "database" ? "bg-[#13DEB9]" : "bg-[#FFAE1F]"
+                }`}
+              />
+              {dbSource === "database" ? "Live DB" : "Cached"}
+            </span>
+
+            <button
+              type="button"
+              onClick={refreshAllData}
+              className="p-1.5 rounded-lg border border-[#DFE5EF] bg-white hover:bg-[#F6F9FC] text-[#5A6A85] text-xs transition-colors"
+              title="Sync Data"
+            >
+              <svg
+                className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`}
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Sticky Horizontal Tab Dock */}
+        <div className="lg:hidden sticky top-[49px] z-30 bg-[#FAFBFD] border-b border-[#EAEFF4] px-3 py-2 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+          {TABS.map((tab) => {
+            const isActive = activeTab === tab.id;
+            const count = getTabCount(tab.id);
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => {
+                  setActiveTab(tab.id);
+                  setSearchQuery("");
+                  setFilterCategory("ALL");
+                }}
+                className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                  isActive
+                    ? "bg-[#5D87FF] text-white shadow-xs"
+                    : "bg-white text-[#5A6A85] border border-[#DFE5EF] hover:border-[#5D87FF]/50"
+                }`}
+              >
+                {getTabIcon(tab.id, "w-3.5 h-3.5")}
+                <span className="whitespace-nowrap">{tab.label}</span>
+                <span
+                  style={{ padding: "1px 6px" }}
+                  className={`rounded-full text-[10px] font-bold ${
+                    isActive
+                      ? "bg-white/20 text-white"
+                      : "bg-[#ECF2FF] text-[#5D87FF]"
+                  }`}
+                >
+                  {count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Mobile Action Sub-Bar */}
+        <div className="lg:hidden bg-white border-b border-[#EAEFF4] px-3.5 py-2.5 flex items-center justify-between gap-2">
+          <div className="min-w-0">
+            <h2 className="text-xs font-bold text-[#2A3547] truncate">
+              {activeTabMeta.label}
+            </h2>
+            <p className="text-[10px] text-[#7C8FAC] truncate">
+              {activeTabMeta.description}
+            </p>
+          </div>
+
+          <div className="shrink-0">
+            {activeTab === "spotlight" && (
+              <button
+                type="button"
+                onClick={handleSaveSpotlight}
+                disabled={savingSpotlight}
+                className="cms-primary-btn text-xs py-1.5 px-3"
+              >
+                <svg
+                  className={`w-3.5 h-3.5 ${savingSpotlight ? "animate-spin" : ""}`}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2.4}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
+                  />
+                </svg>
+                <span>{savingSpotlight ? "Saving..." : "Save Spotlight"}</span>
+              </button>
+            )}
+
+            {["gallery", "activities", "committee", "reels"].includes(activeTab) && (
+              <button
+                type="button"
+                onClick={handleOpenCreateModal}
+                className="cms-primary-btn text-xs py-1.5 px-3"
+              >
+                <svg
+                  className="w-3.5 h-3.5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2.4}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 4v16m8-8H4"
+                  />
+                </svg>
+                <span>
+                  + Add{" "}
+                  {activeTab === "gallery"
+                    ? "Frame"
+                    : activeTab === "committee"
+                    ? "Member"
+                    : activeTab === "reels"
+                    ? "Reel"
+                    : "Event"}
+                </span>
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Desktop Enterprise Header Bar */}
         <header
           style={{ padding: "12px 24px" }}
-          className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-[#EAEFF4] flex flex-wrap items-center justify-between gap-3"
+          className="hidden lg:flex sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-[#EAEFF4] items-center justify-between gap-3"
         >
           <div className="flex items-center gap-3">
             <div
@@ -1111,8 +1478,7 @@ export default function AdminDashboardPage() {
 
         {/* Main Workspace Container */}
         <div
-          style={{ padding: "16px 24px 36px" }}
-          className="flex-1 flex flex-col gap-4 max-w-[1560px] w-full mx-auto"
+          className="flex-1 flex flex-col gap-3.5 sm:gap-4 max-w-[1560px] w-full mx-auto px-3 sm:px-6 sm:py-5 lg:px-8 lg:py-6"
         >
           {/* ============================================================
               EXECUTIVE KPI SUMMARY ROW (Standard Compact Sizing)
@@ -2376,16 +2742,10 @@ export default function AdminDashboardPage() {
           MODAL DRAWER / DIALOG (Enterprise Clean Form)
           ============================================================ */}
       {isModalOpen && (
-        <div
-          style={{ padding: "20px" }}
-          className="fixed inset-0 z-50 bg-[#1E293B]/50 backdrop-blur-xs flex items-center justify-center overflow-y-auto"
-        >
-          <div className="bg-white border border-[#EAEFF4] rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+        <div className="fixed inset-0 z-50 bg-[#1E293B]/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+          <div className="bg-white border border-[#EAEFF4] rounded-2xl w-full max-w-2xl max-h-[92vh] sm:max-h-[88vh] flex flex-col shadow-2xl overflow-hidden">
             {/* Modal Header */}
-            <div
-              style={{ padding: "22px 28px" }}
-              className="border-b border-[#EAEFF4] flex items-center justify-between bg-[#F8FAFC]"
-            >
+            <div className="px-4 py-3 sm:px-6 sm:py-4 border-b border-[#EAEFF4] flex items-center justify-between bg-[#FAFBFD] shrink-0">
               <div>
                 <span className="text-[11px] font-bold uppercase tracking-wider text-[#5D87FF] block">
                   {modalMode === "create"
@@ -2394,7 +2754,7 @@ export default function AdminDashboardPage() {
                 </span>
                 <h2
                   style={{ marginTop: "2px" }}
-                  className="text-lg font-bold text-[#2A3547]"
+                  className="text-base sm:text-lg font-bold text-[#2A3547]"
                 >
                   {activeTabMeta.label}
                 </h2>
@@ -2402,8 +2762,8 @@ export default function AdminDashboardPage() {
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                style={{ width: "34px", height: "34px" }}
-                className="rounded-lg bg-white hover:bg-slate-100 border border-[#DFE5EF] text-[#5A6A85] flex items-center justify-center text-sm font-bold cursor-pointer"
+                style={{ width: "32px", height: "32px" }}
+                className="rounded-lg bg-white hover:bg-slate-100 border border-[#DFE5EF] text-[#5A6A85] flex items-center justify-center text-sm font-bold cursor-pointer transition-colors"
               >
                 ✕
               </button>
@@ -2412,11 +2772,10 @@ export default function AdminDashboardPage() {
             {/* Modal Form Body */}
             <form
               onSubmit={handleSaveItem}
-              style={{ padding: "24px 28px" }}
-              className="flex flex-col gap-5 overflow-y-auto flex-1 text-xs"
+              className="px-4 py-3.5 sm:px-6 sm:py-5 flex flex-col gap-4 overflow-y-auto flex-1 text-xs"
             >
               <div
-                style={{ padding: "18px" }}
+                style={{ padding: "14px" }}
                 className="rounded-xl bg-[#F8FAFC] border border-[#EAEFF4]"
               >
                 <FileUploadZone
@@ -3151,21 +3510,18 @@ export default function AdminDashboardPage() {
                 </div>
               )}
 
-              <div
-                style={{ paddingTop: "18px", marginTop: "6px" }}
-                className="border-t border-[#EAEFF4] flex items-center justify-end gap-3"
-              >
+              <div className="pt-3 border-t border-[#EAEFF4] flex items-center justify-end gap-2.5 shrink-0">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="cms-action-edit"
+                  className="cms-action-edit py-2 px-4 text-xs"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={savingItem}
-                  className="cms-primary-btn"
+                  className="cms-primary-btn py-2 px-4 text-xs"
                 >
                   {savingItem && (
                     <span className="w-3.5 h-3.5 rounded-full border-2 border-white/30 border-t-white animate-spin" />

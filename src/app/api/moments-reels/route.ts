@@ -6,27 +6,41 @@ import { MomentsReel } from "@/models/MomentsReel";
 
 // Default Reels matching FramesOfMoments.tsx
 const DEFAULT_REELS = [
-  { photographer: "Parambrata Sarkar", videoSrc: "/videos/reel-1.mp4", order: 1 },
-  { photographer: "Sayan Saha", videoSrc: "/videos/reel-2.mp4", order: 2 },
-  { photographer: "Aman Baha", videoSrc: "/videos/reel-3.mp4", order: 3 },
-  { photographer: "Sampad Dutta", videoSrc: "/videos/reel-4.mp4", order: 4 },
-  { photographer: "Bituparna", videoSrc: "/videos/reel-5.mp4", order: 5 },
-  { photographer: "Sohan Chandra", videoSrc: "/videos/reel-6.mp4", order: 6 },
+  { id: "reel-01", _id: "reel-01", photographer: "Parambrata Sarkar", videoSrc: "/videos/reel-1.mp4", order: 1 },
+  { id: "reel-02", _id: "reel-02", photographer: "Sayan Saha", videoSrc: "/videos/reel-2.mp4", order: 2 },
+  { id: "reel-03", _id: "reel-03", photographer: "Aman Baha", videoSrc: "/videos/reel-3.mp4", order: 3 },
+  { id: "reel-04", _id: "reel-04", photographer: "Sampad Dutta", videoSrc: "/videos/reel-4.mp4", order: 4 },
+  { id: "reel-05", _id: "reel-05", photographer: "Bituparna", videoSrc: "/videos/reel-5.mp4", order: 5 },
+  { id: "reel-06", _id: "reel-06", photographer: "Sohan Chandra", videoSrc: "/videos/reel-6.mp4", order: 6 },
 ];
+
+const globalForMomentsReels = globalThis as unknown as {
+  __shutterMomentsReelsStore?: any[];
+};
+
+if (!globalForMomentsReels.__shutterMomentsReelsStore) {
+  globalForMomentsReels.__shutterMomentsReelsStore = [...DEFAULT_REELS];
+}
 
 export async function GET() {
   try {
-    const conn = await connectDB();
-    if (!conn) {
-      return NextResponse.json({ success: true, data: DEFAULT_REELS, source: "fallback" });
+    try {
+      const conn = await connectDB();
+      if (conn) {
+        const items = await MomentsReel.find().sort({ order: 1 });
+        if (items && items.length > 0) {
+          return NextResponse.json({ success: true, data: items, source: "database" });
+        }
+      }
+    } catch (dbErr) {
+      console.warn("MongoDB moments reels fetch error, falling back to memory store:", dbErr);
     }
 
-    const items = await MomentsReel.find().sort({ order: 1 });
-    if (!items || items.length === 0) {
-      return NextResponse.json({ success: true, data: DEFAULT_REELS, source: "default" });
-    }
-
-    return NextResponse.json({ success: true, data: items, source: "database" });
+    return NextResponse.json({
+      success: true,
+      data: globalForMomentsReels.__shutterMomentsReelsStore || DEFAULT_REELS,
+      source: "memory",
+    });
   } catch (error) {
     console.error("GET /api/moments-reels error:", error);
     return NextResponse.json({ success: true, data: DEFAULT_REELS, source: "fallback" });
@@ -35,19 +49,34 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const conn = await connectDB();
-    if (!conn) {
-      return NextResponse.json({ error: "Database not connected" }, { status: 503 });
+    const body = await request.json();
+    const newId = body.id || `reel-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
+    const newReel = {
+      ...body,
+      id: newId,
+      _id: body._id || newId,
+      order: body.order || (globalForMomentsReels.__shutterMomentsReelsStore?.length || 0) + 1,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    if (!globalForMomentsReels.__shutterMomentsReelsStore) {
+      globalForMomentsReels.__shutterMomentsReelsStore = [...DEFAULT_REELS];
+    }
+    globalForMomentsReels.__shutterMomentsReelsStore.push(newReel);
+
+    // Attempt to persist to MongoDB if available
+    try {
+      const conn = await connectDB();
+      if (conn) {
+        const doc = await MomentsReel.create(newReel);
+        return NextResponse.json({ success: true, data: doc, source: "database" }, { status: 201 });
+      }
+    } catch (dbErr) {
+      console.warn("MongoDB moments reels create error, saved to in-memory store:", dbErr);
     }
 
-    const body = await request.json();
-    const count = await MomentsReel.countDocuments();
-    const newReel = await MomentsReel.create({
-      ...body,
-      order: body.order || count + 1,
-    });
-
-    return NextResponse.json({ success: true, data: newReel }, { status: 201 });
+    return NextResponse.json({ success: true, data: newReel, source: "memory" }, { status: 201 });
   } catch (error) {
     console.error("POST /api/moments-reels error:", error);
     return NextResponse.json({ error: "Failed to create moments reel" }, { status: 500 });
@@ -56,11 +85,6 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   try {
-    const conn = await connectDB();
-    if (!conn) {
-      return NextResponse.json({ error: "Database not connected" }, { status: 503 });
-    }
-
     const body = await request.json();
     const { id, _id, ...updates } = body;
     const targetId = _id || id;
@@ -69,31 +93,54 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: "Reel ID is required" }, { status: 400 });
     }
 
-    let filter: Record<string, unknown>;
-    if (_id && mongoose.Types.ObjectId.isValid(_id)) {
-      filter = { _id };
-    } else if (id && mongoose.Types.ObjectId.isValid(id)) {
-      filter = { _id: id };
-    } else if (id) {
-      filter = { id };
+    if (!globalForMomentsReels.__shutterMomentsReelsStore) {
+      globalForMomentsReels.__shutterMomentsReelsStore = [...DEFAULT_REELS];
+    }
+
+    let updatedInMemoryItem: any = null;
+    const store = globalForMomentsReels.__shutterMomentsReelsStore;
+    const itemIndex = store.findIndex((it: any) => it._id === targetId || it.id === targetId || it.id === id || it._id === _id);
+
+    if (itemIndex >= 0) {
+      store[itemIndex] = { ...store[itemIndex], ...updates, updatedAt: new Date().toISOString() };
+      updatedInMemoryItem = store[itemIndex];
     } else {
-      filter = { id: _id };
+      updatedInMemoryItem = { id: targetId, _id: targetId, ...updates, updatedAt: new Date().toISOString() };
+      store.push(updatedInMemoryItem);
     }
 
-    const updated = await MomentsReel.findOneAndUpdate(filter, updates, {
-      returnDocument: "after",
-      new: true,
-    });
+    // Attempt to persist to MongoDB if available
+    try {
+      const conn = await connectDB();
+      if (conn) {
+        let filter: Record<string, unknown>;
+        if (_id && mongoose.Types.ObjectId.isValid(_id)) {
+          filter = { _id };
+        } else if (id && mongoose.Types.ObjectId.isValid(id)) {
+          filter = { _id: id };
+        } else if (id) {
+          filter = { id };
+        } else {
+          filter = { id: _id };
+        }
 
-    if (!updated) {
-      const created = await MomentsReel.create({
-        ...(id ? { id } : {}),
-        ...updates,
-      });
-      return NextResponse.json({ success: true, data: created });
+        const updated = await MomentsReel.findOneAndUpdate(filter, updates, {
+          returnDocument: "after",
+          new: true,
+        });
+
+        if (updated) {
+          return NextResponse.json({ success: true, data: updated, source: "database" });
+        } else {
+          const created = await MomentsReel.create({ ...(id ? { id } : {}), ...updates });
+          return NextResponse.json({ success: true, data: created, source: "database" });
+        }
+      }
+    } catch (dbErr) {
+      console.warn("MongoDB moments reels update error, saved to in-memory store:", dbErr);
     }
 
-    return NextResponse.json({ success: true, data: updated });
+    return NextResponse.json({ success: true, data: updatedInMemoryItem, source: "memory" });
   } catch (error) {
     console.error("PUT /api/moments-reels error:", error);
     return NextResponse.json({ error: "Failed to update reel" }, { status: 500 });
@@ -102,11 +149,6 @@ export async function PUT(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
-    const conn = await connectDB();
-    if (!conn) {
-      return NextResponse.json({ error: "Database not connected" }, { status: 503 });
-    }
-
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
@@ -114,15 +156,32 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: "Reel ID is required" }, { status: 400 });
     }
 
-    let filter: Record<string, unknown>;
-    if (mongoose.Types.ObjectId.isValid(id)) {
-      filter = { $or: [{ _id: id }, { id }] };
-    } else {
-      filter = { id };
+    if (!globalForMomentsReels.__shutterMomentsReelsStore) {
+      globalForMomentsReels.__shutterMomentsReelsStore = [...DEFAULT_REELS];
     }
 
-    await MomentsReel.findOneAndDelete(filter);
-    return NextResponse.json({ success: true, message: "Reel deleted successfully" });
+    globalForMomentsReels.__shutterMomentsReelsStore = globalForMomentsReels.__shutterMomentsReelsStore.filter(
+      (it: any) => it.id !== id && it._id !== id
+    );
+
+    // Attempt to delete from MongoDB if available
+    try {
+      const conn = await connectDB();
+      if (conn) {
+        let filter: Record<string, unknown>;
+        if (mongoose.Types.ObjectId.isValid(id)) {
+          filter = { $or: [{ _id: id }, { id }] };
+        } else {
+          filter = { id };
+        }
+        await MomentsReel.findOneAndDelete(filter);
+        return NextResponse.json({ success: true, message: "Reel deleted successfully", source: "database" });
+      }
+    } catch (dbErr) {
+      console.warn("MongoDB moments reels delete error, deleted from in-memory store:", dbErr);
+    }
+
+    return NextResponse.json({ success: true, message: "Reel deleted successfully", source: "memory" });
   } catch (error) {
     console.error("DELETE /api/moments-reels error:", error);
     return NextResponse.json({ error: "Failed to delete reel" }, { status: 500 });

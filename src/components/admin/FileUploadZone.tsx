@@ -288,8 +288,8 @@ export default function FileUploadZone({
     }
   };
 
-  const handleClear = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleClear = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
     onChange("");
     setLocalPreview(null);
     setFileName(null);
@@ -383,7 +383,8 @@ export default function FileUploadZone({
 
           {/* ACTIVE PREVIEW (Image or Video) */}
           {displayAssetUrl ? (
-            <div className="relative w-full h-52 bg-[#0F172A] flex items-center justify-center overflow-hidden group">
+            <div className="w-full flex flex-col">
+              <div className="relative w-full h-52 bg-[#0F172A] flex items-center justify-center overflow-hidden group">
               {isVideo ? (
                 <video
                   src={displayAssetUrl}
@@ -448,6 +449,31 @@ export default function FileUploadZone({
                   <span className="text-[#7C8FAC] shrink-0">({fileSize})</span>
                 )}
               </div>
+            </div>
+
+            {/* Mobile Touch Action Bar */}
+            <div className="flex sm:hidden items-center justify-between gap-2 p-2 bg-white border-t border-[#EAEFF4] z-10 w-full">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  fileInputRef.current?.click();
+                }}
+                className="flex-1 py-1.5 px-3 rounded-lg bg-slate-100 hover:bg-slate-200 text-[#2A3547] text-xs font-semibold text-center transition-colors"
+              >
+                Change File
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleClear();
+                }}
+                className="py-1.5 px-3 rounded-lg bg-[#FDEDE8] hover:bg-[#FA896B] hover:text-white text-[#FA896B] text-xs font-semibold text-center transition-colors"
+              >
+                Remove
+              </button>
+            </div>
             </div>
           ) : (
             /* EMPTY UPLOAD PROMPT */
