@@ -2849,12 +2849,12 @@ export default function DesktopOilstainExperience() {
                     <h3 className="font-serif text-2xl text-[#111111] font-normal leading-[1.15] tracking-tight truncate">
                       {activeSpotlightEvent.title}
                     </h3>
-                    <p className="font-sans text-xs text-black/70 leading-relaxed line-clamp-2">
+                    <p className="font-sans text-xs text-black/70 leading-relaxed">
                       {activeSpotlightEvent.description}
                     </p>
                   </div>
 
-                  {/* Bottom Pill JOIN Button */}
+                  {/* Bottom Pill JOIN Button with comfortable breathing space */}
                   <button
                     type="button"
                     onClick={() => {
@@ -2866,7 +2866,7 @@ export default function DesktopOilstainExperience() {
                       setRegisterSubmitted(false);
                       setIsRegisterModalOpen(true);
                     }}
-                    style={{ padding: "12px 14px 12px 22px" }}
+                    style={{ padding: "12px 14px 12px 22px", marginTop: "18px" }}
                     className={`w-full rounded-full font-sans text-xs font-bold tracking-wide flex items-center justify-between cursor-pointer transition-all shadow-[0_8px_20px_rgba(0,0,0,0.15)] active:scale-[0.98] ${
                       spotlightTab === "LIVE"
                         ? "bg-[#D92B2B] hover:bg-[#B91C1C] text-white"
@@ -4050,7 +4050,7 @@ export default function DesktopOilstainExperience() {
                           {ev.title}
                         </h3>
 
-                        <p className="font-sans text-xs text-black/70 leading-relaxed line-clamp-2">
+                        <p className="font-sans text-xs text-black/70 leading-relaxed">
                           {ev.description}
                         </p>
                       </div>
@@ -4064,7 +4064,7 @@ export default function DesktopOilstainExperience() {
                         setRegisterSubmitted(false);
                         setIsRegisterModalOpen(true);
                       }}
-                      style={{ padding: "10px 12px 10px 16px" }}
+                      style={{ padding: "10px 12px 10px 16px", marginTop: "10px" }}
                       className={`w-full rounded-full font-sans text-xs font-bold tracking-wide flex items-center justify-between cursor-pointer transition-all active:scale-[0.98] ${
                         ev.isUpcoming
                           ? "bg-[#D92B2B] hover:bg-[#B91C1C] text-white"
