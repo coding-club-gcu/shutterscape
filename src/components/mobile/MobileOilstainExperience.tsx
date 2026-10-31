@@ -2275,50 +2275,15 @@ export default function MobileOilstainExperience() {
 
         <div className="relative z-10 w-full flex flex-col bg-black/65">
           <div className="osl-pad-sm flex items-center justify-between font-mono text-[8.5px] tracking-[0.2em] text-white/55 uppercase border-t border-white/10">
-            <span className="pl-12">f/1.4 · 1/1000s · ISO 400</span>
+            <span>f/1.4 · 1/1000s · ISO 400</span>
             <span>GCU · ASSAM</span>
           </div>
 
           <div className="relative w-full">
             <button
               type="button"
-              onClick={toggleHeroAudio}
-              className="absolute bottom-2 left-3 z-20 flex h-9 w-9 items-center justify-center rounded-full border border-[#D4A843]/60 bg-[#161513] text-[#D4A843] shadow-md cursor-pointer active:scale-95 transition-transform"
-              title={isHeroMuted ? "Unmute video sound" : "Mute video sound"}
-              aria-label={
-                isHeroMuted ? "Unmute video sound" : "Mute video sound"
-              }
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="15"
-                height="15"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-                {isHeroMuted ? (
-                  <>
-                    <line x1="23" y1="9" x2="17" y2="15" />
-                    <line x1="17" y1="9" x2="23" y2="15" />
-                  </>
-                ) : (
-                  <>
-                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
-                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
-                  </>
-                )}
-              </svg>
-            </button>
-
-            <button
-              type="button"
               onClick={handleEnterArchiveTransition}
-              style={{ padding: "13px 18px 13px 56px" }}
+              style={{ padding: "13px 18px" }}
               className="w-full flex items-center justify-between bg-[#D4A843] text-[#050505] font-mono text-[9.5px] font-bold tracking-[0.18em] uppercase cursor-pointer"
             >
               <span>ENTER THE DARKROOM ARCHIVE</span>
