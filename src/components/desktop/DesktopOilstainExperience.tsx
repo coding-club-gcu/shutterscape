@@ -880,6 +880,7 @@ export default function DesktopOilstainExperience() {
     Record<string, number>
   >({});
   const reelTouchStartXRef = useRef<number>(0);
+  const isAdvancingReelRef = useRef<boolean>(false);
 
   // Interactive UI States
   const [activeNavTab, setActiveNavTab] = useState<NavTabId>("home");
@@ -1608,7 +1609,7 @@ export default function DesktopOilstainExperience() {
         );
   }, [committee]);
 
-  // Viewport IntersectionObserver for Video Reels
+  // Viewport IntersectionObserver for Video Reels: only play the active center reel when in view
   useEffect(() => {
     if (typeof window === "undefined" || !("IntersectionObserver" in window))
       return;
@@ -1616,34 +1617,41 @@ export default function DesktopOilstainExperience() {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          const video = entry.target as HTMLVideoElement;
-          if (entry.isIntersecting) {
-            video.play().catch(() => {});
-          } else {
-            video.pause();
-          }
+          videoRefs.current.forEach((vid, idx) => {
+            if (!vid) return;
+            if (entry.isIntersecting && idx === activeReelIdx) {
+              vid.play().catch(() => {});
+            } else {
+              vid.pause();
+            }
+          });
         });
       },
-      { threshold: 0.35 }
+      { threshold: 0.2 }
     );
 
-    videoRefs.current.forEach((v) => {
-      if (v) observer.observe(v);
-    });
+    const sectionEl = document.getElementById("desktop-chronology-matrix");
+    if (sectionEl) {
+      observer.observe(sectionEl);
+    }
 
     return () => observer.disconnect();
-  }, [reels]);
+  }, [activeReelIdx]);
 
+  // Silky smooth desktop performance: only play the active center reel video; strictly pause and reset all others
   useEffect(() => {
     videoRefs.current.forEach((vid, idx) => {
       if (!vid) return;
       if (idx === activeReelIdx) {
+        vid.currentTime = 0;
+        vid.muted = activeAudioReelIdx !== idx;
         vid.play().catch(() => {});
       } else {
         vid.pause();
+        vid.currentTime = 0;
       }
     });
-  }, [activeReelIdx]);
+  }, [activeReelIdx, activeAudioReelIdx]);
 
   // Desktop 5-Card Widescreen 3D Reel Carousel Math
   const getReelCardStyle = (index: number) => {
@@ -1737,9 +1745,13 @@ export default function DesktopOilstainExperience() {
   };
 
   const handleReelVideoEnded = (index: number) => {
-    if (index === activeReelIdx) {
-      setActiveReelIdx((prev) => (prev + 1) % reels.length);
-    }
+    if (index !== activeReelIdx || isAdvancingReelRef.current) return;
+    isAdvancingReelRef.current = true;
+    setActiveReelIdx((prev) => (prev + 1) % reels.length);
+    setActiveAudioReelIdx((prev) => (prev !== null ? (prev + 1) % reels.length : null));
+    setTimeout(() => {
+      isAdvancingReelRef.current = false;
+    }, 700);
   };
 
   // Studio-Proportioned Desktop Member Card (Never stretches to 900px!)
@@ -3493,7 +3505,7 @@ export default function DesktopOilstainExperience() {
                     }}
                     src={reel.videoSrc}
                     autoPlay={isActive}
-                    loop={!isActive}
+                    loop={false}
                     muted={activeAudioReelIdx !== index}
                     playsInline
                     preload={isActive ? "auto" : "metadata"}
@@ -3501,7 +3513,12 @@ export default function DesktopOilstainExperience() {
                       const video = e.currentTarget;
                       video.defaultMuted = true;
                       video.muted = activeAudioReelIdx !== index;
-                      if (isActive) video.play().catch(() => {});
+                      if (isActive) {
+                        video.play().catch(() => {});
+                      } else {
+                        video.pause();
+                        video.currentTime = 0;
+                      }
                     }}
                     onTimeUpdate={(e) => {
                       const video = e.currentTarget;
@@ -3513,7 +3530,8 @@ export default function DesktopOilstainExperience() {
                         }));
                         if (
                           isActive &&
-                          video.currentTime >= video.duration - 0.08
+                          video.currentTime >= video.duration - 0.12 &&
+                          !isAdvancingReelRef.current
                         ) {
                           handleReelVideoEnded(index);
                         }

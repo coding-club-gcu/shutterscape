@@ -854,6 +854,7 @@ export default function MobileOilstainExperience() {
     Record<string, number>
   >({});
   const reelTouchStartXRef = useRef<number>(0);
+  const isAdvancingReelRef = useRef<boolean>(false);
 
   // Interactive UI States
   const [activeNavTab, setActiveNavTab] = useState<NavTabId>("home");
@@ -1582,7 +1583,7 @@ export default function MobileOilstainExperience() {
         );
   }, [committee]);
 
-  // Viewport IntersectionObserver for Video Reels
+  // Viewport IntersectionObserver for Video Reels: only play the active center reel when in view
   useEffect(() => {
     if (typeof window === "undefined" || !("IntersectionObserver" in window))
       return;
@@ -1590,35 +1591,41 @@ export default function MobileOilstainExperience() {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          const video = entry.target as HTMLVideoElement;
-          if (entry.isIntersecting) {
-            video.play().catch(() => {});
-          } else {
-            video.pause();
-          }
+          videoRefs.current.forEach((vid, idx) => {
+            if (!vid) return;
+            if (entry.isIntersecting && idx === activeReelIdx) {
+              vid.play().catch(() => {});
+            } else {
+              vid.pause();
+            }
+          });
         });
       },
-      { threshold: 0.35 }
+      { threshold: 0.2 }
     );
 
-    videoRefs.current.forEach((v) => {
-      if (v) observer.observe(v);
-    });
+    const sectionEl = document.getElementById("mobile-chronology-matrix");
+    if (sectionEl) {
+      observer.observe(sectionEl);
+    }
 
     return () => observer.disconnect();
-  }, [reels]);
+  }, [activeReelIdx]);
 
-  // Silky smooth mobile performance: only play the active center reel video; pause all others
+  // Silky smooth mobile performance: only play the active center reel video; strictly pause and reset all others
   useEffect(() => {
     videoRefs.current.forEach((vid, idx) => {
       if (!vid) return;
       if (idx === activeReelIdx) {
+        vid.currentTime = 0;
+        vid.muted = activeAudioReelIdx !== idx;
         vid.play().catch(() => {});
       } else {
         vid.pause();
+        vid.currentTime = 0;
       }
     });
-  }, [activeReelIdx]);
+  }, [activeReelIdx, activeAudioReelIdx]);
 
   const getReelCardStyle = (index: number) => {
     const total = reels.length;
@@ -1711,9 +1718,13 @@ export default function MobileOilstainExperience() {
   };
 
   const handleReelVideoEnded = (index: number) => {
-    if (index === activeReelIdx) {
-      setActiveReelIdx((prev) => (prev + 1) % reels.length);
-    }
+    if (index !== activeReelIdx || isAdvancingReelRef.current) return;
+    isAdvancingReelRef.current = true;
+    setActiveReelIdx((prev) => (prev + 1) % reels.length);
+    setActiveAudioReelIdx((prev) => (prev !== null ? (prev + 1) % reels.length : null));
+    setTimeout(() => {
+      isAdvancingReelRef.current = false;
+    }, 700);
   };
 
   // Colored Studio Member Card (Screenshots 7 & 8)
@@ -2584,7 +2595,7 @@ export default function MobileOilstainExperience() {
                 </span>
               </div>
               <h2
-                style={{ marginTop: "6px" }}
+                style={{ marginTop: "14px" }}
                 className="font-heading font-black text-3xl tracking-[-0.03em] uppercase text-white leading-none"
               >
                 SPOTLIGHT{" "}
@@ -3390,7 +3401,7 @@ export default function MobileOilstainExperience() {
                     }}
                     src={reel.videoSrc}
                     autoPlay={isActive}
-                    loop={!isActive}
+                    loop={false}
                     muted={activeAudioReelIdx !== index}
                     playsInline
                     preload={isActive ? "auto" : "metadata"}
@@ -3398,7 +3409,12 @@ export default function MobileOilstainExperience() {
                       const video = e.currentTarget;
                       video.defaultMuted = true;
                       video.muted = activeAudioReelIdx !== index;
-                      if (isActive) video.play().catch(() => {});
+                      if (isActive) {
+                        video.play().catch(() => {});
+                      } else {
+                        video.pause();
+                        video.currentTime = 0;
+                      }
                     }}
                     onTimeUpdate={(e) => {
                       const video = e.currentTarget;
@@ -3410,7 +3426,8 @@ export default function MobileOilstainExperience() {
                         }));
                         if (
                           isActive &&
-                          video.currentTime >= video.duration - 0.08
+                          video.currentTime >= video.duration - 0.12 &&
+                          !isAdvancingReelRef.current
                         ) {
                           handleReelVideoEnded(index);
                         }
