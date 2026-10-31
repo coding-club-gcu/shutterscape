@@ -615,12 +615,18 @@ export default function AdminDashboardPage() {
           border-right: 1px solid #EAEFF4;
           box-shadow: 0 0 20px rgba(145, 158, 171, 0.05);
         }
-        @media (max-width: 639px) {
+        @media (max-width: 768px) {
           #cms-enterprise-root .cms-action-edit,
           #cms-enterprise-root .cms-action-delete {
-            padding: 7px 12px !important;
-            font-size: 11.5px;
-            min-height: 36px;
+            padding: 8px 14px !important;
+            font-size: 12px;
+            min-height: 38px;
+            border-radius: 8px;
+          }
+          #cms-enterprise-root .cms-filter-pill {
+            padding: 6px 12px !important;
+            font-size: 11px;
+            white-space: nowrap;
           }
         }
         #cms-enterprise-root .cms-nav-btn {
@@ -1190,9 +1196,9 @@ export default function AdminDashboardPage() {
           MAIN WORKSPACE CANVAS
           ============================================================ */}
       <div className="flex-1 min-w-0 min-h-screen flex flex-col">
-        {/* Mobile Sticky Top Header Bar */}
-        <div className="lg:hidden sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#EAEFF4] px-3.5 py-2.5 flex items-center justify-between shadow-xs">
-          <div className="flex items-center gap-2.5">
+        {/* Mobile Sticky Top Header Bar (Row 1 of 2: Solid White 50px) */}
+        <div className="lg:hidden sticky top-0 z-40 bg-white border-b border-[#EAEFF4] px-3.5 h-[50px] flex items-center justify-between shadow-xs">
+          <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={() => setIsMobileDrawerOpen(true)}
@@ -1236,6 +1242,54 @@ export default function AdminDashboardPage() {
               {dbSource === "database" ? "Live DB" : "Cached"}
             </span>
 
+            {/* Quick Header Action Button */}
+            {activeTab === "spotlight" && (
+              <button
+                type="button"
+                onClick={handleSaveSpotlight}
+                disabled={savingSpotlight}
+                className="cms-primary-btn text-xs py-1.5 px-3 rounded-lg"
+              >
+                <svg
+                  className={`w-3.5 h-3.5 ${savingSpotlight ? "animate-spin" : ""}`}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2.4}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
+                  />
+                </svg>
+                <span>{savingSpotlight ? "Saving..." : "Save"}</span>
+              </button>
+            )}
+
+            {["gallery", "activities", "committee", "reels"].includes(activeTab) && (
+              <button
+                type="button"
+                onClick={handleOpenCreateModal}
+                className="cms-primary-btn text-xs py-1.5 px-3 rounded-lg"
+              >
+                <svg
+                  className="w-3.5 h-3.5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2.4}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 4v16m8-8H4"
+                  />
+                </svg>
+                <span>+ Add</span>
+              </button>
+            )}
+
             <button
               type="button"
               onClick={refreshAllData}
@@ -1259,8 +1313,8 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
-        {/* Mobile Sticky Horizontal Tab Dock */}
-        <div className="lg:hidden sticky top-[49px] z-30 bg-[#FAFBFD] border-b border-[#EAEFF4] px-3 py-2 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+        {/* Mobile Sticky Horizontal Tab Dock (Row 2 of 2: Solid White, top-[50px]) */}
+        <div className="lg:hidden sticky top-[50px] z-30 bg-white border-b border-[#EAEFF4] px-3 py-2 flex items-center gap-1.5 overflow-x-auto no-scrollbar shadow-xs">
           {TABS.map((tab) => {
             const isActive = activeTab === tab.id;
             const count = getTabCount(tab.id);
@@ -1273,10 +1327,10 @@ export default function AdminDashboardPage() {
                   setSearchQuery("");
                   setFilterCategory("ALL");
                 }}
-                className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                className={`shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${
                   isActive
                     ? "bg-[#5D87FF] text-white shadow-xs"
-                    : "bg-white text-[#5A6A85] border border-[#DFE5EF] hover:border-[#5D87FF]/50"
+                    : "bg-[#F4F6F9] text-[#5A6A85] hover:bg-[#EAEFF4] hover:text-[#2A3547]"
                 }`}
               >
                 {getTabIcon(tab.id, "w-3.5 h-3.5")}
@@ -1285,8 +1339,8 @@ export default function AdminDashboardPage() {
                   style={{ padding: "1px 6px" }}
                   className={`rounded-full text-[10px] font-bold ${
                     isActive
-                      ? "bg-white/20 text-white"
-                      : "bg-[#ECF2FF] text-[#5D87FF]"
+                      ? "bg-white/25 text-white"
+                      : "bg-[#EAEFF4] text-[#7C8FAC]"
                   }`}
                 >
                   {count}
@@ -1294,76 +1348,6 @@ export default function AdminDashboardPage() {
               </button>
             );
           })}
-        </div>
-
-        {/* Mobile Action Sub-Bar */}
-        <div className="lg:hidden bg-white border-b border-[#EAEFF4] px-3.5 py-2.5 flex items-center justify-between gap-2">
-          <div className="min-w-0">
-            <h2 className="text-xs font-bold text-[#2A3547] truncate">
-              {activeTabMeta.label}
-            </h2>
-            <p className="text-[10px] text-[#7C8FAC] truncate">
-              {activeTabMeta.description}
-            </p>
-          </div>
-
-          <div className="shrink-0">
-            {activeTab === "spotlight" && (
-              <button
-                type="button"
-                onClick={handleSaveSpotlight}
-                disabled={savingSpotlight}
-                className="cms-primary-btn text-xs py-1.5 px-3"
-              >
-                <svg
-                  className={`w-3.5 h-3.5 ${savingSpotlight ? "animate-spin" : ""}`}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2.4}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
-                  />
-                </svg>
-                <span>{savingSpotlight ? "Saving..." : "Save Spotlight"}</span>
-              </button>
-            )}
-
-            {["gallery", "activities", "committee", "reels"].includes(activeTab) && (
-              <button
-                type="button"
-                onClick={handleOpenCreateModal}
-                className="cms-primary-btn text-xs py-1.5 px-3"
-              >
-                <svg
-                  className="w-3.5 h-3.5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2.4}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 4v16m8-8H4"
-                  />
-                </svg>
-                <span>
-                  + Add{" "}
-                  {activeTab === "gallery"
-                    ? "Frame"
-                    : activeTab === "committee"
-                    ? "Member"
-                    : activeTab === "reels"
-                    ? "Reel"
-                    : "Event"}
-                </span>
-              </button>
-            )}
-          </div>
         </div>
 
         {/* Desktop Enterprise Header Bar */}
@@ -1481,9 +1465,9 @@ export default function AdminDashboardPage() {
           className="flex-1 flex flex-col gap-3.5 sm:gap-4 max-w-[1560px] w-full mx-auto px-3 sm:px-6 sm:py-5 lg:px-8 lg:py-6"
         >
           {/* ============================================================
-              EXECUTIVE KPI SUMMARY ROW (Standard Compact Sizing)
+              EXECUTIVE KPI SUMMARY ROW (Desktop: 4 Cards, Mobile: Sleek 1-Line Chip)
               ============================================================ */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+          <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-3.5">
             <div className="cms-kpi-card">
               <div>
                 <span className="text-[11px] font-semibold text-[#7C8FAC] block">
@@ -1590,6 +1574,17 @@ export default function AdminDashboardPage() {
             </div>
           </div>
 
+          {/* Mobile Sleek 1-Line Stat Chip */}
+          <div className="md:hidden flex items-center justify-between bg-white px-3.5 py-2.5 rounded-xl border border-[#EAEFF4] shadow-xs">
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="w-2 h-2 rounded-full bg-[#5D87FF] shrink-0" />
+              <span className="font-bold text-xs text-[#2A3547] truncate">{activeTabMeta.label}</span>
+            </div>
+            <span className="text-[11px] font-bold text-[#5D87FF] bg-[#ECF2FF] px-2.5 py-0.5 rounded-full shrink-0">
+              {getTabCount(activeTab)} items
+            </span>
+          </div>
+
           {/* ============================================================
               ELEVATED SEARCH & SEGMENTED FILTER BAR CARD
               ============================================================ */}
@@ -1627,7 +1622,7 @@ export default function AdminDashboardPage() {
               {activeTab === "gallery" && (
                 <div
                   style={{ padding: "5px" }}
-                  className="flex items-center gap-1.5 bg-[#F4F7FE] rounded-xl border border-[#EAEFF4] overflow-x-auto"
+                  className="flex items-center gap-1.5 bg-[#F4F7FE] rounded-xl border border-[#EAEFF4] overflow-x-auto no-scrollbar"
                 >
                   {[
                     "ALL",
@@ -1659,7 +1654,7 @@ export default function AdminDashboardPage() {
               {activeTab === "activities" && (
                 <div
                   style={{ padding: "5px" }}
-                  className="flex items-center gap-1.5 bg-[#F4F7FE] rounded-xl border border-[#EAEFF4]"
+                  className="flex items-center gap-1.5 bg-[#F4F7FE] rounded-xl border border-[#EAEFF4] overflow-x-auto no-scrollbar"
                 >
                   {["ALL", "2026", "2025"].map((yr) => {
                     const isSelected = filterCategory === yr;
@@ -2737,6 +2732,20 @@ export default function AdminDashboardPage() {
           )}
         </div>
       </div>
+
+      {/* Mobile Floating Action Button (FAB) for Quick 1-Thumb Record Creation */}
+      {["gallery", "activities", "committee", "reels"].includes(activeTab) && (
+        <button
+          type="button"
+          onClick={handleOpenCreateModal}
+          className="lg:hidden fixed bottom-6 right-5 z-40 w-13 h-13 rounded-full bg-[#5D87FF] hover:bg-[#4F75E0] text-white shadow-xl shadow-[#5D87FF]/40 flex items-center justify-center active:scale-95 transition-all"
+          aria-label="Add New Item"
+        >
+          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.4}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+        </button>
+      )}
 
       {/* ============================================================
           MODAL DRAWER / DIALOG (Enterprise Clean Form)
