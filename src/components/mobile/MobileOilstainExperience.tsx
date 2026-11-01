@@ -1583,7 +1583,7 @@ export default function MobileOilstainExperience() {
         );
   }, [committee]);
 
-  // Viewport IntersectionObserver for Video Reels: only play the active center reel when in view
+  // ALL 5 VISIBLE REEL VIDEOS PLAY SIMULTANEOUSLY WHEN SECTION IS IN VIEW
   useEffect(() => {
     if (typeof window === "undefined" || !("IntersectionObserver" in window))
       return;
@@ -1591,9 +1591,16 @@ export default function MobileOilstainExperience() {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
+          const total = reels.length;
           videoRefs.current.forEach((vid, idx) => {
             if (!vid) return;
-            if (entry.isIntersecting && idx === activeReelIdx) {
+            let relIdx = idx - activeReelIdx;
+            if (relIdx > total / 2) relIdx -= total;
+            if (relIdx < -total / 2) relIdx += total;
+            const isVisibleCard = Math.abs(relIdx) <= 2;
+
+            if (entry.isIntersecting && isVisibleCard) {
+              vid.muted = activeAudioReelIdx !== idx;
               vid.play().catch(() => {});
             } else {
               vid.pause();
@@ -1601,7 +1608,7 @@ export default function MobileOilstainExperience() {
           });
         });
       },
-      { threshold: 0.2 }
+      { threshold: 0.15 }
     );
 
     const sectionEl = document.getElementById("mobile-chronology-matrix");
@@ -1610,22 +1617,26 @@ export default function MobileOilstainExperience() {
     }
 
     return () => observer.disconnect();
-  }, [activeReelIdx]);
+  }, [activeReelIdx, activeAudioReelIdx, reels.length]);
 
-  // Silky smooth mobile performance: only play the active center reel video; strictly pause and reset all others
+  // Play all 5 visible carousel videos simultaneously (center + flanking background videos!)
   useEffect(() => {
+    const total = reels.length;
     videoRefs.current.forEach((vid, idx) => {
       if (!vid) return;
-      if (idx === activeReelIdx) {
-        vid.currentTime = 0;
+      let relIdx = idx - activeReelIdx;
+      if (relIdx > total / 2) relIdx -= total;
+      if (relIdx < -total / 2) relIdx += total;
+      const isVisibleCard = Math.abs(relIdx) <= 2;
+
+      if (isVisibleCard) {
         vid.muted = activeAudioReelIdx !== idx;
         vid.play().catch(() => {});
       } else {
         vid.pause();
-        vid.currentTime = 0;
       }
     });
-  }, [activeReelIdx, activeAudioReelIdx]);
+  }, [activeReelIdx, activeAudioReelIdx, reels.length]);
 
   const getReelCardStyle = (index: number) => {
     const total = reels.length;
@@ -1666,14 +1677,14 @@ export default function MobileOilstainExperience() {
       translateX = 150;
       scale = 0.75;
       zIndex = 20;
-      opacity = 0;
+      opacity = 0.45;
       rotateY = -12;
       filter = "brightness(0.5)";
     } else if (relativeIndex === -2) {
       translateX = -150;
       scale = 0.75;
       zIndex = 20;
-      opacity = 0;
+      opacity = 0.45;
       rotateY = 12;
       filter = "brightness(0.5)";
     } else {
@@ -3377,11 +3388,11 @@ export default function MobileOilstainExperience() {
           {reels.map((reel, index) => {
             const isActive = index === activeReelIdx;
             const isActiveAudio = activeAudioReelIdx === index;
-            const isAdjacent =
-              Math.abs(index - activeReelIdx) === 1 ||
-              (index === 0 && activeReelIdx === reels.length - 1) ||
-              (index === reels.length - 1 && activeReelIdx === 0);
-            const isVisibleCard = isActive || isAdjacent;
+            const total = reels.length;
+            let relIdx = index - activeReelIdx;
+            if (relIdx > total / 2) relIdx -= total;
+            if (relIdx < -total / 2) relIdx += total;
+            const isVisibleCard = Math.abs(relIdx) <= 2;
 
             return (
               <div
@@ -3400,21 +3411,16 @@ export default function MobileOilstainExperience() {
                       }
                     }}
                     src={reel.videoSrc}
-                    autoPlay={isActive}
-                    loop={false}
+                    autoPlay
+                    loop={!isActive}
                     muted={activeAudioReelIdx !== index}
                     playsInline
-                    preload={isActive ? "auto" : "metadata"}
+                    preload="auto"
                     onLoadedData={(e) => {
                       const video = e.currentTarget;
                       video.defaultMuted = true;
                       video.muted = activeAudioReelIdx !== index;
-                      if (isActive) {
-                        video.play().catch(() => {});
-                      } else {
-                        video.pause();
-                        video.currentTime = 0;
-                      }
+                      video.play().catch(() => {});
                     }}
                     onTimeUpdate={(e) => {
                       const video = e.currentTarget;
@@ -3433,7 +3439,11 @@ export default function MobileOilstainExperience() {
                         }
                       }
                     }}
-                    onEnded={() => handleReelVideoEnded(index)}
+                    onEnded={() => {
+                      if (isActive) {
+                        handleReelVideoEnded(index);
+                      }
+                    }}
                     className="absolute inset-0 w-full h-full object-cover pointer-events-none"
                   />
                 ) : (
@@ -3602,14 +3612,28 @@ export default function MobileOilstainExperience() {
               </a>
             </div>
 
-            <div className="flex items-center gap-1 shrink-0">
+            <div className="flex items-center gap-1.5 shrink-0">
               <a
                 href="https://www.instagram.com/shutterscape_gcu"
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ padding: "4px 8px" }}
-                className="rounded-full bg-black/[0.05] hover:bg-[#111111] text-[#111111] hover:text-white font-sans text-[9.5px] font-semibold tracking-tight flex items-center gap-0.5 transition-colors whitespace-nowrap"
+                style={{ padding: "5px 10px" }}
+                className="rounded-full bg-black/[0.05] hover:bg-[#111111] text-[#111111] hover:text-white font-sans text-[10px] font-semibold tracking-tight flex items-center gap-1.5 transition-colors whitespace-nowrap"
               >
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                  <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+                </svg>
                 <span>Instagram</span>
                 <span className="text-[8.5px] opacity-60">↗</span>
               </a>
@@ -3617,11 +3641,24 @@ export default function MobileOilstainExperience() {
                 href="https://chat.whatsapp.com/Hs71BicR1Xj3PmOyPJ5wdc?s=sw&p=a&mlu=4&ilr=4"
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ padding: "4px 8px" }}
-                className="rounded-full bg-[#111111] text-white font-sans text-[9.5px] font-semibold tracking-tight flex items-center gap-0.5 transition-opacity hover:opacity-85 whitespace-nowrap"
+                style={{ padding: "5px 10px" }}
+                className="rounded-full bg-[#111111] hover:bg-[#25D366] text-white hover:text-[#050505] font-sans text-[10px] font-semibold tracking-tight flex items-center gap-1.5 transition-colors whitespace-nowrap"
               >
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21" />
+                  <path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1a5 5 0 0 0 5 5h1a.5.5 0 0 0 0-1h-1a.5.5 0 0 0 0 1" />
+                </svg>
                 <span>WhatsApp</span>
-                <span className="text-[8.5px] text-[#D4A843]">↗</span>
+                <span className="text-[8.5px] text-[#FFE066]">↗</span>
               </a>
             </div>
           </div>
