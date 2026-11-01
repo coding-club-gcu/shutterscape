@@ -1119,9 +1119,7 @@ export default function DesktopOilstainExperience() {
   const [activeAudioReelIdx, setActiveAudioReelIdx] = useState<number | null>(
     null
   );
-  const [reelProgressMap, setReelProgressMap] = useState<
-    Record<string, number>
-  >({});
+  const progressBarRefs = useRef<(HTMLDivElement | null)[]>([]);
   const reelTouchStartXRef = useRef<number>(0);
   const isAdvancingReelRef = useRef<boolean>(false);
 
@@ -1846,7 +1844,7 @@ export default function DesktopOilstainExperience() {
         );
   }, [committee]);
 
-  // ALL VISIBLE REEL VIDEOS PLAY SIMULTANEOUSLY WHEN SECTION IS IN VIEW (Fixes Screenshot 5!)
+  // ALL VISIBLE REEL VIDEOS PLAY SIMULTANEOUSLY WHEN SECTION IS IN VIEW
   useEffect(() => {
     if (typeof window === "undefined" || !("IntersectionObserver" in window))
       return;
@@ -1864,7 +1862,13 @@ export default function DesktopOilstainExperience() {
 
             if (entry.isIntersecting && isVisibleCard) {
               vid.muted = activeAudioReelIdx !== idx;
-              vid.play().catch(() => {});
+              const p = vid.play();
+              if (p !== undefined) {
+                p.catch(() => {
+                  vid.muted = true;
+                  vid.play().catch(() => {});
+                });
+              }
             } else {
               vid.pause();
             }
@@ -1884,6 +1888,13 @@ export default function DesktopOilstainExperience() {
 
   // Play all 5 visible carousel videos simultaneously (center + 4 flanking background videos!)
   useEffect(() => {
+    // Reset non-active progress bars via direct DOM
+    progressBarRefs.current.forEach((bar, idx) => {
+      if (bar && idx !== activeReelIdx) {
+        bar.style.width = "0%";
+      }
+    });
+
     const total = reels.length;
     videoRefs.current.forEach((vid, idx) => {
       if (!vid) return;
@@ -1894,7 +1905,13 @@ export default function DesktopOilstainExperience() {
 
       if (isVisibleCard) {
         vid.muted = activeAudioReelIdx !== idx;
-        vid.play().catch(() => {});
+        const p = vid.play();
+        if (p !== undefined) {
+          p.catch(() => {
+            vid.muted = true;
+            vid.play().catch(() => {});
+          });
+        }
       } else {
         vid.pause();
       }
@@ -1987,6 +2004,11 @@ export default function DesktopOilstainExperience() {
   const handleReelCardClick = (index: number) => {
     if (index !== activeReelIdx) {
       setActiveReelIdx(index);
+      const targetVid = videoRefs.current[index];
+      if (targetVid) {
+        targetVid.muted = activeAudioReelIdx !== index;
+        targetVid.play().catch(() => {});
+      }
     } else {
       setActiveAudioReelIdx((prev) => (prev === index ? null : index));
     }
@@ -4041,35 +4063,48 @@ export default function DesktopOilstainExperience() {
                 className="absolute top-1/2 left-1/2 w-[275px] aspect-[9/16] max-h-[54vh] rounded-[24px] overflow-hidden group bg-[#0A0A0D] border border-white/10 shadow-[0_24px_60px_rgba(0,0,0,0.8)] cursor-pointer select-none"
                 style={getReelCardStyle(index)}
               >
+                {/* Visual loading poster / darkroom placeholder behind the video */}
+                <div className="absolute inset-0 bg-[#0E0E12] flex flex-col items-center justify-center gap-2 pointer-events-none z-0">
+                  <div className="w-8 h-8 rounded-full bg-white/[0.05] border border-white/10 flex items-center justify-center">
+                    <span className="w-2 h-2 rounded-full bg-[#EF4444] animate-pulse" />
+                  </div>
+                  <span className="font-mono text-[7px] tracking-[0.2em] uppercase text-white/35">
+                    35MM FILM REEL
+                  </span>
+                </div>
+
                 {isVisibleCard ? (
                   <video
                     ref={(el) => {
                       videoRefs.current[index] = el;
-                      if (el) {
-                        el.defaultMuted = true;
-                        el.muted = activeAudioReelIdx !== index;
-                      }
                     }}
-                    src={reel.videoSrc}
-                    autoPlay
+                    src={
+                      reel.videoSrc.includes("#")
+                        ? reel.videoSrc
+                        : `${reel.videoSrc}#t=0.001`
+                    }
+                    autoPlay={isActive}
                     loop={!isActive}
                     muted={activeAudioReelIdx !== index}
                     playsInline
-                    preload="auto"
+                    preload={isActive ? "auto" : "metadata"}
                     onLoadedData={(e) => {
                       const video = e.currentTarget;
                       video.defaultMuted = true;
                       video.muted = activeAudioReelIdx !== index;
-                      video.play().catch(() => {});
+                      if (isActive) {
+                        const p = video.play();
+                        if (p !== undefined) p.catch(() => {});
+                      }
                     }}
                     onTimeUpdate={(e) => {
                       const video = e.currentTarget;
                       if (video.duration && !isNaN(video.duration)) {
                         const pct = (video.currentTime / video.duration) * 100;
-                        setReelProgressMap((prev) => ({
-                          ...prev,
-                          [reel.id || String(index)]: pct,
-                        }));
+                        const bar = progressBarRefs.current[index];
+                        if (bar) {
+                          bar.style.width = `${pct}%`;
+                        }
                         if (
                           isActive &&
                           video.currentTime >= video.duration - 0.12 &&
@@ -4084,22 +4119,22 @@ export default function DesktopOilstainExperience() {
                         handleReelVideoEnded(index);
                       }
                     }}
-                    className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+                    className="relative z-10 w-full h-full object-cover pointer-events-none"
                   />
                 ) : (
                   <div className="absolute inset-0 bg-[#0A0A0D]" />
                 )}
 
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-black/30 opacity-85 pointer-events-none" />
+                <div className="absolute inset-0 z-20 bg-gradient-to-t from-black/85 via-black/10 to-black/30 opacity-85 pointer-events-none" />
 
                 <div
-                  className={`absolute inset-0 border-2 rounded-[24px] pointer-events-none transition-all duration-500 ${
+                  className={`absolute inset-0 z-20 border-2 rounded-[24px] pointer-events-none transition-all duration-500 ${
                     isActive ? "border-white/35" : "border-transparent"
                   }`}
                 />
 
                 {isActive && (
-                  <div className="absolute top-4 right-4 z-10 pointer-events-none">
+                  <div className="absolute top-4 right-4 z-30 pointer-events-none">
                     {isActiveAudio ? (
                       <div className="bg-black/65 backdrop-blur-md px-2.5 py-1.5 rounded-full border border-white/20 flex items-center gap-1.5 shadow-lg">
                         <div className="sound-wave">
@@ -4125,7 +4160,7 @@ export default function DesktopOilstainExperience() {
 
                 <div
                   style={{ padding: "14px 16px" }}
-                  className="absolute bottom-0 inset-x-0 flex items-center gap-2.5 pointer-events-none"
+                  className="absolute bottom-0 inset-x-0 z-30 flex items-center gap-2.5 pointer-events-none"
                 >
                   <div className="w-7 h-7 rounded-full bg-white text-[#050505] font-sans font-bold text-[9px] flex items-center justify-center shadow-md shrink-0">
                     {getReelInitials(reel.photographer)}
@@ -4135,13 +4170,14 @@ export default function DesktopOilstainExperience() {
                   </span>
                 </div>
 
-                <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-white/20 z-20 pointer-events-none overflow-hidden">
+                <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-white/20 z-30 pointer-events-none overflow-hidden">
                   <div
+                    ref={(el) => {
+                      progressBarRefs.current[index] = el;
+                    }}
                     className="h-full bg-[#EF4444] shadow-[0_0_8px_rgba(239,68,68,0.85)]"
                     style={{
-                      width: `${
-                        reelProgressMap[reel.id || String(index)] || 0
-                      }%`,
+                      width: "0%",
                       transition: "width 0.12s linear",
                     }}
                   />

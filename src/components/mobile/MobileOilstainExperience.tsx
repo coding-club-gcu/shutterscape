@@ -850,9 +850,7 @@ export default function MobileOilstainExperience() {
   const [activeAudioReelIdx, setActiveAudioReelIdx] = useState<number | null>(
     null
   );
-  const [reelProgressMap, setReelProgressMap] = useState<
-    Record<string, number>
-  >({});
+  const progressBarRefs = useRef<(HTMLDivElement | null)[]>([]);
   const reelTouchStartXRef = useRef<number>(0);
   const isAdvancingReelRef = useRef<boolean>(false);
 
@@ -1601,7 +1599,13 @@ export default function MobileOilstainExperience() {
 
             if (entry.isIntersecting && isVisibleCard) {
               vid.muted = activeAudioReelIdx !== idx;
-              vid.play().catch(() => {});
+              const p = vid.play();
+              if (p !== undefined) {
+                p.catch(() => {
+                  vid.muted = true;
+                  vid.play().catch(() => {});
+                });
+              }
             } else {
               vid.pause();
             }
@@ -1619,8 +1623,15 @@ export default function MobileOilstainExperience() {
     return () => observer.disconnect();
   }, [activeReelIdx, activeAudioReelIdx, reels.length]);
 
-  // Play all 5 visible carousel videos simultaneously (center + flanking background videos!)
+  // Smooth playback management: Play active center reel + flanking background cards without CPU churn
   useEffect(() => {
+    // Reset non-active progress bars via direct DOM to avoid component re-renders
+    progressBarRefs.current.forEach((bar, idx) => {
+      if (bar && idx !== activeReelIdx) {
+        bar.style.width = "0%";
+      }
+    });
+
     const total = reels.length;
     videoRefs.current.forEach((vid, idx) => {
       if (!vid) return;
@@ -1631,7 +1642,13 @@ export default function MobileOilstainExperience() {
 
       if (isVisibleCard) {
         vid.muted = activeAudioReelIdx !== idx;
-        vid.play().catch(() => {});
+        const p = vid.play();
+        if (p !== undefined) {
+          p.catch(() => {
+            vid.muted = true;
+            vid.play().catch(() => {});
+          });
+        }
       } else {
         vid.pause();
       }
@@ -1723,6 +1740,11 @@ export default function MobileOilstainExperience() {
   const handleReelCardClick = (index: number) => {
     if (index !== activeReelIdx) {
       setActiveReelIdx(index);
+      const targetVid = videoRefs.current[index];
+      if (targetVid) {
+        targetVid.muted = activeAudioReelIdx !== index;
+        targetVid.play().catch(() => {});
+      }
     } else {
       setActiveAudioReelIdx((prev) => (prev === index ? null : index));
     }
@@ -3350,7 +3372,7 @@ export default function MobileOilstainExperience() {
         />
 
         <div
-          style={{ padding: "36px 20px 14px" }}
+          style={{ padding: "58px 20px 14px" }}
           className="relative z-10 flex flex-col items-center justify-center text-center gap-2 w-full max-w-md mx-auto"
         >
           <h2 className="font-script text-5xl sm:text-6xl font-bold tracking-normal leading-[0.9]">
@@ -3401,35 +3423,49 @@ export default function MobileOilstainExperience() {
                 className="absolute top-1/2 left-1/2 w-[74vw] max-w-[280px] aspect-[9/16] max-h-[52vh] rounded-[24px] overflow-hidden group bg-[#0A0A0D] border border-white/10 shadow-[0_24px_60px_rgba(0,0,0,0.8)] cursor-pointer select-none"
                 style={getReelCardStyle(index)}
               >
+                {/* Visual loading poster / darkroom placeholder behind the video */}
+                <div className="absolute inset-0 bg-[#0E0E12] flex flex-col items-center justify-center gap-2 pointer-events-none z-0">
+                  <div className="w-8 h-8 rounded-full bg-white/[0.05] border border-white/10 flex items-center justify-center">
+                    <span className="w-2 h-2 rounded-full bg-[#EF4444] animate-pulse" />
+                  </div>
+                  <span className="font-mono text-[7px] tracking-[0.2em] uppercase text-white/35">
+                    35MM FILM REEL
+                  </span>
+                </div>
+
                 {isVisibleCard ? (
                   <video
                     ref={(el) => {
                       videoRefs.current[index] = el;
-                      if (el) {
-                        el.defaultMuted = true;
-                        el.muted = activeAudioReelIdx !== index;
-                      }
                     }}
-                    src={reel.videoSrc}
-                    autoPlay
+                    src={
+                      reel.videoSrc.includes("#")
+                        ? reel.videoSrc
+                        : `${reel.videoSrc}#t=0.001`
+                    }
+                    autoPlay={isActive}
                     loop={!isActive}
                     muted={activeAudioReelIdx !== index}
                     playsInline
-                    preload="auto"
+                    webkit-playsinline="true"
+                    preload={isActive ? "auto" : "metadata"}
                     onLoadedData={(e) => {
                       const video = e.currentTarget;
                       video.defaultMuted = true;
                       video.muted = activeAudioReelIdx !== index;
-                      video.play().catch(() => {});
+                      if (isActive) {
+                        const p = video.play();
+                        if (p !== undefined) p.catch(() => {});
+                      }
                     }}
                     onTimeUpdate={(e) => {
                       const video = e.currentTarget;
                       if (video.duration && !isNaN(video.duration)) {
                         const pct = (video.currentTime / video.duration) * 100;
-                        setReelProgressMap((prev) => ({
-                          ...prev,
-                          [reel.id || String(index)]: pct,
-                        }));
+                        const bar = progressBarRefs.current[index];
+                        if (bar) {
+                          bar.style.width = `${pct}%`;
+                        }
                         if (
                           isActive &&
                           video.currentTime >= video.duration - 0.12 &&
@@ -3444,22 +3480,22 @@ export default function MobileOilstainExperience() {
                         handleReelVideoEnded(index);
                       }
                     }}
-                    className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+                    className="relative z-10 w-full h-full object-cover pointer-events-none"
                   />
                 ) : (
                   <div className="absolute inset-0 bg-[#0A0A0D]" />
                 )}
 
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-black/30 opacity-85 pointer-events-none" />
+                <div className="absolute inset-0 z-20 bg-gradient-to-t from-black/85 via-black/10 to-black/30 opacity-85 pointer-events-none" />
 
                 <div
-                  className={`absolute inset-0 border-2 rounded-[24px] pointer-events-none transition-all duration-500 ${
+                  className={`absolute inset-0 z-20 border-2 rounded-[24px] pointer-events-none transition-all duration-500 ${
                     isActive ? "border-white/35" : "border-transparent"
                   }`}
                 />
 
                 {isActive && (
-                  <div className="absolute top-4 right-4 z-10 pointer-events-none">
+                  <div className="absolute top-4 right-4 z-30 pointer-events-none">
                     {isActiveAudio ? (
                       <div className="bg-black/65 backdrop-blur-md px-2.5 py-1.5 rounded-full border border-white/20 flex items-center gap-1.5 shadow-lg">
                         <div className="sound-wave">
@@ -3485,7 +3521,7 @@ export default function MobileOilstainExperience() {
 
                 <div
                   style={{ padding: "14px 16px" }}
-                  className="absolute bottom-0 inset-x-0 flex items-center gap-2.5 pointer-events-none"
+                  className="absolute bottom-0 inset-x-0 z-30 flex items-center gap-2.5 pointer-events-none"
                 >
                   <div className="w-7 h-7 rounded-full bg-white text-[#050505] font-sans font-bold text-[9px] flex items-center justify-center shadow-md shrink-0">
                     {getReelInitials(reel.photographer)}
@@ -3495,13 +3531,14 @@ export default function MobileOilstainExperience() {
                   </span>
                 </div>
 
-                <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-white/20 z-20 pointer-events-none overflow-hidden">
+                <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-white/20 z-30 pointer-events-none overflow-hidden">
                   <div
+                    ref={(el) => {
+                      progressBarRefs.current[index] = el;
+                    }}
                     className="h-full bg-[#EF4444] shadow-[0_0_8px_rgba(239,68,68,0.85)]"
                     style={{
-                      width: `${
-                        reelProgressMap[reel.id || String(index)] || 0
-                      }%`,
+                      width: "0%",
                       transition: "width 0.12s linear",
                     }}
                   />
@@ -3539,7 +3576,7 @@ export default function MobileOilstainExperience() {
       <footer
         id="mobile-global-footer"
         style={{
-          padding: "18px 14px 82px 14px",
+          padding: "24px 16px 148px 16px",
           backgroundColor: "#FAF9F5",
           color: "#0A0A0C",
         }}
@@ -3571,105 +3608,110 @@ export default function MobileOilstainExperience() {
           </svg>
         </div>
 
-        <div className="relative z-10 w-full max-w-md mx-auto flex flex-col gap-2.5">
+        <div className="relative z-10 w-full max-w-md mx-auto flex flex-col gap-3.5">
+          {/* Header Row: Separated Brand Crests & Social Actions to eliminate ANY overlap */}
           <div
-            style={{ paddingBottom: "10px" }}
-            className="w-full flex items-center justify-between gap-1.5 border-b border-black/[0.08]"
+            style={{ paddingBottom: "12px" }}
+            className="w-full flex flex-col gap-3 border-b border-black/[0.08]"
           >
-            <div className="flex items-center gap-2 min-w-0 shrink">
-              <div
-                style={{ width: "64px", height: "18px" }}
-                className="relative shrink-0"
-              >
-                <Image
-                  src="/images/shutterscape-logo-cropped.png"
-                  alt="ShutterScape"
-                  fill
-                  sizes="64px"
-                  unoptimized
-                  className="object-contain object-left"
-                />
+            {/* Top Brand Identity Bar */}
+            <div className="w-full flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5 shrink-0">
+                <div
+                  style={{ width: "72px", height: "20px" }}
+                  className="relative shrink-0"
+                >
+                  <Image
+                    src="/images/shutterscape-logo-cropped.png"
+                    alt="ShutterScape"
+                    fill
+                    sizes="72px"
+                    unoptimized
+                    className="object-contain object-left"
+                  />
+                </div>
+
+                <span className="h-3.5 w-[1px] bg-black/15 shrink-0" />
+
+                <a
+                  href="https://gcu.ac.in"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Girijananda Chowdhury University"
+                  style={{ width: "82px", height: "20px" }}
+                  className="relative opacity-95 hover:opacity-100 transition-opacity shrink-0 flex items-center"
+                >
+                  <Image
+                    src="/images/gcu-logo-black-text.png"
+                    alt="GCU"
+                    fill
+                    sizes="82px"
+                    unoptimized
+                    className="object-contain object-left"
+                  />
+                </a>
               </div>
 
-              <span className="h-3 w-[1px] bg-black/15 shrink-0" />
-
-              <a
-                href="https://gcu.ac.in"
-                target="_blank"
-                rel="noopener noreferrer"
-                title="Girijananda Chowdhury University"
-                style={{ width: "70px", height: "18px" }}
-                className="relative opacity-90 hover:opacity-100 transition-opacity shrink-0"
-              >
-                <Image
-                  src="/images/gcu-logo-black-text.png"
-                  alt="GCU"
-                  fill
-                  sizes="70px"
-                  unoptimized
-                  className="object-contain object-left"
-                />
-              </a>
-            </div>
-
-            <div className="flex items-center gap-1.5 shrink-0">
-              <a
-                href="https://www.instagram.com/shutterscape_gcu"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ padding: "5px 10px" }}
-                className="rounded-full bg-black/[0.05] hover:bg-[#111111] text-[#111111] hover:text-white font-sans text-[10px] font-semibold tracking-tight flex items-center gap-1.5 transition-colors whitespace-nowrap"
-              >
-                <svg
-                  width="12"
-                  height="12"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+              {/* Official Instagram & WhatsApp Social Action Pills */}
+              <div className="flex items-center gap-1.5 shrink-0">
+                <a
+                  href="https://www.instagram.com/shutterscape_gcu"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ padding: "5px 10px" }}
+                  className="rounded-full bg-black/[0.05] hover:bg-[#111111] text-[#111111] hover:text-white font-sans text-[10px] font-semibold tracking-tight flex items-center gap-1.5 transition-colors whitespace-nowrap shadow-2xs"
                 >
-                  <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
-                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-                  <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
-                </svg>
-                <span>Instagram</span>
-                <span className="text-[8.5px] opacity-60">↗</span>
-              </a>
-              <a
-                href="https://chat.whatsapp.com/Hs71BicR1Xj3PmOyPJ5wdc?s=sw&p=a&mlu=4&ilr=4"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ padding: "5px 10px" }}
-                className="rounded-full bg-[#111111] hover:bg-[#25D366] text-white hover:text-[#050505] font-sans text-[10px] font-semibold tracking-tight flex items-center gap-1.5 transition-colors whitespace-nowrap"
-              >
-                <svg
-                  width="12"
-                  height="12"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                    <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+                  </svg>
+                  <span>Instagram</span>
+                  <span className="text-[8.5px] opacity-60">↗</span>
+                </a>
+                <a
+                  href="https://chat.whatsapp.com/Hs71BicR1Xj3PmOyPJ5wdc?s=sw&p=a&mlu=4&ilr=4"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ padding: "5px 10px" }}
+                  className="rounded-full bg-[#111111] hover:bg-[#25D366] text-white hover:text-[#050505] font-sans text-[10px] font-semibold tracking-tight flex items-center gap-1.5 transition-colors whitespace-nowrap shadow-2xs"
                 >
-                  <path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21" />
-                  <path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1a5 5 0 0 0 5 5h1a.5.5 0 0 0 0-1h-1a.5.5 0 0 0 0 1" />
-                </svg>
-                <span>WhatsApp</span>
-                <span className="text-[8.5px] text-[#FFE066]">↗</span>
-              </a>
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21" />
+                    <path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1a5 5 0 0 0 5 5h1a.5.5 0 0 0 0-1h-1a.5.5 0 0 0 0 1" />
+                  </svg>
+                  <span>WhatsApp</span>
+                  <span className="text-[8.5px] text-[#FFE066]">↗</span>
+                </a>
+              </div>
             </div>
           </div>
 
           <div
             style={{ paddingBottom: "10px" }}
-            className="w-full flex items-center justify-between gap-2 border-b border-black/[0.08] font-sans text-[10px] text-black/75"
+            className="w-full flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 border-b border-black/[0.08] font-sans text-[10px] text-black/75"
           >
             <a
               href="mailto:shutterscape@gcuniversity.ac.in"
-              className="flex items-center gap-1.5 hover:text-black transition-colors min-w-0 truncate"
+              className="flex items-center gap-1.5 hover:text-black transition-colors"
             >
               <svg
                 width="11"
@@ -3685,7 +3727,7 @@ export default function MobileOilstainExperience() {
                 <rect x="2" y="4" width="20" height="16" rx="2" />
                 <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
               </svg>
-              <span className="truncate font-medium">
+              <span className="font-medium">
                 shutterscape@gcuniversity.ac.in
               </span>
             </a>
@@ -3694,7 +3736,7 @@ export default function MobileOilstainExperience() {
               href="https://maps.app.goo.gl/NhdHs1u76Bjxo2J87"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 text-black/65 hover:text-black font-medium shrink-0 whitespace-nowrap transition-colors"
+              className="flex items-center gap-1 text-black/65 hover:text-black font-medium transition-colors"
             >
               <svg
                 width="10"
@@ -3710,7 +3752,7 @@ export default function MobileOilstainExperience() {
                 <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
                 <circle cx="12" cy="10" r="3" />
               </svg>
-              <span>Azara, Guwahati</span>
+              <span>GCU Campus, Azara, Guwahati</span>
               <span className="text-[8.5px] opacity-50">↗</span>
             </a>
           </div>
