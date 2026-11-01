@@ -186,7 +186,7 @@ graph TD
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/krishnayankashyap-hub/shutterscape.git
+git clone https://github.com/coding-club-gcu/shutterscape.git
 cd shutterscape
 ```
 
