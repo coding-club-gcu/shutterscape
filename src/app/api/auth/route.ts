@@ -23,6 +23,7 @@ export async function POST(request: Request) {
         sameSite: "lax",
         path: "/",
         maxAge: 0,
+        expires: new Date(0),
       });
       return response;
     }
@@ -286,4 +287,17 @@ export async function GET(request: Request) {
   } catch {
     return NextResponse.json({ authenticated: false }, { status: 401 });
   }
+}
+
+export async function DELETE() {
+  const response = NextResponse.json({ success: true, message: "Logged out cleanly" });
+  response.cookies.set(SESSION_COOKIE_NAME, "", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 0,
+    expires: new Date(0),
+  });
+  return response;
 }
