@@ -537,9 +537,9 @@ const SLICES_PER_CARD = 6;
 const SLICE_INDICES = Array.from({ length: SLICES_PER_CARD }, (_, i) => i);
 
 // =========================================================================
-// 1. DESKTOP-PROPORTIONED "ORIGINS" MAGAZINE SPREAD
+// 1. DESKTOP "ORIGINS" MAGAZINE SPREAD (Fixes Screenshot 6!)
 //    - Pure Plain White Photo Stage (ZERO Background Text!)
-//    - Full 12-Column Editorial Spread with Zero Empty Space!
+//    - Left Plate Specification Card Matches Right Contact Sheet Card 100%!
 // =========================================================================
 const StopMotionFlipbook = React.memo(function StopMotionFlipbook({
   matrixStack,
@@ -584,23 +584,23 @@ const StopMotionFlipbook = React.memo(function StopMotionFlipbook({
   const currentFrame = matrixStack[photoIdx % matrixStack.length];
 
   return (
-    <div className="space-y-7">
-      {/* TOP 12-COLUMN EDITORIAL SPREAD: Manifesto Paragraph (Left) + Club Credo Card (Right) */}
-      <div className="grid grid-cols-12 gap-8 items-center">
-        <div className="col-span-7 space-y-3">
+    <div className="space-y-8">
+      {/* TOP 12-COLUMN EDITORIAL SPREAD */}
+      <div className="grid grid-cols-12 gap-10 items-center">
+        <div className="col-span-7 space-y-4">
           <div className="flex items-center gap-3">
             <h3 className="font-heading font-black text-4xl uppercase tracking-[-0.03em] text-[#111111]">
               STORYTELLERS
             </h3>
             <span
-              style={{ padding: "4px 10px" }}
+              style={{ padding: "4px 12px" }}
               className="rounded-full bg-[#111111] text-[#FFE066] font-mono text-[9.5px] font-bold uppercase tracking-[0.18em]"
             >
               CHAPTER 01 // ORIGINS
             </span>
           </div>
 
-          <p className="font-serif text-[22px] leading-[1.6] text-[#111111] font-normal">
+          <p className="font-serif text-[22px] leading-[1.65] text-[#111111] font-normal">
             Born at{" "}
             <span
               style={{ padding: "2px 8px" }}
@@ -639,50 +639,48 @@ const StopMotionFlipbook = React.memo(function StopMotionFlipbook({
           </p>
         </div>
 
-        {/* Right 5 Columns: Creative Club Credo & Optical Pillars Card (Eliminates Empty Top Right Space!) */}
+        {/* Right 5 Columns: Matched Studio Pillar Card */}
         <div
-          style={{ padding: "18px 20px" }}
-          className="col-span-5 rounded-2xl bg-white border border-black/12 shadow-[4px_4px_0px_#111111] space-y-3"
+          style={{ padding: "20px 22px" }}
+          className="col-span-5 rounded-2xl bg-white border border-black/10 shadow-[0_12px_32px_rgba(0,0,0,0.05)] space-y-3.5"
         >
-          <div className="flex items-center justify-between border-b border-black/10 pb-2">
-            <span className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#D92B2B]">
+          <div className="flex items-center justify-between border-b border-black/10 pb-2.5 font-mono text-[9px] uppercase tracking-[0.2em]">
+            <span className="font-bold text-[#D92B2B]">
               ★ THE SHUTTERSCAPE CREDO
             </span>
-            <span className="font-mono text-[8.5px] font-bold uppercase text-black/45">
-              EST. 2023 · ASSAM
-            </span>
+            <span className="text-black/45 font-bold">EST. 2023 · ASSAM</span>
           </div>
-          <div className="grid grid-cols-3 gap-2.5 text-center">
+          <div className="grid grid-cols-3 gap-3 text-center">
             <div
-              style={{ padding: "10px 6px" }}
-              className="rounded-xl bg-[#FFE066]/35 border border-black/10"
+              style={{ padding: "12px 8px" }}
+              className="rounded-xl bg-[#FAF9F5] border border-black/8"
             >
-              <span className="font-mono text-[8px] font-bold uppercase text-black/55 block">
+              <span className="font-mono text-[8px] font-bold uppercase text-black/45 block">
                 01 // EYE
               </span>
-              <span className="font-heading font-black text-xs uppercase text-[#111111] mt-0.5 block">
+              <span className="font-heading font-black text-xs uppercase text-[#111111] mt-1 block">
                 OBSERVE
               </span>
             </div>
             <div
-              style={{ padding: "10px 6px" }}
-              className="rounded-xl bg-[#8CE99A]/35 border border-black/10"
+              style={{ padding: "12px 8px" }}
+              className="rounded-xl bg-[#FAF9F5] border border-black/8"
             >
-              <span className="font-mono text-[8px] font-bold uppercase text-black/55 block">
+              <span className="font-mono text-[8px] font-bold uppercase text-black/45 block">
                 02 // SHUTTER
               </span>
-              <span className="font-heading font-black text-xs uppercase text-[#111111] mt-0.5 block">
+              <span className="font-heading font-black text-xs uppercase text-[#111111] mt-1 block">
                 CAPTURE
               </span>
             </div>
             <div
-              style={{ padding: "10px 6px" }}
-              className="rounded-xl bg-[#74C0FC]/35 border border-black/10"
+              style={{ padding: "12px 8px" }}
+              className="rounded-xl bg-[#FAF9F5] border border-black/8"
             >
-              <span className="font-mono text-[8px] font-bold uppercase text-black/55 block">
+              <span className="font-mono text-[8px] font-bold uppercase text-black/45 block">
                 03 // PRINT
               </span>
-              <span className="font-heading font-black text-xs uppercase text-[#111111] mt-0.5 block">
+              <span className="font-heading font-black text-xs uppercase text-[#111111] mt-1 block">
                 ARCHIVE
               </span>
             </div>
@@ -690,53 +688,107 @@ const StopMotionFlipbook = React.memo(function StopMotionFlipbook({
         </div>
       </div>
 
-      {/* MIDDLE STAGE: PURE PLAIN WHITE LIGHTBOX (ZERO BACKGROUND TEXT!) + RICH FLANKING DOSSIERS */}
+      {/* MIDDLE STAGE: PURE PLAIN WHITE LIGHTBOX + MATCHING TWIN ARCHIVAL CARDS */}
       <div
         ref={containerRef}
         onClick={() => setPhotoIdx((prev) => (prev + 1) % matrixStack.length)}
         style={{
           padding: "28px 32px",
-          height: "470px",
+          height: "465px",
         }}
-        className="relative w-full overflow-hidden grid grid-cols-12 gap-6 items-center border-2 border-black/15 bg-white rounded-3xl cursor-pointer shadow-[0_16px_44px_rgba(0,0,0,0.06)]"
+        className="relative w-full overflow-hidden grid grid-cols-12 gap-7 items-center border border-black/12 bg-white rounded-3xl cursor-pointer shadow-[0_16px_44px_rgba(0,0,0,0.05)]"
       >
-        {/* LEFT COLUMN (3 cols): Archival Provenance & Curatorial Field Notes */}
+        {/* LEFT COLUMN (3 cols): Professional Plate Telemetry Card (Matches Right Card 100%!) */}
         <div
-          style={{ padding: "20px" }}
-          className="col-span-3 h-[400px] flex flex-col justify-between bg-[#FAF9F5] border border-black/10 rounded-2xl select-none text-left"
+          style={{ padding: "18px" }}
+          onClick={(e) => e.stopPropagation()}
+          className="col-span-3 h-[400px] flex flex-col justify-between bg-[#FAF9F5] border border-black/10 rounded-2xl select-none text-left font-mono"
         >
-          <div className="space-y-3">
-            <div className="flex items-center justify-between text-[8.5px] font-mono tracking-[0.2em] uppercase text-black/50 pb-2.5 border-b border-black/10">
-              <span>ARCHIVE VAULT</span>
-              <span className="text-[#0F766E] font-bold">● LIVE REEL</span>
-            </div>
-            <span className="font-mono text-[9px] tracking-wider uppercase text-[#D92B2B] font-bold block">
-              PROVENANCE // PLATE 0{photoIdx + 1}
+          {/* Top Header Bar (Identical to Right Card) */}
+          <div className="flex items-center justify-between text-[8.5px] tracking-[0.18em] uppercase text-black/50 pb-2.5 border-b border-black/10">
+            <span>PLATE DOSSIER</span>
+            <span className="text-[#D92B2B] font-bold">
+              PLATE 0{photoIdx + 1}A
             </span>
-            <h4 className="font-serif text-2xl text-[#111111] leading-tight">
-              {currentFrame?.title || "GCU Visual Study"}
-            </h4>
-            <p className="font-body text-xs text-black/65 leading-relaxed">
-              Every frame in our stop-motion reel is a student-captured plate from
-              campus photowalks, Brahmaputra ghats, and studio strobe clinics.
+          </div>
+
+          {/* Middle Active Plate Title + 2x2 Technical Spec Grid */}
+          <div className="my-auto space-y-3 py-1">
+            <div>
+              <span className="text-[8px] tracking-[0.18em] uppercase text-black/40 block">
+                ACTIVE EXHIBITION PLATE
+              </span>
+              <h4 className="font-serif text-xl text-[#111111] font-normal leading-snug mt-0.5 line-clamp-2">
+                {currentFrame?.title || "GCU Visual Study"}
+              </h4>
+            </div>
+
+            {/* Clean 2x2 Spec Grid */}
+            <div className="grid grid-cols-2 gap-2">
+              <div
+                style={{ padding: "9px 10px" }}
+                className="rounded-xl bg-white border border-black/8"
+              >
+                <span className="text-[7px] text-black/40 uppercase block">
+                  FILM STOCK
+                </span>
+                <span className="text-[9.5px] font-bold text-[#111111] mt-0.5 block truncate">
+                  KODAK 400TX
+                </span>
+              </div>
+              <div
+                style={{ padding: "9px 10px" }}
+                className="rounded-xl bg-white border border-black/8"
+              >
+                <span className="text-[7px] text-black/40 uppercase block">
+                  OPTICS
+                </span>
+                <span className="text-[9.5px] font-bold text-[#111111] mt-0.5 block truncate">
+                  35MM · F/1.4
+                </span>
+              </div>
+              <div
+                style={{ padding: "9px 10px" }}
+                className="rounded-xl bg-white border border-black/8"
+              >
+                <span className="text-[7px] text-black/40 uppercase block">
+                  PROCESS
+                </span>
+                <span className="text-[9.5px] font-bold text-[#0F766E] mt-0.5 block truncate">
+                  C-41 / D-76
+                </span>
+              </div>
+              <div
+                style={{ padding: "9px 10px" }}
+                className="rounded-xl bg-white border border-black/8"
+              >
+                <span className="text-[7px] text-black/40 uppercase block">
+                  ARCHIVE LAB
+                </span>
+                <span className="text-[9.5px] font-bold text-[#D92B2B] mt-0.5 block truncate">
+                  GCU AZARA
+                </span>
+              </div>
+            </div>
+
+            <p className="font-sans text-[11px] text-black/60 leading-relaxed line-clamp-2">
+              Captured and archived by GCU student storytellers during campus
+              and Brahmaputra field expeditions.
             </p>
           </div>
 
-          <div className="space-y-2.5 pt-3 border-t border-black/10 font-mono text-[9px] tracking-wider uppercase text-black/60">
-            <div className="flex justify-between">
-              <span>ARCHIVE CAMPUS:</span>
-              <span className="font-bold text-[#111111]">GCU GUWAHATI</span>
-            </div>
-            <div className="flex justify-between">
-              <span>EMULSION STOCK:</span>
-              <span className="font-bold text-[#D92B2B]">KODAK 400TX</span>
-            </div>
-            <div
-              style={{ padding: "7px 10px" }}
-              className="rounded-lg bg-[#111111] text-[#FFE066] text-center font-bold tracking-[0.16em]"
+          {/* Bottom Bar (Identical to Right Card!) */}
+          <div className="pt-2.5 border-t border-black/10 text-[8.5px] tracking-wider uppercase text-black/55 flex items-center justify-between">
+            <span>GCU ARCHIVE VAULT</span>
+            <button
+              type="button"
+              onClick={() =>
+                setPhotoIdx((prev) => (prev + 1) % matrixStack.length)
+              }
+              className="text-[#111111] hover:text-[#D92B2B] font-bold cursor-pointer transition-colors"
             >
-              CLICK PHOTO TO STEP ↻
-            </div>
+              NEXT PLATE →
+            </button>
           </div>
         </div>
 
@@ -757,7 +809,7 @@ const StopMotionFlipbook = React.memo(function StopMotionFlipbook({
                     ? "scale(1) rotate(-1deg)"
                     : "scale(0.96) rotate(1deg)",
                 }}
-                className="absolute bg-white rounded-2xl shadow-[0_24px_55px_rgba(0,0,0,0.2)] border border-black/15 pointer-events-none transition-all duration-200"
+                className="absolute bg-white rounded-2xl shadow-[0_24px_55px_rgba(0,0,0,0.18)] border border-black/12 pointer-events-none transition-all duration-200"
               >
                 <img
                   src={frame.src}
@@ -777,14 +829,13 @@ const StopMotionFlipbook = React.memo(function StopMotionFlipbook({
           onClick={(e) => e.stopPropagation()}
           className="col-span-3 h-[400px] flex flex-col justify-between bg-[#FAF9F5] border border-black/10 rounded-2xl select-none text-left font-mono"
         >
-          <div className="flex items-center justify-between text-[8.5px] tracking-[0.18em] uppercase text-black/50 pb-2 border-b border-black/10">
+          <div className="flex items-center justify-between text-[8.5px] tracking-[0.18em] uppercase text-black/50 pb-2.5 border-b border-black/10">
             <span>CONTACT SHEET</span>
             <span className="text-[#D92B2B] font-bold">
               0{photoIdx + 1} / 0{matrixStack.length}
             </span>
           </div>
 
-          {/* 2x3 Interactive Thumbnail Grid */}
           <div className="grid grid-cols-2 gap-2 my-auto py-2">
             {matrixStack.slice(0, 6).map((thumb, idx) => {
               const isSelected = idx === photoIdx % matrixStack.length;
@@ -812,15 +863,15 @@ const StopMotionFlipbook = React.memo(function StopMotionFlipbook({
             })}
           </div>
 
-          <div className="pt-2 border-t border-black/10 text-[8.5px] tracking-wider uppercase text-black/55 flex items-center justify-between">
+          <div className="pt-2.5 border-t border-black/10 text-[8.5px] tracking-wider uppercase text-black/55 flex items-center justify-between">
             <span>SELECT ANY PLATE</span>
             <span className="text-[#111111] font-bold">35MM LOUPE ↗</span>
           </div>
         </div>
       </div>
 
-      {/* BOTTOM 12-COLUMN EDITORIAL SPREAD: Story Paragraph (Left) + Camera Rig & Membership Strip (Right) */}
-      <div className="grid grid-cols-12 gap-8 items-center">
+      {/* BOTTOM 12-COLUMN EDITORIAL SPREAD */}
+      <div className="grid grid-cols-12 gap-10 items-center">
         <div className="col-span-7">
           <span
             style={{ marginBottom: "8px" }}
@@ -828,7 +879,7 @@ const StopMotionFlipbook = React.memo(function StopMotionFlipbook({
           >
             DOUBLE VISION // {currentFrame?.title || "GCU ARCHIVE"}
           </span>
-          <p className="font-serif text-[20px] text-[#111111]/85 leading-[1.6]">
+          <p className="font-serif text-[20px] text-[#111111]/85 leading-[1.65]">
             ShutterScape was created for students who love to{" "}
             <span className="font-semibold text-[#111111] underline decoration-[#D4A843] decoration-2 underline-offset-4">
               observe, capture, and tell stories
@@ -861,9 +912,8 @@ const StopMotionFlipbook = React.memo(function StopMotionFlipbook({
           </p>
         </div>
 
-        {/* Right 5 Columns: Interactive Darkroom Membership & Rig Card (Eliminates Bottom Right Empty Space!) */}
         <div
-          style={{ padding: "18px 20px" }}
+          style={{ padding: "20px 24px" }}
           className="col-span-5 rounded-2xl bg-[#111111] text-white flex items-center justify-between gap-4 shadow-lg"
         >
           <div className="space-y-1">
@@ -880,7 +930,7 @@ const StopMotionFlipbook = React.memo(function StopMotionFlipbook({
           <button
             type="button"
             onClick={onOpenRegister}
-            style={{ padding: "10px 16px" }}
+            style={{ padding: "10px 18px" }}
             className="rounded-full bg-[#FFE066] hover:bg-white text-[#111111] font-mono text-[9.5px] font-bold uppercase tracking-wider shrink-0 cursor-pointer transition-colors"
           >
             JOIN US ↗
@@ -892,9 +942,9 @@ const StopMotionFlipbook = React.memo(function StopMotionFlipbook({
 });
 
 // =========================================================================
-// 2. BUTTER-SMOOTH 12-SLOT ROTATING HALF-WHEEL COLORED FAN (Section 4)
-//    - 12 Evenly Spaced Slots = Zero Popping or Gaps When Next Card Appears!
-//    - Contained Stage + Brushed-Metal Leica Turntable Hub at Base!
+// 2. CLEAN, FRAMELESS, BORDERLESS ROTATING HALF-WHEEL FAN (Fixes Screenshot 3!)
+//    - ZERO outer box/frame, ZERO top text, ZERO bottom "SHUTTERSCAPE OPTICS" hub!
+//    - Blends 100% seamlessly into the #ECEBE6 page background with smooth 12-slot orbit!
 // =========================================================================
 const WHEEL_SLOTS = 12;
 
@@ -905,7 +955,6 @@ const HalfWheelGalleryFan = React.memo(function HalfWheelGalleryFan({
   items: any[];
   onSelectCard: (idx: number) => void;
 }) {
-  // Always populate 12 slots so cards are spaced every 15 degrees across the 180-deg arc with ZERO gaps!
   const wheelCards = useMemo(() => {
     const source = items.length > 0 ? items : FALLBACK_GALLERY;
     return Array.from({ length: WHEEL_SLOTS }, (_, i) => ({
@@ -933,11 +982,10 @@ const HalfWheelGalleryFan = React.memo(function HalfWheelGalleryFan({
       lastTime = now;
 
       if (isInViewRef.current && !isPausedRef.current) {
-        angleRef.current = (angleRef.current + dt * 9.5) % 180;
+        angleRef.current = (angleRef.current + dt * 10.5) % 180;
       }
 
       const baseAngle = angleRef.current;
-      // Seamless 180-degree arc wrap [-90, +90]: 12 cards = 1 card every 15 degrees!
       const stepDeg = 180 / count;
 
       for (let i = 0; i < count; i++) {
@@ -945,18 +993,17 @@ const HalfWheelGalleryFan = React.memo(function HalfWheelGalleryFan({
         if (!el) continue;
 
         const rawDeg = (i * stepDeg + baseAngle) % 180;
-        const deg = rawDeg - 90; // Smoothly glides from -90 deg (left horizon) to +90 deg (right horizon)
+        const deg = rawDeg - 90;
         const rad = (deg * Math.PI) / 180;
 
-        const radius = 235;
+        const radius = 225;
         const x = Math.sin(rad) * radius;
-        const y = -Math.cos(rad) * radius + 195;
+        const y = -Math.cos(rad) * radius + 145;
 
-        // Smooth cosine bell curve for both scale and opacity so cards never pop abruptly!
-        const norm = Math.min(1, Math.abs(deg) / 88);
-        const smoothBell = Math.pow(Math.cos(norm * (Math.PI / 2)), 1.35);
+        const norm = Math.min(1, Math.abs(deg) / 86);
+        const smoothBell = Math.pow(Math.cos(norm * (Math.PI / 2)), 1.3);
         const scale = 0.78 + 0.24 * smoothBell;
-        const opacity = Math.abs(deg) >= 88 ? 0 : smoothBell;
+        const opacity = Math.abs(deg) >= 86 ? 0 : smoothBell;
         const zIdx = Math.round(100 - Math.abs(deg));
 
         el.style.transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(
@@ -1009,32 +1056,8 @@ const HalfWheelGalleryFan = React.memo(function HalfWheelGalleryFan({
       onMouseLeave={() => {
         isPausedRef.current = false;
       }}
-      className="relative w-full h-[460px] rounded-3xl bg-[#E4E2DA]/70 border border-black/12 overflow-hidden flex items-center justify-center select-none shadow-inner"
+      className="relative w-full h-[380px] bg-transparent overflow-hidden flex items-center justify-center select-none"
     >
-      {/* Top Studio Telemetry Strip Inside Wheel Stage */}
-      <div
-        style={{ padding: "14px 20px" }}
-        className="absolute top-0 inset-x-0 z-20 flex items-center justify-between font-mono text-[8.5px] tracking-[0.22em] uppercase text-black/50"
-      >
-        <span>● CONTINUOUS 35MM CAROUSEL // 12-SLOT ORBIT</span>
-        <span className="px-2.5 py-1 rounded-full bg-white/80 text-[#111111] font-bold">
-          HOVER TO PAUSE · CLICK PLATE TO INSPECT
-        </span>
-      </div>
-
-      {/* Concentric Optical Guide Rings */}
-      <div
-        aria-hidden="true"
-        style={{ width: "520px", height: "520px", bottom: "-260px" }}
-        className="absolute rounded-full border border-dashed border-black/15 pointer-events-none"
-      />
-      <div
-        aria-hidden="true"
-        style={{ width: "380px", height: "380px", bottom: "-190px" }}
-        className="absolute rounded-full border border-black/10 pointer-events-none"
-      />
-
-      {/* Rotating Full-Color Cards */}
       <div className="relative w-full h-full flex items-center justify-center">
         {wheelCards.map((item, idx) => (
           <div
@@ -1044,12 +1067,12 @@ const HalfWheelGalleryFan = React.memo(function HalfWheelGalleryFan({
             }}
             onClick={() => onSelectCard(item._origIdx)}
             style={{
-              width: "180px",
-              height: "240px",
+              width: "178px",
+              height: "238px",
               padding: "6px",
               willChange: "transform, opacity",
             }}
-            className="absolute bg-white rounded-2xl shadow-[0_18px_38px_rgba(0,0,0,0.2)] border border-black/12 cursor-pointer hover:border-[#D92B2B] transition-colors group"
+            className="absolute bg-white rounded-2xl shadow-[0_18px_40px_rgba(0,0,0,0.18)] border border-black/10 cursor-pointer hover:border-[#D4A843] transition-colors group"
           >
             <div className="relative w-full h-full rounded-xl overflow-hidden bg-[#111111]">
               <img
@@ -1070,21 +1093,6 @@ const HalfWheelGalleryFan = React.memo(function HalfWheelGalleryFan({
             </div>
           </div>
         ))}
-      </div>
-
-      {/* Physical-Looking Camera Aperture Turntable Hub at Bottom Center */}
-      <div
-        aria-hidden="true"
-        style={{ width: "220px", height: "110px", bottom: "-55px" }}
-        className="absolute z-[120] rounded-t-full bg-[#111115] border-2 border-white/25 shadow-[0_-10px_30px_rgba(0,0,0,0.35)] flex flex-col items-center justify-start pt-3.5 pointer-events-none"
-      >
-        <span className="w-2 h-2 rounded-full bg-[#D92B2B] mb-1" />
-        <span className="font-mono text-[7.5px] tracking-[0.22em] uppercase text-[#FFE066] font-bold">
-          SHUTTERSCAPE OPTICS
-        </span>
-        <span className="font-mono text-[6.5px] tracking-[0.18em] uppercase text-white/45">
-          f/1.4 · 35MM MOUNT
-        </span>
       </div>
     </div>
   );
@@ -1139,7 +1147,7 @@ export default function DesktopOilstainExperience() {
     seconds: string;
   }>({ days: "14", hours: "06", minutes: "45", seconds: "00" });
 
-  // Section 4 Creative Optical Lab States (Defaults to "LOUPE" so the left monitor is always active & rich!)
+  // Section 4 Creative Optical Lab States
   const [activeOpticalLab, setActiveOpticalLab] =
     useState<OpticalLabKey>("LOUPE");
   const [selectedFocalMm, setSelectedFocalMm] = useState<number>(50);
@@ -1170,7 +1178,7 @@ export default function DesktopOilstainExperience() {
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const heroVideoRef = useRef<HTMLVideoElement>(null);
 
-  // Refs for 720px Desktop Floating Notch Navbar (padding = 36px left/right -> 648px inner / 5 cols = 129.6px per col -> centers at 100.8 + idx * 129.6)
+  // Refs for 720px Desktop Floating Notch Navbar
   const clipPathElementRef = useRef<SVGPathElement>(null);
   const borderPathElementRef = useRef<SVGPathElement>(null);
   const activeBubbleRef = useRef<HTMLDivElement>(null);
@@ -1342,7 +1350,6 @@ export default function DesktopOilstainExperience() {
       0,
       FLOATING_NAV_ITEMS.findIndex((it) => it.id === activeNavTab)
     );
-    // For 720px width with 36px left/right padding: 648px inner width / 5 cols = 129.6px per col -> centers at 100.8 + idx * 129.6
     targetNotchXRef.current = 100.8 + idx * 129.6;
     startNotchAnimation();
   }, [activeNavTab, startNotchAnimation]);
@@ -1977,92 +1984,28 @@ export default function DesktopOilstainExperience() {
     }, 700);
   };
 
-  // Rich Desktop Studio Member Card (Adapts to 2-card, 3-card, or 6-card rosters so there is NEVER empty space!)
-  const renderStudioMemberCard = (
-    person: any,
-    idx: number,
-    isWideFeature = false
-  ) => {
+  // Standard, Crisp Studio Member Card (Fixes Screenshot 4: 235px Standard Width — Never Giant!)
+  const renderStudioMemberCard = (person: any, idx: number) => {
     const bgColor = MEMBER_CARD_BACKDROPS[idx % MEMBER_CARD_BACKDROPS.length];
-
-    if (isWideFeature) {
-      // Wide Horizontal Studio Dossier Card for 2-Member Chapters (THE TEACHERS / WHERE IT ALL STARTED)
-      return (
-        <div
-          key={`${person.name}-${idx}`}
-          onClick={() => setSelectedMemberModal({ person, bgColor })}
-          style={{ padding: "16px" }}
-          className="group bg-white rounded-3xl border border-black/12 shadow-[0_12px_32px_rgba(0,0,0,0.06)] hover:shadow-[6px_6px_0px_#111111] transition-all duration-300 grid grid-cols-12 gap-5 items-center cursor-pointer"
-        >
-          <div className="col-span-5">
-            <div
-              style={{
-                backgroundColor: bgColor,
-                clipPath:
-                  "polygon(0 0, 100% 0, 100% 100%, 20px 100%, 0 calc(100% - 20px))",
-              }}
-              className="relative w-full aspect-[4/4.4] rounded-2xl overflow-hidden"
-            >
-              <img
-                src={person.img}
-                alt={person.name}
-                className="w-full h-full object-cover object-top saturate-[1.08] contrast-[1.03] group-hover:scale-105 transition-transform duration-500"
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
-          </div>
-
-          <div className="col-span-7 flex flex-col justify-between h-full py-2 pr-2 space-y-3">
-            <div className="space-y-1.5">
-              <span
-                style={{ backgroundColor: bgColor, padding: "3px 10px" }}
-                className="inline-block rounded-full font-mono text-[8.5px] font-bold uppercase tracking-[0.16em] text-[#111111]"
-              >
-                {person.role}
-              </span>
-              <h4 className="font-heading font-black text-xl text-[#111111] tracking-tight leading-snug">
-                {person.name}
-              </h4>
-              {person.dept && (
-                <p className="font-mono text-[10px] text-[#D92B2B] font-semibold uppercase tracking-wider">
-                  {person.dept}
-                </p>
-              )}
-              <p className="font-sans text-xs text-black/70 leading-relaxed pt-1">
-                {person.bio ||
-                  `${person.name} guides ShutterScape's visual storytelling, exhibitions, and archival documentation at Girijananda Chowdhury University.`}
-              </p>
-            </div>
-
-            <div className="pt-2 border-t border-black/8 flex items-center justify-between">
-              <span className="font-mono text-[8.5px] uppercase tracking-[0.16em] text-black/45">
-                VIEW FULL DOSSIER
-              </span>
-              <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-black/[0.05] group-hover:bg-[#111111] text-[#111111] group-hover:text-white text-xs transition-colors">
-                →
-              </span>
-            </div>
-          </div>
-        </div>
-      );
-    }
 
     return (
       <div
         key={`${person.name}-${idx}`}
         onClick={() => setSelectedMemberModal({ person, bgColor })}
-        style={{ padding: "14px" }}
-        className="group bg-white rounded-3xl border border-black/12 shadow-[0_10px_28px_rgba(0,0,0,0.06)] hover:shadow-[5px_5px_0px_#111111] transition-all duration-300 flex flex-col justify-between cursor-pointer"
+        style={{
+          width: "235px",
+          padding: "11px",
+        }}
+        className="group bg-white rounded-2xl border border-black/10 shadow-[0_8px_24px_rgba(0,0,0,0.06)] hover:shadow-[4px_4px_0px_#111111] transition-all duration-300 flex flex-col justify-between cursor-pointer shrink-0"
       >
         <div>
           <div
             style={{
               backgroundColor: bgColor,
               clipPath:
-                "polygon(0 0, 100% 0, 100% 100%, 20px 100%, 0 calc(100% - 20px))",
+                "polygon(0 0, 100% 0, 100% 100%, 18px 100%, 0 calc(100% - 18px))",
             }}
-            className="relative w-full aspect-[4/4.2] rounded-2xl overflow-hidden"
+            className="relative w-full aspect-[4/4.3] rounded-xl overflow-hidden"
           >
             <div
               className="absolute inset-0 pointer-events-none"
@@ -2081,44 +2024,41 @@ export default function DesktopOilstainExperience() {
             />
           </div>
 
-          <div style={{ padding: "14px 4px 4px" }}>
-            <div className="flex items-center justify-between gap-2">
+          <div style={{ padding: "10px 4px 2px" }}>
+            <div className="flex items-center justify-between gap-1.5">
               <span
-                style={{ backgroundColor: bgColor, padding: "2.5px 8px" }}
-                className="rounded-md font-mono text-[8px] font-bold uppercase tracking-[0.14em] text-[#111111]"
+                style={{ backgroundColor: bgColor, padding: "2px 7px" }}
+                className="rounded font-mono text-[7.5px] font-bold uppercase tracking-[0.12em] text-[#111111] truncate"
               >
                 {person.role}
               </span>
-              <span className="font-mono text-[8px] text-black/40 uppercase">
+              <span className="font-mono text-[7.5px] text-black/40 uppercase shrink-0">
                 GCU &apos;26
               </span>
             </div>
 
-            <h4 className="font-heading font-bold text-base text-[#111111] tracking-tight leading-snug mt-2">
+            <h4 className="font-heading font-bold text-[14.5px] text-[#111111] tracking-tight leading-snug mt-2 truncate">
               {person.name}
             </h4>
             {person.dept && (
               <p
                 style={{ marginTop: "2px" }}
-                className="font-sans text-[11px] font-medium text-[#D92B2B] line-clamp-1"
+                className="font-sans text-[10.5px] font-medium text-[#D92B2B] line-clamp-1"
               >
                 {person.dept}
               </p>
             )}
-            <p className="font-sans text-xs text-black/65 leading-relaxed line-clamp-2 mt-2">
-              {person.bio}
-            </p>
           </div>
         </div>
 
         <div
-          style={{ paddingTop: "10px", marginTop: "8px" }}
+          style={{ paddingTop: "8px", marginTop: "6px" }}
           className="border-t border-black/8 flex items-center justify-between"
         >
-          <span className="font-mono text-[8px] uppercase tracking-[0.16em] text-black/45">
-            OPEN PROFILE
+          <span className="font-mono text-[7.5px] uppercase tracking-[0.14em] text-black/45">
+            VIEW BIO
           </span>
-          <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-black/[0.04] group-hover:bg-[#111111] text-[#111111] group-hover:text-white text-xs transition-colors">
+          <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-black/[0.04] group-hover:bg-[#111111] text-[#111111] group-hover:text-white text-xs transition-colors">
             →
           </span>
         </div>
@@ -2174,6 +2114,14 @@ export default function DesktopOilstainExperience() {
           animation: oslHeartBurst 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
+        @keyframes oslSpinSlow {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        #shutterscape-desktop-oilstain .osl-spin-slow {
+          animation: oslSpinSlow 24s linear infinite;
+        }
+
         #shutterscape-desktop-oilstain {
           background-color: #ECEBE6;
           color: #111111;
@@ -2201,14 +2149,14 @@ export default function DesktopOilstainExperience() {
           transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
         }
         #shutterscape-desktop-oilstain .osl-bento-cell {
-          padding: 16px 12px !important;
+          padding: 15px 12px !important;
           border-right: 1px solid rgba(17, 17, 17, 0.12);
           display: flex;
           flex-direction: column;
           align-items: center;
           justify-content: center;
           gap: 4px;
-          background: #ECEBE6;
+          background: #FAF9F5;
           cursor: pointer;
           transition: background 0.2s ease, color 0.2s ease;
         }
@@ -2356,7 +2304,6 @@ export default function DesktopOilstainExperience() {
           </div>
         </button>
 
-        {/* Center Widescreen Viewfinder Telemetry */}
         <div className="flex items-center gap-4 font-mono text-[10.5px] tracking-[0.22em] uppercase text-white/75">
           <span className="h-4 w-[1px] bg-white/20 shrink-0" />
           <div className="flex items-center gap-2 font-bold text-white">
@@ -2659,8 +2606,8 @@ export default function DesktopOilstainExperience() {
       </section>
 
       {/* ============================================================
-          2. PAGE 2: WIDESCREEN ARCHIVE STAGE + 3-COLUMN CURATOR'S DESK
-             (Eliminates all empty space around the handwritten note!)
+          2. PAGE 2: WIDESCREEN ARCHIVE STAGE + COHESIVE POLAROID &
+             CURATORIAL DESK (Fixes Screenshot 1!)
           ============================================================ */}
       <section
         id="desktop-light-spec-section"
@@ -2817,129 +2764,116 @@ export default function DesktopOilstainExperience() {
           })}
         </div>
 
-        {/* Rich 3-Column Darkroom Curator's Desk (1360px Wide — Zero Empty Space!) */}
+        {/* Cohesive Editorial Polaroid & Darkroom Light-Table Desk (Fixes Screenshot 1!) */}
         <div
           ref={lowerContentRiseRef}
           style={{
             willChange: "transform, opacity",
-            maxWidth: "1360px",
+            maxWidth: "1280px",
             margin: "0 auto",
           }}
           className="relative z-10 flex-1 flex flex-col justify-evenly items-center w-full px-8"
         >
           <div
-            style={{ padding: "8px 24px 14px" }}
+            style={{ padding: "10px 24px 18px" }}
             className="w-full text-center border-b border-black/10 shrink-0"
           >
             <div className="flex items-center justify-center gap-3 mb-2">
-              <span className="h-px w-12 bg-black/20" />
-              <span className="font-mono text-[9px] font-bold uppercase tracking-[0.25em] text-[#D92B2B]">
+              <span className="h-px w-14 bg-black/20" />
+              <span className="font-mono text-[9.5px] font-bold uppercase tracking-[0.25em] text-[#D92B2B]">
                 ★ DARKROOM PROMISES // ARCHIVE EPILOGUE
               </span>
-              <span className="h-px w-12 bg-black/20" />
+              <span className="h-px w-14 bg-black/20" />
             </div>
-            <h2 className="font-heading font-black text-3xl lg:text-4xl tracking-[-0.03em] uppercase leading-[0.96] text-[#111111]">
+            <h2 className="font-heading font-black text-3xl lg:text-4xl tracking-[-0.03em] uppercase leading-[1.02] text-[#111111]">
               LIGHT IS MEMORY. MEMORY IS LIGHT.
             </h2>
             <p
-              style={{ marginTop: "6px" }}
-              className="font-mono text-[9.5px] tracking-[0.24em] uppercase text-black/50"
+              style={{ marginTop: "8px" }}
+              className="font-mono text-[10px] tracking-[0.24em] uppercase text-black/50"
             >
               [ GIRIJANANDA CHOWDHURY UNIVERSITY · GUWAHATI ]
             </p>
           </div>
 
+          {/* Unified Light-Table Mat Stage */}
           <div
-            style={{ padding: "24px 0 8px" }}
-            className="w-full grid grid-cols-12 gap-7 items-center"
+            style={{ padding: "28px 32px", marginTop: "18px" }}
+            className="w-full rounded-3xl bg-[#E4E1D8]/75 border border-black/10 shadow-inner grid grid-cols-12 gap-8 items-center"
           >
-            {/* COLUMN 1 (4 cols): Optical Field Ledger & Light Meter Dossier */}
-            <div
-              style={{ padding: "22px" }}
-              className="col-span-4 rounded-2xl bg-white border border-black/12 shadow-[4px_4px_0px_#111111] flex flex-col justify-between space-y-4"
-            >
-              <div className="flex items-center justify-between border-b border-black/10 pb-2.5">
-                <span className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#111111]">
-                  ● GCU OPTICAL LEDGER
-                </span>
-                <span
-                  style={{ padding: "2px 8px" }}
-                  className="rounded bg-[#FFE066] font-mono text-[8px] font-bold uppercase text-[#111111]"
-                >
-                  VERIFIED &apos;26
-                </span>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2.5">
-                <div
-                  style={{ padding: "12px" }}
-                  className="rounded-xl bg-[#FAF9F5] border border-black/8"
-                >
-                  <span className="font-heading font-black text-2xl text-[#111111] block leading-none">
-                    60+
-                  </span>
-                  <span className="font-mono text-[8px] uppercase tracking-wider text-black/50 mt-1 block">
-                    Archival Plates
-                  </span>
-                </div>
-                <div
-                  style={{ padding: "12px" }}
-                  className="rounded-xl bg-[#FAF9F5] border border-black/8"
-                >
-                  <span className="font-heading font-black text-2xl text-[#D92B2B] block leading-none">
-                    24+
-                  </span>
-                  <span className="font-mono text-[8px] uppercase tracking-wider text-black/50 mt-1 block">
-                    Field Expeditions
-                  </span>
-                </div>
-              </div>
-
-              {/* Analog Exposure Meter Scale */}
+            {/* LEFT COLUMN (4 cols): Layered Dual Polaroid Stack on Light-Table */}
+            <div className="col-span-4 relative h-[285px] flex items-center justify-center">
+              {/* Back Polaroid */}
               <div
-                style={{ padding: "10px 12px" }}
-                className="rounded-xl bg-[#111115] text-white font-mono space-y-1.5"
-              >
-                <div className="flex items-center justify-between text-[7.5px] tracking-[0.18em] text-white/50 uppercase">
-                  <span>EXPOSURE METER</span>
-                  <span className="text-[#8CE99A] font-bold">EV +0.0 OPTIMAL</span>
-                </div>
-                <div className="flex items-center justify-between text-[9px] font-bold tracking-widest text-white/80">
-                  <span>-3</span>
-                  <span>-2</span>
-                  <span>-1</span>
-                  <span className="px-2 py-0.5 rounded bg-[#FFE066] text-black">
-                    0
-                  </span>
-                  <span>+1</span>
-                  <span>+2</span>
-                  <span>+3</span>
-                </div>
-              </div>
-
-              <button
-                type="button"
                 onClick={() => {
                   setGalleryFilterCat("ALL");
-                  setExpandedGalleryId(null);
                   setIsGalleryPageOpen(true);
                 }}
-                style={{ padding: "10px 14px" }}
-                className="w-full rounded-xl bg-[#111111] hover:bg-[#D92B2B] text-white font-mono text-[9.5px] font-bold uppercase tracking-[0.18em] flex items-center justify-between cursor-pointer transition-colors"
+                style={{
+                  width: "215px",
+                  padding: "10px 10px 28px 10px",
+                  transform: "translate(-28px, 8px) rotate(-6deg)",
+                }}
+                className="absolute bg-white rounded-xl shadow-[0_14px_30px_rgba(0,0,0,0.14)] border border-black/10 cursor-pointer hover:rotate-[-2deg] transition-transform"
               >
-                <span>OPEN CONTACT ARCHIVE</span>
-                <span>↗</span>
-              </button>
+                <div className="w-full aspect-[4/3] rounded-lg overflow-hidden bg-black">
+                  <img
+                    src={
+                      gallery[2]?.src ||
+                      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=75"
+                    }
+                    alt="Polaroid 1"
+                    className="w-full h-full object-cover saturate-[1.15]"
+                  />
+                </div>
+                <span className="handmade-fountain-pen text-[14px] text-black/75 block text-center mt-2 leading-none">
+                  Brahmaputra Twilight · &apos;26
+                </span>
+              </div>
+
+              {/* Front Polaroid */}
+              <div
+                onClick={() => {
+                  setGalleryFilterCat("ALL");
+                  setIsGalleryPageOpen(true);
+                }}
+                style={{
+                  width: "225px",
+                  padding: "10px 10px 30px 10px",
+                  transform: "translate(24px, -6px) rotate(4.5deg)",
+                }}
+                className="relative z-10 bg-white rounded-xl shadow-[0_20px_42px_rgba(0,0,0,0.2)] border border-black/12 cursor-pointer hover:rotate-0 transition-transform"
+              >
+                <span
+                  style={{ padding: "2px 8px" }}
+                  className="absolute top-4 left-4 z-20 rounded bg-[#FFE066] text-[#111111] font-mono text-[7.5px] font-bold uppercase tracking-wider shadow-xs"
+                >
+                  PLATE 01A
+                </span>
+                <div className="w-full aspect-[4/3] rounded-lg overflow-hidden bg-black">
+                  <img
+                    src={
+                      gallery[0]?.src ||
+                      "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=800&q=75"
+                    }
+                    alt="Polaroid 2"
+                    className="w-full h-full object-cover saturate-[1.15]"
+                  />
+                </div>
+                <span className="handmade-fountain-pen text-[15px] text-[#111111] block text-center mt-2.5 leading-none">
+                  Campus Golden Hour · 35mm
+                </span>
+              </div>
             </div>
 
-            {/* COLUMN 2 (4 cols): Handwritten Fountain-Pen Note on Archival Paper */}
+            {/* CENTER COLUMN (4 cols): Handwritten Fountain-Pen Letter */}
             <div className="col-span-4 flex justify-center">
               <div
                 style={{
-                  transform: "rotate(-2deg)",
+                  transform: "rotate(-1.5deg)",
                   padding: "26px 24px",
                 }}
-                className="w-full bg-[#FFFDF8] rounded-2xl border border-[#E7DFCF] shadow-[0_20px_45px_rgba(0,0,0,0.08)] relative overflow-hidden select-none transition-transform hover:rotate-0 duration-300"
+                className="w-full bg-[#FFFDF8] rounded-2xl border border-[#E7DFCF] shadow-[0_20px_45px_rgba(0,0,0,0.1)] relative overflow-hidden select-none transition-transform hover:rotate-0 duration-300"
               >
                 <div
                   aria-hidden="true"
@@ -3014,73 +2948,150 @@ export default function DesktopOilstainExperience() {
               </div>
             </div>
 
-            {/* COLUMN 3 (4 cols): Dual Darkroom Proof Print & Step-Density Strip */}
-            <div className="col-span-4 flex flex-col justify-between space-y-3">
-              <div
-                style={{ transform: "rotate(2deg)", padding: "12px" }}
-                className="relative bg-[#111111] rounded-2xl shadow-[0_16px_36px_rgba(0,0,0,0.18)] border border-black/20 text-white transition-transform hover:rotate-0 duration-300"
-              >
-                <div className="flex items-center justify-between pb-2 border-b border-white/10 font-mono text-[8px] tracking-[0.2em] text-white/50 uppercase">
-                  <span>KODAK TX-400 // FRAME 35A</span>
-                  <span className="text-[#D4A843] font-bold">
-                    ● SILVER GELATIN
-                  </span>
-                </div>
-
-                <div className="relative w-full h-44 rounded-xl overflow-hidden bg-black mt-2">
-                  <img
-                    src={
-                      gallery[0]?.src ||
-                      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=75"
-                    }
-                    alt="Archive Print"
-                    className="w-full h-full object-cover saturate-[1.1] contrast-[1.05]"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                  <div className="absolute inset-x-0 bottom-0 p-2.5 bg-gradient-to-t from-black/85 to-transparent flex items-center justify-between font-mono text-[8px] text-white/85">
-                    <span>50MM F/1.4 · 1/500S</span>
-                    <span className="text-[#FFE066]">AZARA CAMPUS</span>
-                  </div>
-                </div>
-              </div>
-
-              <div
-                style={{ transform: "rotate(-1.5deg)", padding: "12px 14px" }}
-                className="bg-white rounded-xl border border-black/12 shadow-xs flex items-center justify-between font-mono text-[8.5px]"
-              >
+            {/* RIGHT COLUMN (4 cols): Animated Aperture Iris & Curatorial Archive Pass */}
+            <div
+              style={{ padding: "22px" }}
+              className="col-span-4 rounded-2xl bg-[#111115] text-white border border-black/20 shadow-[0_18px_40px_rgba(0,0,0,0.16)] flex flex-col justify-between space-y-4"
+            >
+              <div className="flex items-center justify-between border-b border-white/10 pb-3">
                 <div>
-                  <span className="text-black/45 block text-[7px] uppercase tracking-wider">
-                    DARKROOM TEST STRIP
+                  <span className="font-mono text-[8px] tracking-[0.2em] uppercase text-[#FFE066] font-bold block">
+                    ● OPTICAL COLLECTIVE
                   </span>
-                  <span className="font-bold text-black/85">
-                    STEP DENSITY D-MIN 0.08 / D-MAX 2.45
+                  <h4 className="font-serif text-xl text-white mt-0.5">
+                    The 35mm Vault
+                  </h4>
+                </div>
+
+                {/* Animated Rotating SVG Camera Aperture Iris */}
+                <svg
+                  width="38"
+                  height="38"
+                  viewBox="0 0 48 48"
+                  fill="none"
+                  className="osl-spin-slow text-[#FFE066] shrink-0"
+                >
+                  <circle
+                    cx="24"
+                    cy="24"
+                    r="21"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeDasharray="4 3"
+                  />
+                  <circle
+                    cx="24"
+                    cy="24"
+                    r="11"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                  />
+                  <line
+                    x1="24"
+                    y1="3"
+                    x2="31"
+                    y2="15"
+                    stroke="currentColor"
+                    strokeWidth="1.4"
+                  />
+                  <line
+                    x1="45"
+                    y1="24"
+                    x2="33"
+                    y2="31"
+                    stroke="currentColor"
+                    strokeWidth="1.4"
+                  />
+                  <line
+                    x1="24"
+                    y1="45"
+                    x2="17"
+                    y2="33"
+                    stroke="currentColor"
+                    strokeWidth="1.4"
+                  />
+                  <line
+                    x1="3"
+                    y1="24"
+                    x2="15"
+                    y2="17"
+                    stroke="currentColor"
+                    strokeWidth="1.4"
+                  />
+                </svg>
+              </div>
+
+              <p className="font-sans text-xs text-white/70 leading-relaxed">
+                From analog darkroom prints to golden-hour riverfront
+                documentaries, explore {gallery.length}+ curated student plates
+                in our permanent collection.
+              </p>
+
+              <div className="grid grid-cols-3 gap-2 font-mono text-center">
+                <div
+                  style={{ padding: "8px 4px" }}
+                  className="rounded-lg bg-white/[0.06] border border-white/10"
+                >
+                  <span className="text-sm font-bold text-[#FFE066] block">
+                    {gallery.length}
+                  </span>
+                  <span className="text-[7px] text-white/50 uppercase">
+                    Plates
                   </span>
                 </div>
-                <div className="flex items-center gap-1">
-                  <span className="w-5 h-4 bg-black/15 rounded-xs" />
-                  <span className="w-5 h-4 bg-black/40 rounded-xs" />
-                  <span className="w-5 h-4 bg-black/70 rounded-xs" />
-                  <span className="w-5 h-4 bg-black rounded-xs" />
+                <div
+                  style={{ padding: "8px 4px" }}
+                  className="rounded-lg bg-white/[0.06] border border-white/10"
+                >
+                  <span className="text-sm font-bold text-[#8CE99A] block">
+                    {activities.length}
+                  </span>
+                  <span className="text-[7px] text-white/50 uppercase">
+                    Events
+                  </span>
+                </div>
+                <div
+                  style={{ padding: "8px 4px" }}
+                  className="rounded-lg bg-white/[0.06] border border-white/10"
+                >
+                  <span className="text-sm font-bold text-[#74C0FC] block">
+                    {committee.length}
+                  </span>
+                  <span className="text-[7px] text-white/50 uppercase">
+                    Roster
+                  </span>
                 </div>
               </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setGalleryFilterCat("ALL");
+                  setExpandedGalleryId(null);
+                  setIsGalleryPageOpen(true);
+                }}
+                style={{ padding: "11px 16px" }}
+                className="w-full rounded-xl bg-[#FFE066] hover:bg-white text-[#111111] font-mono text-[9.5px] font-bold uppercase tracking-[0.18em] flex items-center justify-between cursor-pointer transition-colors"
+              >
+                <span>INSPECT FULL ARCHIVE</span>
+                <span>↗</span>
+              </button>
             </div>
           </div>
         </div>
       </section>
 
       {/* ============================================================
-          3. DESKTOP WIDESCREEN "SPOTLIGHT '26" COLLECTOR PASS SECTION
-             - Full 1360px 2-Column Layout with Zero Empty Black Gaps!
-             - Left Column: Title, Switcher, Pass Telemetry + Expedition Schedule
-             - Right Column: Two-Tone Collector's Pass Card
+          3. DESKTOP WIDESCREEN "SPOTLIGHT '26" SECTION (Fixes Screenshot 2!)
+             - Generous Breathing Space Between Headlines, Description & Controls
+             - Refined Editorial Showcase Card
           ============================================================ */}
       <section
         id="desktop-dark-showcase"
         className="relative z-20 w-full bg-[#0A0A0E] text-white border-t border-white/10 overflow-hidden"
       >
         <div
-          className="pointer-events-none absolute top-12 left-1/2 -translate-x-1/2 w-[560px] h-[320px] rounded-full opacity-20 blur-3xl"
+          className="pointer-events-none absolute top-16 left-1/2 -translate-x-1/2 w-[620px] h-[340px] rounded-full opacity-20 blur-3xl"
           style={{
             background:
               spotlightTab === "LIVE"
@@ -3091,28 +3102,29 @@ export default function DesktopOilstainExperience() {
 
         <div
           style={{
-            padding: "56px 32px 54px",
-            maxWidth: "1360px",
+            padding: "76px 36px 72px",
+            maxWidth: "1320px",
             margin: "0 auto",
           }}
           className="relative z-10 w-full"
         >
-          <div className="grid grid-cols-12 gap-8 lg:gap-10 items-stretch">
-            {/* LEFT COLUMN (5 cols): Header, Switcher, Telemetry, Expedition Itinerary & White ACTIVITIES Button */}
-            <div className="col-span-12 lg:col-span-5 flex flex-col justify-between space-y-4">
-              <div className="space-y-3.5">
-                <div className="flex flex-wrap items-center gap-2.5">
+          <div className="grid grid-cols-12 gap-12 items-center">
+            {/* LEFT COLUMN (5 cols): Generous Breathing Space Between Every Element! */}
+            <div className="col-span-12 lg:col-span-5 flex flex-col justify-between space-y-8">
+              <div className="space-y-6">
+                {/* 1. Eyebrow Badges */}
+                <div className="flex flex-wrap items-center gap-3">
                   <span
-                    style={{ padding: "3px 10px" }}
-                    className="rounded-full bg-[#FFE066] text-[#111111] font-mono text-[9px] font-bold uppercase tracking-[0.18em]"
+                    style={{ padding: "4px 12px" }}
+                    className="rounded-full bg-[#FFE066] text-[#111111] font-mono text-[9.5px] font-bold uppercase tracking-[0.18em]"
                   >
                     ★ GCU DISPATCH
                   </span>
-                  <span className="font-serif italic text-sm text-white/65">
+                  <span className="font-serif italic text-base text-white/70">
                     Collector&apos;s Pass
                   </span>
                   <span
-                    style={{ padding: "3px 10px" }}
+                    style={{ padding: "4px 12px" }}
                     className={`rounded-full font-mono text-[8.5px] font-bold uppercase tracking-[0.16em] flex items-center gap-1.5 border ${
                       spotlightTab === "LIVE"
                         ? "bg-[#FF6B6B]/20 border-[#FF6B6B]/50 text-[#FFA8A8]"
@@ -3132,29 +3144,34 @@ export default function DesktopOilstainExperience() {
                   </span>
                 </div>
 
-                <h2 className="font-heading font-black text-4xl lg:text-5xl tracking-[-0.03em] uppercase text-white leading-none">
-                  SPOTLIGHT{" "}
-                  <span className="font-serif italic font-normal text-[#FFE066]">
-                    &apos;26
-                  </span>
-                </h2>
+                {/* 2. Headline with Generous Top & Bottom Breathing Space */}
+                <div>
+                  <h2 className="font-heading font-black text-5xl tracking-[-0.03em] uppercase text-white leading-[1.02]">
+                    SPOTLIGHT{" "}
+                    <span className="font-serif italic font-normal text-[#FFE066]">
+                      &apos;26
+                    </span>
+                  </h2>
+                  <p
+                    style={{ marginTop: "18px" }}
+                    className="font-sans text-sm text-white/75 leading-[1.75] max-w-md"
+                  >
+                    Curated student showcases, golden-hour photo expeditions,
+                    and live darkroom labs hosted by Girijananda Chowdhury
+                    University Photography Club.
+                  </p>
+                </div>
 
-                <p className="font-sans text-xs text-white/70 leading-relaxed">
-                  Curated student showcases, golden-hour photo expeditions, and
-                  live darkroom labs hosted by Girijananda Chowdhury University
-                  Photography Club.
-                </p>
-
-                {/* 2-Part Pill Switcher */}
+                {/* 3. 2-Part Pill Switcher with Breathing Room */}
                 <div
-                  style={{ padding: "4px" }}
-                  className="grid grid-cols-2 gap-1.5 rounded-full bg-white/[0.07] border border-white/15 backdrop-blur-md"
+                  style={{ padding: "5px" }}
+                  className="grid grid-cols-2 gap-2 rounded-full bg-white/[0.07] border border-white/15 backdrop-blur-md max-w-sm"
                 >
                   <button
                     type="button"
                     onClick={() => setSpotlightTab("UPCOMING")}
-                    style={{ padding: "9px 14px" }}
-                    className={`rounded-full font-sans text-xs font-bold tracking-wide flex items-center justify-center gap-1.5 cursor-pointer transition-all ${
+                    style={{ padding: "11px 16px" }}
+                    className={`rounded-full font-sans text-xs font-bold tracking-wide flex items-center justify-center gap-2 cursor-pointer transition-all ${
                       spotlightTab === "UPCOMING"
                         ? "bg-[#FFE066] text-[#111111] shadow-[0_4px_14px_rgba(255,224,102,0.35)]"
                         : "bg-transparent text-white/65 hover:text-white"
@@ -3167,8 +3184,8 @@ export default function DesktopOilstainExperience() {
                   <button
                     type="button"
                     onClick={() => setSpotlightTab("LIVE")}
-                    style={{ padding: "9px 14px" }}
-                    className={`rounded-full font-sans text-xs font-bold tracking-wide flex items-center justify-center gap-1.5 cursor-pointer transition-all ${
+                    style={{ padding: "11px 16px" }}
+                    className={`rounded-full font-sans text-xs font-bold tracking-wide flex items-center justify-center gap-2 cursor-pointer transition-all ${
                       spotlightTab === "LIVE"
                         ? "bg-[#FF5A5F] text-white shadow-[0_4px_14px_rgba(255,90,95,0.4)]"
                         : "bg-transparent text-white/65 hover:text-white"
@@ -3185,131 +3202,80 @@ export default function DesktopOilstainExperience() {
                   </button>
                 </div>
 
-                {/* Collector's Pass Telemetry Card */}
+                {/* 4. Clean 3-Pillar Highlight Strip (Replaces the Cluttered Stacked Boxes!) */}
                 <div
-                  style={{ padding: "14px 16px" }}
-                  className="rounded-2xl bg-white/[0.04] border border-white/10 space-y-3 backdrop-blur-md"
+                  style={{ paddingTop: "8px" }}
+                  className="grid grid-cols-3 gap-3 font-mono"
                 >
-                  <div className="flex items-center justify-between pb-2 border-b border-white/10 font-mono text-[9px] tracking-[0.2em] uppercase text-white/50">
-                    <div className="flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-[#FFE066] animate-pulse" />
-                      <span className="text-white/85 font-bold">
-                        GCU-PASS-2026-X09
-                      </span>
-                    </div>
-                    <span className="font-mono text-[8px] text-[#FFE066] tracking-[0.15em] font-bold">
-                      VERIFIED DISPATCH
+                  <div
+                    style={{ padding: "14px 12px" }}
+                    className="rounded-2xl bg-white/[0.04] border border-white/10"
+                  >
+                    <span className="text-xl font-bold text-white block leading-none">
+                      {activities.length}+
+                    </span>
+                    <span className="text-[8px] uppercase tracking-wider text-white/50 block mt-1.5">
+                      Field Works
                     </span>
                   </div>
-
-                  <div className="grid grid-cols-3 gap-2 text-center font-mono">
-                    <div
-                      style={{ padding: "8px" }}
-                      className="rounded-xl bg-white/[0.03] border border-white/5"
-                    >
-                      <span className="text-lg font-bold text-white block">
-                        {activities.length}+
-                      </span>
-                      <span className="text-[7px] uppercase tracking-wider text-white/45 block mt-0.5">
-                        Works
-                      </span>
-                    </div>
-                    <div
-                      style={{ padding: "8px" }}
-                      className="rounded-xl bg-white/[0.03] border border-white/5"
-                    >
-                      <span className="text-lg font-bold text-[#FFE066] block">
-                        100%
-                      </span>
-                      <span className="text-[7px] uppercase tracking-wider text-white/45 block mt-0.5">
-                        Student Led
-                      </span>
-                    </div>
-                    <div
-                      style={{ padding: "8px" }}
-                      className="rounded-xl bg-white/[0.03] border border-white/5"
-                    >
-                      <span className="text-lg font-bold text-[#8CE99A] block">
-                        35MM
-                      </span>
-                      <span className="text-[7px] uppercase tracking-wider text-white/45 block mt-0.5">
-                        Darkroom
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* NEW: Field Expedition Schedule & Live Seat Availability HUD (Fills Left Column Space!) */}
-                <div
-                  style={{ padding: "14px 16px" }}
-                  className="rounded-2xl bg-white/[0.04] border border-white/10 space-y-2.5 font-mono"
-                >
-                  <div className="flex items-center justify-between text-[8.5px] uppercase tracking-[0.18em]">
-                    <span className="text-white/60">EXPEDITION ROSTER</span>
-                    <span className="text-[#8CE99A] font-bold">
-                      ● 84% SEATS CLAIMED
+                  <div
+                    style={{ padding: "14px 12px" }}
+                    className="rounded-2xl bg-white/[0.04] border border-white/10"
+                  >
+                    <span className="text-xl font-bold text-[#FFE066] block leading-none">
+                      35MM
+                    </span>
+                    <span className="text-[8px] uppercase tracking-wider text-white/50 block mt-1.5">
+                      Optics Lab
                     </span>
                   </div>
-                  <div className="w-full h-1.5 rounded-full bg-white/10 overflow-hidden">
-                    <div
-                      style={{ width: "84%" }}
-                      className="h-full rounded-full bg-gradient-to-r from-[#FFE066] to-[#8CE99A]"
-                    />
-                  </div>
-                  <div className="grid grid-cols-3 gap-2 pt-1 text-[8px] text-white/70">
-                    <div className="p-2 rounded-lg bg-white/[0.03] border border-white/5">
-                      <span className="text-[#FFE066] font-bold block">
-                        01 // BRIEF
-                      </span>
-                      <span className="text-white/50">Optics Check</span>
-                    </div>
-                    <div className="p-2 rounded-lg bg-white/[0.03] border border-white/5">
-                      <span className="text-[#8CE99A] font-bold block">
-                        02 // SHOOT
-                      </span>
-                      <span className="text-white/50">Field Walk</span>
-                    </div>
-                    <div className="p-2 rounded-lg bg-white/[0.03] border border-white/5">
-                      <span className="text-[#74C0FC] font-bold block">
-                        03 // LOUPE
-                      </span>
-                      <span className="text-white/50">Print Review</span>
-                    </div>
+                  <div
+                    style={{ padding: "14px 12px" }}
+                    className="rounded-2xl bg-white/[0.04] border border-white/10"
+                  >
+                    <span className="text-xl font-bold text-[#8CE99A] block leading-none">
+                      FREE
+                    </span>
+                    <span className="text-[8px] uppercase tracking-wider text-white/50 block mt-1.5">
+                      GCU Pass
+                    </span>
                   </div>
                 </div>
               </div>
 
-              {/* SOLID WHITE "ACTIVITIES +" BAR BUTTON */}
-              <button
-                type="button"
-                onClick={() => {
-                  setActivityFilterCat("ALL");
-                  setActiveActivitySlideIdx(0);
-                  setIsActivitiesPageOpen(true);
-                }}
-                className="osl-bar-btn w-full bg-white hover:bg-[#FFE066] text-[#0A0A0D] rounded-xl shadow-[0_12px_30px_rgba(255,255,255,0.14)] active:scale-[0.99] transition-all"
-              >
-                <span className="font-bold">
-                  ACTIVITIES ({activities.length} CHRONOLOGY WORKS)
-                </span>
-                <span className="w-6 h-6 rounded-full bg-[#0A0A0D] text-white flex items-center justify-center text-sm leading-none">
-                  +
-                </span>
-              </button>
+              {/* 5. SOLID WHITE "ACTIVITIES +" BAR BUTTON */}
+              <div style={{ paddingTop: "8px" }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActivityFilterCat("ALL");
+                    setActiveActivitySlideIdx(0);
+                    setIsActivitiesPageOpen(true);
+                  }}
+                  className="osl-bar-btn w-full bg-white hover:bg-[#FFE066] text-[#0A0A0D] rounded-xl shadow-[0_12px_30px_rgba(255,255,255,0.14)] active:scale-[0.99] transition-all"
+                >
+                  <span className="font-bold">
+                    ACTIVITIES ({activities.length} CHRONOLOGY WORKS)
+                  </span>
+                  <span className="w-6 h-6 rounded-full bg-[#0A0A0D] text-white flex items-center justify-center text-sm leading-none">
+                    +
+                  </span>
+                </button>
+              </div>
             </div>
 
-            {/* RIGHT COLUMN (7 cols): Two-Tone Collector's Pass Card */}
-            <div className="col-span-12 lg:col-span-7 flex flex-col justify-between">
+            {/* RIGHT COLUMN (7 cols): Spacious Collector's Pass Card with Breathing Room */}
+            <div className="col-span-12 lg:col-span-7">
               <div
                 style={{
                   boxShadow:
                     spotlightTab === "LIVE"
-                      ? "0 24px 60px rgba(0,0,0,0.75), 6px 6px 0px #FF5A5F"
-                      : "0 24px 60px rgba(0,0,0,0.75), 6px 6px 0px #D4A843",
+                      ? "0 28px 65px rgba(0,0,0,0.75), 6px 6px 0px #FF5A5F"
+                      : "0 28px 65px rgba(0,0,0,0.75), 6px 6px 0px #D4A843",
                 }}
-                className="relative h-full rounded-3xl bg-[#FAF8F5] text-[#111111] border-2 border-white overflow-hidden flex flex-col justify-between shadow-2xl"
+                className="relative rounded-3xl bg-[#FAF8F5] text-[#111111] border-2 border-white overflow-hidden"
               >
-                <div style={{ padding: "12px 12px 0 12px" }}>
+                <div style={{ padding: "14px 14px 0 14px" }}>
                   <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden bg-[#111111] shadow-md">
                     <img
                       src={activeSpotlightEvent.img}
@@ -3329,18 +3295,18 @@ export default function DesktopOilstainExperience() {
                     <div
                       style={{
                         padding: "5px 12px",
-                        transform: "rotate(-2.5deg)",
+                        transform: "rotate(-2deg)",
                         backgroundColor:
                           spotlightTab === "LIVE" ? "#FFA8A8" : "#8CE99A",
                       }}
-                      className="absolute top-3.5 left-3.5 rounded-lg text-[#111111] font-mono text-[9px] font-bold uppercase tracking-[0.15em] shadow-md border border-black/15"
+                      className="absolute top-4 left-4 rounded-lg text-[#111111] font-mono text-[9px] font-bold uppercase tracking-[0.15em] shadow-md border border-black/15"
                     >
                       ★ {activeSpotlightEvent.category}
                     </div>
 
                     <div
                       style={{ padding: "5px 12px" }}
-                      className={`absolute top-3.5 right-3.5 rounded-full font-mono text-[9px] font-bold uppercase tracking-[0.14em] shadow-md ${
+                      className={`absolute top-4 right-4 rounded-full font-mono text-[9px] font-bold uppercase tracking-[0.14em] shadow-md ${
                         spotlightTab === "LIVE"
                           ? "bg-[#FF5A5F] text-white"
                           : "bg-white/95 text-[#111111]"
@@ -3352,14 +3318,14 @@ export default function DesktopOilstainExperience() {
                     </div>
 
                     <div
-                      style={{ padding: "10px 14px" }}
+                      style={{ padding: "12px 16px" }}
                       className="absolute bottom-0 inset-x-0 flex items-center justify-between gap-2 text-white"
                     >
                       <span className="font-sans text-xs font-semibold truncate drop-shadow">
                         📍 {activeSpotlightEvent.location}
                       </span>
                       <span
-                        style={{ padding: "3px 9px" }}
+                        style={{ padding: "3.5px 10px" }}
                         className="rounded-full bg-black/65 backdrop-blur-md text-[#FFE066] font-mono text-[8px] font-bold uppercase tracking-wider shrink-0"
                       >
                         {activeSpotlightEvent.filmStock || "35MM ARCHIVE"}
@@ -3368,7 +3334,8 @@ export default function DesktopOilstainExperience() {
                   </div>
                 </div>
 
-                <div className="relative w-full border-t-2 border-dashed border-black/15 my-2">
+                {/* Perforated Ticket Divider */}
+                <div className="relative w-full border-t-2 border-dashed border-black/15 my-3">
                   <div
                     style={{
                       width: "20px",
@@ -3387,25 +3354,29 @@ export default function DesktopOilstainExperience() {
                   />
                 </div>
 
+                {/* Spacious Ticket Story & Countdown Deck */}
                 <div
-                  style={{ padding: "6px 22px 20px" }}
-                  className="space-y-3.5"
+                  style={{ padding: "10px 26px 26px" }}
+                  className="space-y-5"
                 >
-                  <div className="flex items-center justify-between gap-4">
+                  <div className="flex flex-wrap items-center justify-between gap-4">
                     <div>
-                      <span className="handmade-fountain-pen text-[16px] text-[#D92B2B] leading-none block">
+                      <span className="handmade-fountain-pen text-[18px] text-[#D92B2B] leading-none block">
                         {spotlightTab === "UPCOMING"
                           ? "Don't miss the golden hour!"
                           : "Doors are open right now!"}
                       </span>
-                      <span className="font-mono text-[8.5px] font-bold uppercase tracking-[0.16em] text-black/50">
+                      <span
+                        style={{ marginTop: "4px" }}
+                        className="font-mono text-[8.5px] font-bold uppercase tracking-[0.16em] text-black/50 block"
+                      >
                         {spotlightTab === "UPCOMING"
                           ? "COUNTDOWN TO LAUNCH"
                           : "LIVE SESSION ENDS IN"}
                       </span>
                     </div>
 
-                    <div className="grid grid-cols-4 gap-2">
+                    <div className="grid grid-cols-4 gap-2.5">
                       {[
                         { val: countdown.days, label: "DAYS", bg: "#FFE066" },
                         { val: countdown.hours, label: "HRS", bg: "#8CE99A" },
@@ -3415,7 +3386,7 @@ export default function DesktopOilstainExperience() {
                         <div
                           key={unit.label}
                           style={{
-                            padding: "5px 10px",
+                            padding: "6px 11px",
                             backgroundColor: unit.bg,
                           }}
                           className="rounded-xl border border-black/15 shadow-[2px_2px_0px_#111111] flex flex-col items-center justify-center text-center"
@@ -3434,11 +3405,12 @@ export default function DesktopOilstainExperience() {
                     </div>
                   </div>
 
-                  <div className="border-t border-black/10 pt-2.5 space-y-1">
-                    <h3 className="font-serif text-2xl text-[#111111] font-normal leading-[1.15] tracking-tight">
+                  {/* Generous Breathing Space Between Title & Description */}
+                  <div className="border-t border-black/10 pt-4 space-y-2.5">
+                    <h3 className="font-serif text-2xl lg:text-[28px] text-[#111111] font-normal leading-[1.15] tracking-tight">
                       {activeSpotlightEvent.title}
                     </h3>
-                    <p className="font-sans text-xs text-black/70 leading-relaxed">
+                    <p className="font-sans text-xs text-black/70 leading-[1.7]">
                       {activeSpotlightEvent.description}
                     </p>
                   </div>
@@ -3454,7 +3426,7 @@ export default function DesktopOilstainExperience() {
                       setRegisterSubmitted(false);
                       setIsRegisterModalOpen(true);
                     }}
-                    style={{ padding: "11px 14px 11px 22px" }}
+                    style={{ padding: "13px 16px 13px 24px" }}
                     className={`w-full rounded-full font-sans text-xs font-bold tracking-wide flex items-center justify-between cursor-pointer transition-all shadow-[0_8px_20px_rgba(0,0,0,0.15)] active:scale-[0.98] ${
                       spotlightTab === "LIVE"
                         ? "bg-[#D92B2B] hover:bg-[#B91C1C] text-white"
@@ -3490,9 +3462,8 @@ export default function DesktopOilstainExperience() {
       </section>
 
       {/* ============================================================
-          4. VISUAL ARCHIVE: 12-SLOT BUTTER-SMOOTH HALF-WHEEL FAN
-             + EMBEDDED LIVE OPTICAL LAB MONITOR ON LEFT COLUMN
-             + SOLID BLACK "GALLERY +" BUTTON
+          4. VISUAL ARCHIVE: FRAMELESS HALF-WHEEL FAN + CLEAN OPTICAL LAB
+             (Fixes Screenshot 3!)
           ============================================================ */}
       <section
         id="desktop-light-bento-section"
@@ -3500,31 +3471,39 @@ export default function DesktopOilstainExperience() {
       >
         <div
           style={{
-            padding: "56px 32px",
-            maxWidth: "1360px",
+            padding: "64px 36px",
+            maxWidth: "1320px",
             margin: "0 auto",
           }}
+          className="space-y-8"
         >
-          <div className="grid grid-cols-12 gap-8 lg:gap-10 items-stretch">
-            {/* LEFT COLUMN (5 cols): Title, 3 Lab Tabs, Live Optical Monitor & Black GALLERY Button */}
-            <div className="col-span-12 lg:col-span-5 flex flex-col justify-between space-y-4">
-              <div className="space-y-3.5">
-                <div className="flex items-end justify-between">
-                  <div>
-                    <span className="font-serif italic text-base text-black/60 block">
-                      Curated Contact Sheet
-                    </span>
-                    <h2 className="font-heading font-black text-4xl uppercase tracking-[-0.03em] text-[#111111]">
-                      VISUAL ARCHIVE
-                    </h2>
-                  </div>
-                  <span className="font-mono text-[10px] tracking-[0.2em] uppercase text-[#D92B2B] font-bold">
-                    [ {gallery.length} COLOR PLATES ]
-                  </span>
-                </div>
+          {/* Top Clean Editorial Header */}
+          <div className="flex flex-wrap items-end justify-between gap-4 border-b border-black/12 pb-5">
+            <div>
+              <span className="font-serif italic text-lg text-black/60 block">
+                Curated Contact Sheet
+              </span>
+              <h2 className="font-heading font-black text-4xl uppercase tracking-[-0.03em] text-[#111111] mt-1">
+                VISUAL ARCHIVE
+              </h2>
+            </div>
+            <p className="font-sans text-xs text-black/65 max-w-md leading-relaxed">
+              Archival negatives, 35mm loupe magnifications, and analog film
+              stock emulsions developed by GCU photographers across Assam.
+            </p>
+            <span
+              style={{ padding: "5px 12px" }}
+              className="rounded-full bg-white border border-black/10 font-mono text-[10px] tracking-[0.2em] uppercase text-[#D92B2B] font-bold"
+            >
+              [ {gallery.length} COLOR PLATES ]
+            </span>
+          </div>
 
-                {/* 3-Button Optical Lab Switcher */}
-                <div className="grid grid-cols-3 border border-black/15 rounded-xl overflow-hidden bg-white shadow-2xs">
+          <div className="grid grid-cols-12 gap-10 items-center">
+            {/* LEFT COLUMN (5 cols): Clean White Studio Optical Lab Card + Black GALLERY Button */}
+            <div className="col-span-12 lg:col-span-5 flex flex-col justify-between space-y-5">
+              <div className="rounded-3xl bg-white border border-black/12 shadow-[0_14px_34px_rgba(0,0,0,0.06)] overflow-hidden">
+                <div className="grid grid-cols-3 border-b border-black/10">
                   <button
                     type="button"
                     onClick={() => setActiveOpticalLab("LOUPE")}
@@ -3571,36 +3550,32 @@ export default function DesktopOilstainExperience() {
                   </button>
                 </div>
 
-                {/* Embedded Live Optical Lab Monitor (Always Visible — Zero Empty Space!) */}
-                <div
-                  style={{ padding: "16px" }}
-                  className="rounded-2xl bg-[#141418] text-white border border-black/15 space-y-3 shadow-md"
-                >
-                  <div className="flex items-center justify-between font-mono text-[8.5px] tracking-[0.18em] uppercase text-[#FFE066]">
-                    <span>● OPTICAL MONITOR // {activeOpticalLab}</span>
-                    <span className="text-white/50">GCU LAB</span>
-                  </div>
-
+                <div style={{ padding: "18px" }} className="space-y-3">
                   {activeOpticalLab === "LOUPE" && (
-                    <div className="space-y-2.5">
-                      <div className="grid grid-cols-4 gap-2">
-                        {[24, 35, 50, 85].map((mm) => (
-                          <button
-                            key={mm}
-                            type="button"
-                            onClick={() => setSelectedFocalMm(mm)}
-                            style={{ padding: "6px" }}
-                            className={`rounded-lg font-mono text-[9.5px] font-bold uppercase cursor-pointer transition-colors ${
-                              selectedFocalMm === mm
-                                ? "bg-[#FFE066] text-black"
-                                : "bg-white/10 text-white hover:bg-white/20"
-                            }`}
-                          >
-                            {mm}MM
-                          </button>
-                        ))}
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="font-mono text-[8.5px] uppercase tracking-[0.18em] text-black/50 font-bold">
+                          PRIME FOCAL SIMULATOR
+                        </span>
+                        <div className="flex items-center gap-1.5">
+                          {[24, 35, 50, 85].map((mm) => (
+                            <button
+                              key={mm}
+                              type="button"
+                              onClick={() => setSelectedFocalMm(mm)}
+                              style={{ padding: "4px 8px" }}
+                              className={`rounded-md font-mono text-[9px] font-bold uppercase cursor-pointer transition-colors ${
+                                selectedFocalMm === mm
+                                  ? "bg-[#111111] text-[#FFE066]"
+                                  : "bg-black/[0.06] text-black/70 hover:bg-black/10"
+                              }`}
+                            >
+                              {mm}MM
+                            </button>
+                          ))}
+                        </div>
                       </div>
-                      <div className="relative w-full h-[155px] rounded-xl overflow-hidden border border-white/15">
+                      <div className="relative w-full h-[175px] rounded-2xl overflow-hidden border border-black/10 bg-black">
                         <img
                           src={gallery[0]?.src || FALLBACK_GALLERY[0].src}
                           alt="Focal Preview"
@@ -3617,7 +3592,7 @@ export default function DesktopOilstainExperience() {
                           }}
                           className="w-full h-full object-cover transition-transform duration-500"
                         />
-                        <div className="absolute bottom-2 left-2 px-2.5 py-1 rounded bg-black/75 font-mono text-[8.5px] text-[#FFE066]">
+                        <div className="absolute bottom-2.5 left-2.5 px-2.5 py-1 rounded bg-black/75 font-mono text-[8.5px] text-[#FFE066]">
                           {selectedFocalMm}MM PRIME ·{" "}
                           {selectedFocalMm === 85
                             ? "PORTRAIT COMPRESSION"
@@ -3632,27 +3607,32 @@ export default function DesktopOilstainExperience() {
                   )}
 
                   {activeOpticalLab === "EMULSION" && (
-                    <div className="space-y-2.5">
-                      <div className="grid grid-cols-3 gap-2">
-                        {(["PORTRA", "CINESTILL", "VELVIA"] as const).map(
-                          (stock) => (
-                            <button
-                              key={stock}
-                              type="button"
-                              onClick={() => setSelectedEmulsion(stock)}
-                              style={{ padding: "6px" }}
-                              className={`rounded-lg font-mono text-[9.5px] font-bold uppercase cursor-pointer transition-colors ${
-                                selectedEmulsion === stock
-                                  ? "bg-[#D92B2B] text-white"
-                                  : "bg-white/10 text-white hover:bg-white/20"
-                              }`}
-                            >
-                              {stock}
-                            </button>
-                          )
-                        )}
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="font-mono text-[8.5px] uppercase tracking-[0.18em] text-black/50 font-bold">
+                          FILM STOCK EMULSION
+                        </span>
+                        <div className="flex items-center gap-1.5">
+                          {(["PORTRA", "CINESTILL", "VELVIA"] as const).map(
+                            (stock) => (
+                              <button
+                                key={stock}
+                                type="button"
+                                onClick={() => setSelectedEmulsion(stock)}
+                                style={{ padding: "4px 8px" }}
+                                className={`rounded-md font-mono text-[8.5px] font-bold uppercase cursor-pointer transition-colors ${
+                                  selectedEmulsion === stock
+                                    ? "bg-[#D92B2B] text-white"
+                                    : "bg-black/[0.06] text-black/70 hover:bg-black/10"
+                                }`}
+                              >
+                                {stock}
+                              </button>
+                            )
+                          )}
+                        </div>
                       </div>
-                      <div className="relative w-full h-[155px] rounded-xl overflow-hidden border border-white/15">
+                      <div className="relative w-full h-[175px] rounded-2xl overflow-hidden border border-black/10 bg-black">
                         <img
                           src={gallery[2]?.src || FALLBACK_GALLERY[2].src}
                           alt="Emulsion Grade"
@@ -3666,7 +3646,7 @@ export default function DesktopOilstainExperience() {
                           }}
                           className="w-full h-full object-cover transition-all duration-500"
                         />
-                        <div className="absolute bottom-2 left-2 px-2.5 py-1 rounded bg-black/75 font-mono text-[8.5px] text-white">
+                        <div className="absolute bottom-2.5 left-2.5 px-2.5 py-1 rounded bg-black/75 font-mono text-[8.5px] text-white">
                           {selectedEmulsion === "PORTRA"
                             ? "KODAK PORTRA 400 // WARM SKIN LATITUDE"
                             : selectedEmulsion === "CINESTILL"
@@ -3678,22 +3658,22 @@ export default function DesktopOilstainExperience() {
                   )}
 
                   {activeOpticalLab === "STROBE" && (
-                    <div className="space-y-2.5 font-mono text-[10px] text-white/80 py-2">
-                      <div className="flex justify-between py-2 border-b border-white/10">
-                        <span className="text-white/45">OPTICAL FORMAT</span>
-                        <span className="text-[#FFE066] font-bold">
+                    <div className="space-y-2.5 font-mono text-[10px] text-black/80 py-2">
+                      <div className="flex justify-between py-2.5 border-b border-black/10">
+                        <span className="text-black/45">OPTICAL FORMAT</span>
+                        <span className="text-[#111111] font-bold">
                           35MM FULL-FRAME &amp; 120 MEDIUM
                         </span>
                       </div>
-                      <div className="flex justify-between py-2 border-b border-white/10">
-                        <span className="text-white/45">STUDIO LIGHTING</span>
-                        <span className="text-white font-bold">
+                      <div className="flex justify-between py-2.5 border-b border-black/10">
+                        <span className="text-black/45">STUDIO LIGHTING</span>
+                        <span className="text-[#D92B2B] font-bold">
                           GODEX AD600 PRO XENON STROBES
                         </span>
                       </div>
-                      <div className="flex justify-between py-2">
-                        <span className="text-white/45">DARKROOM LOCATION</span>
-                        <span className="text-[#8CE99A] font-bold">
+                      <div className="flex justify-between py-2.5">
+                        <span className="text-black/45">DARKROOM LOCATION</span>
+                        <span className="text-[#0F766E] font-bold">
                           GCU MEDIA LAB · AZARA
                         </span>
                       </div>
@@ -3721,7 +3701,7 @@ export default function DesktopOilstainExperience() {
               </button>
             </div>
 
-            {/* RIGHT COLUMN (7 cols): Butter-Smooth 12-Slot Half-Wheel Turntable Stage */}
+            {/* RIGHT COLUMN (7 cols): Clean, Frameless Rotating Half-Wheel Fan */}
             <div className="col-span-12 lg:col-span-7 flex items-center justify-center">
               <HalfWheelGalleryFan
                 items={gallery}
@@ -3740,14 +3720,15 @@ export default function DesktopOilstainExperience() {
       </section>
 
       {/* ============================================================
-          5. "ABOUT" BANNER + 6-CHAPTER BAR + FULL-WIDTH 1360PX STAGE
+          5. "ABOUT" BANNER + 6-CHAPTER BAR + STANDARD COMPACT MEMBER CARDS
+             (Fixes Screenshots 4 & 6!)
           ============================================================ */}
       <section
         id="desktop-light-about-section"
         className="relative z-20 w-full bg-[#FAF9F5] text-[#111111] border-t border-black/15"
       >
         <div
-          style={{ height: "300px" }}
+          style={{ height: "290px" }}
           className="relative w-full bg-[#111111] flex items-center justify-center overflow-hidden"
         >
           <img
@@ -3802,12 +3783,12 @@ export default function DesktopOilstainExperience() {
           </div>
         </div>
 
-        {/* Centered 1360px Chapter Stage */}
+        {/* Centered 1280px Chapter Stage */}
         <div
           style={{
-            maxWidth: "1360px",
+            maxWidth: "1280px",
             margin: "0 auto",
-            padding: "48px 32px 60px",
+            padding: "48px 32px 64px",
           }}
         >
           {activeAboutTab === "ORIGINS" && (
@@ -3823,24 +3804,25 @@ export default function DesktopOilstainExperience() {
 
           {activeAboutTab === "THE TEACHERS" && (
             <div className="space-y-8">
-              <div className="flex flex-wrap items-end justify-between gap-4 border-b border-black/10 pb-4">
-                <div>
-                  <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-[#0F766E] font-bold block">
-                    CHAPTER 02 // THE TEACHERS
-                  </span>
-                  <h3 className="font-heading font-black text-3xl uppercase tracking-[-0.03em] text-[#111111] mt-1">
-                    THE TEACHERS WHO GUIDE US
-                  </h3>
-                </div>
-                <p className="font-body text-xs text-black/65 max-w-md leading-relaxed">
+              <div className="text-center space-y-1.5">
+                <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-[#0F766E] font-bold block">
+                  CHAPTER 02 // THE TEACHERS
+                </span>
+                <h3 className="font-heading font-black text-3xl uppercase tracking-[-0.03em] text-[#111111]">
+                  THE TEACHERS WHO GUIDE US
+                </h3>
+                <p
+                  style={{ maxWidth: "520px", margin: "6px auto 0" }}
+                  className="font-body text-xs text-black/65 leading-relaxed"
+                >
                   Our faculty coordinators who mentor our visual archive,
                   symposia, and campus-wide exhibitions at GCU.
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="flex flex-wrap items-stretch justify-center gap-6">
                 {mentorsList.map((person, idx) =>
-                  renderStudioMemberCard(person, idx, true)
+                  renderStudioMemberCard(person, idx)
                 )}
               </div>
             </div>
@@ -3848,24 +3830,25 @@ export default function DesktopOilstainExperience() {
 
           {activeAboutTab === "BEHIND THE LENS" && (
             <div className="space-y-8">
-              <div className="flex flex-wrap items-end justify-between gap-4 border-b border-black/10 pb-4">
-                <div>
-                  <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-[#D92B2B] font-bold block">
-                    CHAPTER 03 // LEADERSHIP
-                  </span>
-                  <h3 className="font-heading font-black text-3xl uppercase tracking-[-0.03em] text-[#111111] mt-1">
-                    BEHIND THE LENS
-                  </h3>
-                </div>
-                <p className="font-body text-xs text-black/65 max-w-md leading-relaxed">
+              <div className="text-center space-y-1.5">
+                <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-[#D92B2B] font-bold block">
+                  CHAPTER 03 // LEADERSHIP
+                </span>
+                <h3 className="font-heading font-black text-3xl uppercase tracking-[-0.03em] text-[#111111]">
+                  BEHIND THE LENS
+                </h3>
+                <p
+                  style={{ maxWidth: "520px", margin: "6px auto 0" }}
+                  className="font-body text-xs text-black/65 leading-relaxed"
+                >
                   Student executive directors leading expeditions, darkroom
                   critiques, and curation across Assam.
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="flex flex-wrap items-stretch justify-center gap-6">
                 {leadsList.map((person, idx) =>
-                  renderStudioMemberCard(person, idx + 2, false)
+                  renderStudioMemberCard(person, idx + 2)
                 )}
               </div>
             </div>
@@ -3873,24 +3856,26 @@ export default function DesktopOilstainExperience() {
 
           {activeAboutTab === "CORE MEMBERS" && (
             <div className="space-y-8">
-              <div className="flex flex-wrap items-end justify-between gap-4 border-b border-black/10 pb-4">
-                <div>
-                  <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-[#1864AB] font-bold block">
-                    CHAPTER 04 // THE FOUNDATION
-                  </span>
-                  <h3 className="font-heading font-black text-3xl uppercase tracking-[-0.03em] text-[#111111] mt-1">
-                    CORE MEMBERS
-                  </h3>
-                </div>
-                <p className="font-body text-xs text-black/65 max-w-md leading-relaxed">
+              <div className="text-center space-y-1.5">
+                <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-[#1864AB] font-bold block">
+                  CHAPTER 04 // THE FOUNDATION
+                </span>
+                <h3 className="font-heading font-black text-3xl uppercase tracking-[-0.03em] text-[#111111]">
+                  CORE MEMBERS
+                </h3>
+                <p
+                  style={{ maxWidth: "520px", margin: "6px auto 0" }}
+                  className="font-body text-xs text-black/65 leading-relaxed"
+                >
                   The creative backbone driving street reportage, strobe
                   portraiture, landscape expeditions, and motion reels.
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Standard 235px Studio Member Cards in a Centered Flex Grid */}
+              <div className="flex flex-wrap items-stretch justify-center gap-5 max-w-5xl mx-auto">
                 {coreList.map((person, idx) =>
-                  renderStudioMemberCard(person, idx + 1, false)
+                  renderStudioMemberCard(person, idx + 1)
                 )}
               </div>
             </div>
@@ -3898,24 +3883,25 @@ export default function DesktopOilstainExperience() {
 
           {activeAboutTab === "WHERE IT ALL STARTED" && (
             <div className="space-y-8">
-              <div className="flex flex-wrap items-end justify-between gap-4 border-b border-black/10 pb-4">
-                <div>
-                  <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-[#B45309] font-bold block">
-                    CHAPTER 05 // GENESIS
-                  </span>
-                  <h3 className="font-heading font-black text-3xl uppercase tracking-[-0.03em] text-[#111111] mt-1">
-                    WHERE IT ALL STARTED
-                  </h3>
-                </div>
-                <p className="font-body text-xs text-black/65 max-w-md leading-relaxed">
+              <div className="text-center space-y-1.5">
+                <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-[#B45309] font-bold block">
+                  CHAPTER 05 // GENESIS
+                </span>
+                <h3 className="font-heading font-black text-3xl uppercase tracking-[-0.03em] text-[#111111]">
+                  WHERE IT ALL STARTED
+                </h3>
+                <p
+                  style={{ maxWidth: "520px", margin: "6px auto 0" }}
+                  className="font-body text-xs text-black/65 leading-relaxed"
+                >
                   Founded in 2023 to unite Girijananda Chowdhury
                   University&apos;s visual storytellers under one banner.
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="flex flex-wrap items-stretch justify-center gap-6">
                 {foundersList.map((person, idx) =>
-                  renderStudioMemberCard(person, idx + 4, true)
+                  renderStudioMemberCard(person, idx + 4)
                 )}
               </div>
             </div>
@@ -3923,24 +3909,25 @@ export default function DesktopOilstainExperience() {
 
           {activeAboutTab === "CARRYING IT FORWARD" && (
             <div className="space-y-8">
-              <div className="flex flex-wrap items-end justify-between gap-4 border-b border-black/10 pb-4">
-                <div>
-                  <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-[#6B21A8] font-bold block">
-                    CHAPTER 06 // LEGACY
-                  </span>
-                  <h3 className="font-heading font-black text-3xl uppercase tracking-[-0.03em] text-[#111111] mt-1">
-                    CARRYING IT FORWARD
-                  </h3>
-                </div>
-                <p className="font-body text-xs text-black/65 max-w-md leading-relaxed">
+              <div className="text-center space-y-1.5">
+                <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-[#6B21A8] font-bold block">
+                  CHAPTER 06 // LEGACY
+                </span>
+                <h3 className="font-heading font-black text-3xl uppercase tracking-[-0.03em] text-[#111111]">
+                  CARRYING IT FORWARD
+                </h3>
+                <p
+                  style={{ maxWidth: "520px", margin: "6px auto 0" }}
+                  className="font-body text-xs text-black/65 leading-relaxed"
+                >
                   Alumni torchbearers whose early exhibitions and mentorship
                   built the creative culture of ShutterScape.
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="flex flex-wrap items-stretch justify-center gap-6">
                 {legacyList.map((person, idx) =>
-                  renderStudioMemberCard(person, idx + 3, true)
+                  renderStudioMemberCard(person, idx + 3)
                 )}
               </div>
             </div>
@@ -4148,7 +4135,7 @@ export default function DesktopOilstainExperience() {
               setIsRegisterModalOpen(true);
             }}
             style={{
-              maxWidth: "1360px",
+              maxWidth: "1320px",
               margin: "0 auto 36px",
               borderRadius: "12px",
             }}
@@ -4161,20 +4148,22 @@ export default function DesktopOilstainExperience() {
       </section>
 
       {/* ============================================================
-          7. COMPACT CORPORATE-GRADE MINIMALIST FOOTER (1360PX DESKTOP)
+          7. CORPORATE-GRADE MINIMALIST FOOTER + LIVE GOOGLE MAP VIEW
+             + OFFICIAL INSTAGRAM & WHATSAPP LOGOS (Fixes Screenshot 5!)
           ============================================================ */}
       <footer
         id="desktop-global-footer"
         style={{
-          padding: "28px 32px 104px 32px",
+          padding: "36px 36px 108px 36px",
           backgroundColor: "#FAF9F5",
           color: "#0A0A0C",
         }}
         className="relative z-20 w-full border-t border-black/10 select-none overflow-hidden"
       >
+        {/* Full-Width Responsive SHUTTERSCAPE Backdrop Watermark */}
         <div
           aria-hidden="true"
-          style={{ maxWidth: "1360px", margin: "0 auto" }}
+          style={{ maxWidth: "1320px", margin: "0 auto" }}
           className="pointer-events-none absolute inset-x-6 bottom-12 flex items-center justify-center overflow-hidden select-none"
         >
           <svg
@@ -4200,126 +4189,189 @@ export default function DesktopOilstainExperience() {
         </div>
 
         <div
-          style={{ maxWidth: "1360px", margin: "0 auto" }}
-          className="relative z-10 w-full flex flex-col gap-3.5"
+          style={{ maxWidth: "1320px", margin: "0 auto" }}
+          className="relative z-10 w-full flex flex-col gap-5"
         >
-          <div
-            style={{ paddingBottom: "12px" }}
-            className="w-full flex items-center justify-between gap-4 border-b border-black/[0.08]"
-          >
-            <div className="flex items-center gap-3 min-w-0 shrink">
-              <div
-                style={{ width: "88px", height: "24px" }}
-                className="relative shrink-0"
-              >
-                <Image
-                  src="/images/shutterscape-logo-cropped.png"
-                  alt="ShutterScape"
-                  fill
-                  sizes="88px"
-                  unoptimized
-                  className="object-contain object-left"
-                />
+          {/* MAIN 12-COLUMN FOOTER DECK: Brand & Socials (Left 7 Cols) + Embedded Map View (Right 5 Cols) */}
+          <div className="grid grid-cols-12 gap-8 items-center pb-4 border-b border-black/[0.08]">
+            {/* Left 7 Columns: Dual Brand Crest, Mission & Social Buttons with Logos */}
+            <div className="col-span-7 space-y-4">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3.5">
+                  <div
+                    style={{ width: "96px", height: "26px" }}
+                    className="relative shrink-0"
+                  >
+                    <Image
+                      src="/images/shutterscape-logo-cropped.png"
+                      alt="ShutterScape"
+                      fill
+                      sizes="96px"
+                      unoptimized
+                      className="object-contain object-left"
+                    />
+                  </div>
+
+                  <span className="h-4 w-[1px] bg-black/15 shrink-0" />
+
+                  <a
+                    href="https://gcu.ac.in"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="Girijananda Chowdhury University"
+                    style={{ width: "105px", height: "26px" }}
+                    className="relative opacity-90 hover:opacity-100 transition-opacity shrink-0"
+                  >
+                    <Image
+                      src="/images/gcu-logo-black-text.png"
+                      alt="GCU"
+                      fill
+                      sizes="105px"
+                      unoptimized
+                      className="object-contain object-left"
+                    />
+                  </a>
+                </div>
+
+                {/* Instagram & WhatsApp Pills with Official SVG Logos */}
+                <div className="flex items-center gap-2.5 shrink-0">
+                  <a
+                    href="https://www.instagram.com/shutterscape_gcu"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ padding: "7px 14px" }}
+                    className="rounded-full bg-black/[0.05] hover:bg-[#111111] text-[#111111] hover:text-white font-sans text-xs font-semibold tracking-tight flex items-center gap-2 transition-colors whitespace-nowrap"
+                  >
+                    {/* Instagram SVG Logo */}
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+                    </svg>
+                    <span>Instagram</span>
+                    <span className="text-[10px] opacity-60">↗</span>
+                  </a>
+
+                  <a
+                    href="https://chat.whatsapp.com/Hs71BicR1Xj3PmOyPJ5wdc?s=sw&p=a&mlu=4&ilr=4"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ padding: "7px 14px" }}
+                    className="rounded-full bg-[#111111] hover:bg-[#25D366] text-white hover:text-[#050505] font-sans text-xs font-semibold tracking-tight flex items-center gap-2 transition-colors whitespace-nowrap"
+                  >
+                    {/* WhatsApp SVG Logo */}
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21" />
+                      <path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1a5 5 0 0 0 5 5h1a.5.5 0 0 0 0-1h-1a.5.5 0 0 0 0 1" />
+                    </svg>
+                    <span>WhatsApp</span>
+                    <span className="text-[10px] text-[#FFE066]">↗</span>
+                  </a>
+                </div>
               </div>
 
-              <span className="h-4 w-[1px] bg-black/15 shrink-0" />
+              <p className="font-serif italic text-sm text-black/65 leading-relaxed max-w-xl">
+                Official visual arts &amp; photography collective of Girijananda
+                Chowdhury University, Assam. Documenting time, culture, and
+                stories through light.
+              </p>
 
-              <a
-                href="https://gcu.ac.in"
-                target="_blank"
-                rel="noopener noreferrer"
-                title="Girijananda Chowdhury University"
-                style={{ width: "94px", height: "24px" }}
-                className="relative opacity-90 hover:opacity-100 transition-opacity shrink-0"
-              >
-                <Image
-                  src="/images/gcu-logo-black-text.png"
-                  alt="GCU"
-                  fill
-                  sizes="94px"
-                  unoptimized
-                  className="object-contain object-left"
-                />
-              </a>
+              <div className="flex flex-wrap items-center gap-6 font-sans text-xs text-black/75 pt-1">
+                <a
+                  href="mailto:shutterscape@gcuniversity.ac.in"
+                  className="flex items-center gap-2 hover:text-black transition-colors font-medium"
+                >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="text-black/45 shrink-0"
+                  >
+                    <rect x="2" y="4" width="20" height="16" rx="2" />
+                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                  </svg>
+                  <span>shutterscape@gcuniversity.ac.in</span>
+                </a>
+
+                <a
+                  href="https://maps.app.goo.gl/NhdHs1u76Bjxo2J87"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 text-black/70 hover:text-black font-medium transition-colors"
+                >
+                  <svg
+                    width="13"
+                    height="13"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="text-[#D92B2B] shrink-0"
+                  >
+                    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                    <circle cx="12" cy="10" r="3" />
+                  </svg>
+                  <span>GCU Campus, Hathkhowapara, Azara, Guwahati</span>
+                  <span className="text-[10px] opacity-50">↗</span>
+                </a>
+              </div>
             </div>
 
-            <div className="flex items-center gap-2 shrink-0">
-              <a
-                href="https://www.instagram.com/shutterscape_gcu"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ padding: "6px 14px" }}
-                className="rounded-full bg-black/[0.05] hover:bg-[#111111] text-[#111111] hover:text-white font-sans text-xs font-semibold tracking-tight flex items-center gap-1 transition-colors whitespace-nowrap"
+            {/* Right 5 Columns: Embedded Interactive Campus Map View Card */}
+            <div className="col-span-5">
+              <div
+                style={{ padding: "8px" }}
+                className="rounded-2xl bg-white border border-black/12 shadow-sm overflow-hidden"
               >
-                <span>Instagram</span>
-                <span className="text-[10px] opacity-60">↗</span>
-              </a>
-              <a
-                href="https://chat.whatsapp.com/Hs71BicR1Xj3PmOyPJ5wdc?s=sw&p=a&mlu=4&ilr=4"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ padding: "6px 14px" }}
-                className="rounded-full bg-[#111111] text-white font-sans text-xs font-semibold tracking-tight flex items-center gap-1 transition-opacity hover:opacity-85 whitespace-nowrap"
-              >
-                <span>WhatsApp</span>
-                <span className="text-[10px] text-[#D4A843]">↗</span>
-              </a>
+                <div className="relative w-full h-[125px] rounded-xl overflow-hidden bg-[#ECEBE6]">
+                  <iframe
+                    title="Girijananda Chowdhury University Campus Map"
+                    src="https://www.google.com/maps?q=Girijananda+Chowdhury+University+Azara+Guwahati&output=embed"
+                    className="w-full h-full border-0 filter contrast-[1.04]"
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                  />
+                  <a
+                    href="https://maps.app.goo.gl/NhdHs1u76Bjxo2J87"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ padding: "4px 10px" }}
+                    className="absolute bottom-2 right-2 rounded-full bg-[#111111]/90 hover:bg-[#D92B2B] text-white font-mono text-[8px] font-bold uppercase tracking-wider backdrop-blur-xs shadow-md transition-colors"
+                  >
+                    OPEN IN GOOGLE MAPS ↗
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div
-            style={{ paddingBottom: "12px" }}
-            className="w-full flex items-center justify-between gap-4 border-b border-black/[0.08] font-sans text-xs text-black/75"
-          >
-            <a
-              href="mailto:shutterscape@gcuniversity.ac.in"
-              className="flex items-center gap-2 hover:text-black transition-colors min-w-0 truncate"
-            >
-              <svg
-                width="13"
-                height="13"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="text-black/45 shrink-0"
-              >
-                <rect x="2" y="4" width="20" height="16" rx="2" />
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-              </svg>
-              <span className="truncate font-medium">
-                shutterscape@gcuniversity.ac.in
-              </span>
-            </a>
-
-            <a
-              href="https://maps.app.goo.gl/NhdHs1u76Bjxo2J87"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 text-black/65 hover:text-black font-medium shrink-0 whitespace-nowrap transition-colors"
-            >
-              <svg
-                width="12"
-                height="12"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="text-[#D92B2B] shrink-0"
-              >
-                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
-                <circle cx="12" cy="10" r="3" />
-              </svg>
-              <span>Azara, Guwahati, Assam</span>
-              <span className="text-[10px] opacity-50">↗</span>
-            </a>
-          </div>
-
-          <div className="w-full flex items-center justify-between gap-4 pt-0.5 font-sans text-xs text-black/50">
+          {/* Bottom Legal & Attribution Row */}
+          <div className="w-full flex items-center justify-between gap-4 font-sans text-xs text-black/50">
             <span className="font-mono text-[9.5px] tracking-[0.12em] uppercase whitespace-nowrap">
               © 2026 SHUTTERSCAPE · GIRIJANANDA CHOWDHURY UNIVERSITY
             </span>
