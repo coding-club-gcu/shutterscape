@@ -358,6 +358,16 @@ export default function AdminDashboardPage() {
     }
   }, []);
 
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      if (isMobileDrawerOpen) {
+        document.body.style.overflow = "hidden";
+      } else {
+        document.body.style.overflow = "";
+      }
+    }
+  }, [isMobileDrawerOpen]);
+
   const showToast = (text: string, type: "success" | "error" = "success") => {
     setStatusToast({ text, type });
     setTimeout(() => setStatusToast(null), 4500);
@@ -816,6 +826,27 @@ export default function AdminDashboardPage() {
           letter-spacing: 0.04em;
           text-transform: uppercase;
         }
+        @media (max-width: 640px) {
+          #cms-enterprise-root .cms-card {
+            border-radius: 10px;
+          }
+          #cms-enterprise-root .cms-card-body {
+            padding: 8px 9px !important;
+          }
+          #cms-enterprise-root .cms-action-edit,
+          #cms-enterprise-root .cms-action-delete {
+            padding: 4px 6px !important;
+            font-size: 10px !important;
+          }
+          #cms-enterprise-root .cms-badge {
+            padding: 2px 5px !important;
+            font-size: 8px !important;
+          }
+          #cms-enterprise-root .cms-filter-pill {
+            padding: 4px 8px !important;
+            font-size: 10.5px !important;
+          }
+        }
       `,
         }}
       />
@@ -1011,205 +1042,216 @@ export default function AdminDashboardPage() {
       </aside>
 
       {/* ============================================================
-          MOBILE SLIDE-OVER NAVIGATION DRAWER
+          MOBILE SLIDE-OVER NAVIGATION DRAWER (Smooth Animated Slide-Over)
           ============================================================ */}
-      {isMobileDrawerOpen && (
-        <div className="lg:hidden fixed inset-0 z-50 flex">
-          {/* Backdrop */}
-          <div
-            className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity"
-            onClick={() => setIsMobileDrawerOpen(false)}
-          />
+      <div
+        className={`lg:hidden fixed inset-0 z-50 flex transition-[visibility,opacity] duration-300 ease-in-out ${
+          isMobileDrawerOpen
+            ? "visible opacity-100 pointer-events-auto"
+            : "invisible opacity-0 pointer-events-none"
+        }`}
+        aria-hidden={!isMobileDrawerOpen}
+      >
+        {/* Backdrop with smooth fade */}
+        <div
+          className={`fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity duration-300 ease-in-out ${
+            isMobileDrawerOpen ? "opacity-100" : "opacity-0"
+          }`}
+          onClick={() => setIsMobileDrawerOpen(false)}
+        />
 
-          {/* Drawer Panel */}
-          <div className="relative w-72 max-w-[85vw] bg-white h-full shadow-2xl flex flex-col justify-between z-10 overflow-y-auto">
-            <div>
-              <div
-                style={{ padding: "14px 18px" }}
-                className="border-b border-[#EAEFF4] flex items-center justify-between bg-[#FAFBFD]"
+        {/* Drawer Panel with smooth slide-in/slide-out */}
+        <div
+          className={`relative w-72 max-w-[85vw] bg-white h-full shadow-2xl flex flex-col justify-between z-10 overflow-y-auto transform transition-transform duration-300 ease-out ${
+            isMobileDrawerOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
+        >
+          <div>
+            <div
+              style={{ padding: "14px 18px" }}
+              className="border-b border-[#EAEFF4] flex items-center justify-between bg-[#FAFBFD]"
+            >
+              <div className="flex items-center gap-2.5">
+                <div
+                  style={{ width: "28px", height: "28px" }}
+                  className="rounded-lg bg-[#5D87FF] flex items-center justify-center text-white font-serif italic font-bold text-sm shadow-xs"
+                >
+                  S
+                </div>
+                <div>
+                  <span className="block font-bold text-[13px] text-[#2A3547] leading-none">
+                    ShutterScape
+                  </span>
+                  <span className="block text-[9.5px] font-medium text-[#7C8FAC] mt-0.5">
+                    Darkroom CMS v4.0
+                  </span>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setIsMobileDrawerOpen(false)}
+                className="w-7 h-7 rounded-lg bg-white border border-[#DFE5EF] text-[#5A6A85] flex items-center justify-center text-xs font-bold hover:bg-slate-50 transition-colors"
               >
-                <div className="flex items-center gap-2.5">
-                  <div
-                    style={{ width: "28px", height: "28px" }}
-                    className="rounded-lg bg-[#5D87FF] flex items-center justify-center text-white font-serif italic font-bold text-sm shadow-xs"
-                  >
-                    S
-                  </div>
-                  <div>
-                    <span className="block font-bold text-[13px] text-[#2A3547] leading-none">
-                      ShutterScape
-                    </span>
-                    <span className="block text-[9.5px] font-medium text-[#7C8FAC] mt-0.5">
-                      Darkroom CMS v4.0
-                    </span>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => setIsMobileDrawerOpen(false)}
-                  className="w-7 h-7 rounded-lg bg-white border border-[#DFE5EF] text-[#5A6A85] flex items-center justify-center text-xs font-bold hover:bg-slate-50 transition-colors"
-                >
-                  ✕
-                </button>
-              </div>
-
-              <div style={{ padding: "12px 14px" }}>
-                <div
-                  style={{ padding: "0 10px", marginBottom: "6px" }}
-                  className="text-[10px] font-bold uppercase tracking-wider text-[#7C8FAC]"
-                >
-                  Content Archives
-                </div>
-
-                {TABS.filter((t) => t.group === "ARCHIVES").map((tab) => {
-                  const isActive = activeTab === tab.id;
-                  const count = getTabCount(tab.id);
-                  return (
-                    <button
-                      key={tab.id}
-                      type="button"
-                      onClick={() => {
-                        setActiveTab(tab.id);
-                        setSearchQuery("");
-                        setFilterCategory("ALL");
-                        setIsMobileDrawerOpen(false);
-                      }}
-                      className={`cms-nav-btn ${isActive ? "active" : ""}`}
-                    >
-                      <div className="flex items-center gap-3">
-                        {getTabIcon(tab.id, "w-4 h-4")}
-                        <span>{tab.label}</span>
-                      </div>
-                      <span
-                        style={{ padding: "2px 8px" }}
-                        className={`rounded-full text-[11px] font-bold ${
-                          isActive
-                            ? "bg-white/20 text-white"
-                            : "bg-[#ECF2FF] text-[#5D87FF]"
-                        }`}
-                      >
-                        {count}
-                      </span>
-                    </button>
-                  );
-                })}
-
-                <div
-                  style={{
-                    padding: "0 10px",
-                    marginTop: "16px",
-                    marginBottom: "6px",
-                  }}
-                  className="text-[10px] font-bold uppercase tracking-wider text-[#7C8FAC]"
-                >
-                  Cinematic Scenes
-                </div>
-
-                {TABS.filter((t) => t.group === "SCENES").map((tab) => {
-                  const isActive = activeTab === tab.id;
-                  const count = getTabCount(tab.id);
-                  return (
-                    <button
-                      key={tab.id}
-                      type="button"
-                      onClick={() => {
-                        setActiveTab(tab.id);
-                        setSearchQuery("");
-                        setFilterCategory("ALL");
-                        setIsMobileDrawerOpen(false);
-                      }}
-                      className={`cms-nav-btn ${isActive ? "active" : ""}`}
-                    >
-                      <div className="flex items-center gap-2.5">
-                        {getTabIcon(tab.id, "w-3.5 h-3.5")}
-                        <span>{tab.label}</span>
-                      </div>
-                      <span
-                        style={{ padding: "1.5px 7px" }}
-                        className={`rounded-full text-[10px] font-bold ${
-                          isActive
-                            ? "bg-white/20 text-white"
-                            : "bg-[#ECF2FF] text-[#5D87FF]"
-                        }`}
-                      >
-                        {count}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
+                ✕
+              </button>
             </div>
 
-            <div
-              style={{ padding: "12px 14px" }}
-              className="border-t border-[#EAEFF4] bg-[#FAFBFD]"
-            >
-              <Link
-                href="/"
-                target="_blank"
-                style={{ padding: "8px 12px", marginBottom: "10px" }}
-                className="w-full flex items-center justify-center gap-2 rounded-lg bg-[#ECF2FF] hover:bg-[#5D87FF] text-[#5D87FF] hover:text-white text-[11px] font-bold transition-all"
+            <div style={{ padding: "12px 14px" }}>
+              <div
+                style={{ padding: "0 10px", marginBottom: "6px" }}
+                className="text-[10px] font-bold uppercase tracking-wider text-[#7C8FAC]"
               >
-                <svg
-                  className="w-3.5 h-3.5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                  />
-                </svg>
-                <span>Open Public Website</span>
-              </Link>
-
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div
-                    style={{ width: "28px", height: "28px" }}
-                    className="rounded-full bg-[#5D87FF] text-white flex items-center justify-center font-bold text-[10px]"
-                  >
-                    AD
-                  </div>
-                  <div>
-                    <span className="block text-[11px] font-bold text-[#2A3547]">
-                      Admin Lead
-                    </span>
-                    <span className="block text-[9.5px] text-[#7C8FAC]">
-                      GCU ShutterScape
-                    </span>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={handleLogout}
-                  style={{ padding: "4px 8px" }}
-                  className="rounded-md bg-[#FDEDE8] hover:bg-[#FA896B] text-[#FA896B] hover:text-white text-[11px] font-bold transition-colors cursor-pointer"
-                >
-                  Sign Out
-                </button>
+                Content Archives
               </div>
+
+              {TABS.filter((t) => t.group === "ARCHIVES").map((tab) => {
+                const isActive = activeTab === tab.id;
+                const count = getTabCount(tab.id);
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => {
+                      setActiveTab(tab.id);
+                      setSearchQuery("");
+                      setFilterCategory("ALL");
+                      setIsMobileDrawerOpen(false);
+                    }}
+                    className={`cms-nav-btn ${isActive ? "active" : ""}`}
+                  >
+                    <div className="flex items-center gap-3">
+                      {getTabIcon(tab.id, "w-4 h-4")}
+                      <span>{tab.label}</span>
+                    </div>
+                    <span
+                      style={{ padding: "2px 8px" }}
+                      className={`rounded-full text-[11px] font-bold ${
+                        isActive
+                          ? "bg-white/20 text-white"
+                          : "bg-[#ECF2FF] text-[#5D87FF]"
+                      }`}
+                    >
+                      {count}
+                    </span>
+                  </button>
+                );
+              })}
+
+              <div
+                style={{
+                  padding: "0 10px",
+                  marginTop: "16px",
+                  marginBottom: "6px",
+                }}
+                className="text-[10px] font-bold uppercase tracking-wider text-[#7C8FAC]"
+              >
+                Cinematic Scenes
+              </div>
+
+              {TABS.filter((t) => t.group === "SCENES").map((tab) => {
+                const isActive = activeTab === tab.id;
+                const count = getTabCount(tab.id);
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => {
+                      setActiveTab(tab.id);
+                      setSearchQuery("");
+                      setFilterCategory("ALL");
+                      setIsMobileDrawerOpen(false);
+                    }}
+                    className={`cms-nav-btn ${isActive ? "active" : ""}`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      {getTabIcon(tab.id, "w-3.5 h-3.5")}
+                      <span>{tab.label}</span>
+                    </div>
+                    <span
+                      style={{ padding: "1.5px 7px" }}
+                      className={`rounded-full text-[10px] font-bold ${
+                        isActive
+                          ? "bg-white/20 text-white"
+                          : "bg-[#ECF2FF] text-[#5D87FF]"
+                      }`}
+                    >
+                      {count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div
+            style={{ padding: "12px 14px" }}
+            className="border-t border-[#EAEFF4] bg-[#FAFBFD]"
+          >
+            <Link
+              href="/"
+              target="_blank"
+              style={{ padding: "8px 12px", marginBottom: "10px" }}
+              className="w-full flex items-center justify-center gap-2 rounded-lg bg-[#ECF2FF] hover:bg-[#5D87FF] text-[#5D87FF] hover:text-white text-[11px] font-bold transition-all"
+            >
+              <svg
+                className="w-3.5 h-3.5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                />
+              </svg>
+              <span>Open Public Website</span>
+            </Link>
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div
+                  style={{ width: "28px", height: "28px" }}
+                  className="rounded-full bg-[#5D87FF] text-white flex items-center justify-center font-bold text-[10px]"
+                >
+                  AD
+                </div>
+                <div>
+                  <span className="block text-[11px] font-bold text-[#2A3547]">
+                    Admin Lead
+                  </span>
+                  <span className="block text-[9.5px] text-[#7C8FAC]">
+                    GCU ShutterScape
+                  </span>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleLogout}
+                style={{ padding: "4px 8px" }}
+                className="rounded-md bg-[#FDEDE8] hover:bg-[#FA896B] text-[#FA896B] hover:text-white text-[11px] font-bold transition-colors cursor-pointer"
+              >
+                Sign Out
+              </button>
             </div>
           </div>
         </div>
-      )}
+      </div>
 
       {/* ============================================================
           MAIN WORKSPACE CANVAS
           ============================================================ */}
       <div className="flex-1 min-w-0 min-h-screen flex flex-col">
-        {/* Mobile Sticky Top Header Bar (Row 1 of 2: Solid White 50px) */}
+        {/* Mobile Sticky Top Header Bar (Solid White 50px) */}
         <div className="lg:hidden sticky top-0 z-40 bg-white border-b border-[#EAEFF4] px-3.5 h-[50px] flex items-center justify-between shadow-xs">
           <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={() => setIsMobileDrawerOpen(true)}
-              className="p-1.5 -ml-1 text-[#2A3547] hover:text-[#5D87FF] rounded-lg hover:bg-slate-50 transition-colors"
+              className="p-1.5 -ml-1 text-[#2A3547] hover:text-[#5D87FF] rounded-lg hover:bg-slate-50 active:scale-95 transition-all cursor-pointer"
               aria-label="Open Navigation Drawer"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -1318,43 +1360,6 @@ export default function AdminDashboardPage() {
               </svg>
             </button>
           </div>
-        </div>
-
-        {/* Mobile Sticky Horizontal Tab Dock (Row 2 of 2: Solid White, top-[50px]) */}
-        <div className="lg:hidden sticky top-[50px] z-30 bg-white border-b border-[#EAEFF4] px-3 py-2 flex items-center gap-1.5 overflow-x-auto no-scrollbar shadow-xs">
-          {TABS.map((tab) => {
-            const isActive = activeTab === tab.id;
-            const count = getTabCount(tab.id);
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => {
-                  setActiveTab(tab.id);
-                  setSearchQuery("");
-                  setFilterCategory("ALL");
-                }}
-                className={`shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                  isActive
-                    ? "bg-[#5D87FF] text-white shadow-xs"
-                    : "bg-[#F4F6F9] text-[#5A6A85] hover:bg-[#EAEFF4] hover:text-[#2A3547]"
-                }`}
-              >
-                {getTabIcon(tab.id, "w-3.5 h-3.5")}
-                <span className="whitespace-nowrap">{tab.label}</span>
-                <span
-                  style={{ padding: "1px 6px" }}
-                  className={`rounded-full text-[10px] font-bold ${
-                    isActive
-                      ? "bg-white/25 text-white"
-                      : "bg-[#EAEFF4] text-[#7C8FAC]"
-                  }`}
-                >
-                  {count}
-                </span>
-              </button>
-            );
-          })}
         </div>
 
         {/* Desktop Enterprise Header Bar */}
@@ -1469,7 +1474,7 @@ export default function AdminDashboardPage() {
 
         {/* Main Workspace Container */}
         <div
-          className="flex-1 flex flex-col gap-3.5 sm:gap-4 max-w-[1560px] w-full mx-auto px-3 sm:px-6 sm:py-5 lg:px-8 lg:py-6"
+          className="flex-1 flex flex-col gap-3 sm:gap-4 max-w-[1560px] w-full mx-auto px-2.5 sm:px-6 py-2.5 sm:py-5 lg:px-8 lg:py-6"
         >
           {/* ============================================================
               EXECUTIVE KPI SUMMARY ROW (Desktop: 4 Cards, Mobile: Sleek 1-Line Chip)
@@ -1582,12 +1587,12 @@ export default function AdminDashboardPage() {
           </div>
 
           {/* Mobile Sleek 1-Line Stat Chip */}
-          <div className="md:hidden flex items-center justify-between bg-white px-3.5 py-2.5 rounded-xl border border-[#EAEFF4] shadow-xs">
+          <div className="md:hidden flex items-center justify-between bg-white px-3 py-2 rounded-xl border border-[#EAEFF4] shadow-xs">
             <div className="flex items-center gap-2 min-w-0">
               <span className="w-2 h-2 rounded-full bg-[#5D87FF] shrink-0" />
               <span className="font-bold text-xs text-[#2A3547] truncate">{activeTabMeta.label}</span>
             </div>
-            <span className="text-[11px] font-bold text-[#5D87FF] bg-[#ECF2FF] px-2.5 py-0.5 rounded-full shrink-0">
+            <span className="text-[10.5px] font-bold text-[#5D87FF] bg-[#ECF2FF] px-2.5 py-0.5 rounded-full shrink-0">
               {getTabCount(activeTab)} items
             </span>
           </div>
@@ -1597,8 +1602,7 @@ export default function AdminDashboardPage() {
               ============================================================ */}
           {activeTab !== "spotlight" && (
             <div
-              style={{ padding: "10px 16px" }}
-              className="bg-white rounded-xl border border-[#EAEFF4] shadow-[0_2px_12px_rgba(145,158,171,0.05)] flex flex-col lg:flex-row lg:items-center justify-between gap-3"
+              className="bg-white rounded-xl border border-[#EAEFF4] shadow-[0_2px_12px_rgba(145,158,171,0.05)] p-2.5 sm:px-4 sm:py-3 flex flex-col lg:flex-row lg:items-center justify-between gap-2.5 sm:gap-3"
             >
               {/* Search Box with non-overlapping icon */}
               <div className="relative w-full lg:w-80">
@@ -1628,8 +1632,7 @@ export default function AdminDashboardPage() {
               {/* Category Filter Pills for Gallery */}
               {activeTab === "gallery" && (
                 <div
-                  style={{ padding: "5px" }}
-                  className="flex items-center gap-1.5 bg-[#F4F7FE] rounded-xl border border-[#EAEFF4] overflow-x-auto no-scrollbar"
+                  className="flex items-center gap-1.5 p-1 bg-[#F4F7FE] rounded-xl border border-[#EAEFF4] overflow-x-auto no-scrollbar"
                 >
                   {[
                     "ALL",
@@ -1660,8 +1663,7 @@ export default function AdminDashboardPage() {
               {/* Year Filter Pills for Activities */}
               {activeTab === "activities" && (
                 <div
-                  style={{ padding: "5px" }}
-                  className="flex items-center gap-1.5 bg-[#F4F7FE] rounded-xl border border-[#EAEFF4] overflow-x-auto no-scrollbar"
+                  className="flex items-center gap-1.5 p-1 bg-[#F4F7FE] rounded-xl border border-[#EAEFF4] overflow-x-auto no-scrollbar"
                 >
                   {["ALL", "2026", "2025"].map((yr) => {
                     const isSelected = filterCategory === yr;
@@ -1684,10 +1686,10 @@ export default function AdminDashboardPage() {
           )}
 
           {/* ============================================================
-              TAB 1: VISUAL ARCHIVE GALLERY GRID
+              TAB 1: VISUAL ARCHIVE GALLERY GRID (Mobile: 2 Cards / Column)
               ============================================================ */}
           {activeTab === "gallery" && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5">
+            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-3.5">
               {galleryList
                 .filter((item) => {
                   if (
@@ -1715,23 +1717,23 @@ export default function AdminDashboardPage() {
                         alt={item.title}
                         fill
                         className="object-cover group-hover:scale-105 transition-transform duration-500"
-                        sizes="400px"
+                        sizes="(max-width: 640px) 50vw, 400px"
                         unoptimized
                         loading="lazy"
                       />
                       <div
-                        style={{ top: "8px", left: "8px" }}
+                        style={{ top: "6px", left: "6px" }}
                         className="cms-badge absolute bg-white/95 text-[#5D87FF] shadow-xs"
                       >
                         {item.category}
                       </div>
                       <div
                         style={{
-                          bottom: "8px",
-                          right: "8px",
-                          padding: "3px 8px",
+                          bottom: "6px",
+                          right: "6px",
+                          padding: "2px 5px",
                         }}
-                        className="absolute rounded-md bg-[#2A3547]/85 backdrop-blur-xs text-white text-[9.5px] font-mono font-semibold"
+                        className="absolute rounded bg-[#2A3547]/85 backdrop-blur-xs text-white text-[8px] sm:text-[9.5px] font-mono font-semibold"
                       >
                         {item.filmStock}
                       </div>
@@ -1739,39 +1741,38 @@ export default function AdminDashboardPage() {
 
                     <div className="cms-card-body">
                       <div>
-                        <h3 className="text-[13.5px] font-bold text-[#2A3547] group-hover:text-[#5D87FF] transition-colors line-clamp-1">
+                        <h3 className="text-xs sm:text-[13.5px] font-bold text-[#2A3547] group-hover:text-[#5D87FF] transition-colors line-clamp-1 leading-snug">
                           {item.title}
                         </h3>
                         <p
-                          style={{ marginTop: "2px" }}
-                          className="text-[11.5px] font-semibold text-[#5D87FF]"
+                          style={{ marginTop: "1px" }}
+                          className="text-[10px] sm:text-[11.5px] font-semibold text-[#5D87FF] truncate"
                         >
                           By {item.photographer}
                         </p>
                         <p
-                          style={{ marginTop: "6px" }}
-                          className="text-[11px] text-[#7C8FAC] line-clamp-2 leading-relaxed min-h-[32px]"
+                          style={{ marginTop: "3px" }}
+                          className="text-[9.5px] sm:text-[11px] text-[#7C8FAC] line-clamp-1 sm:line-clamp-2 leading-tight sm:leading-relaxed"
                         >
                           {item.description}
                         </p>
                       </div>
 
                       <div
-                        style={{ marginTop: "12px", paddingTop: "10px" }}
-                        className="border-t border-[#EAEFF4] flex items-center justify-between gap-1.5"
+                        style={{ marginTop: "8px", paddingTop: "6px" }}
+                        className="border-t border-[#EAEFF4] flex items-center justify-between gap-1"
                       >
                         <span
-                          style={{ padding: "3px 6px" }}
-                          className="font-mono text-[10px] text-[#5A6A85] bg-[#F4F7FE] rounded truncate max-w-[120px]"
+                          className="hidden sm:inline-block font-mono text-[9px] text-[#5A6A85] bg-[#F4F7FE] rounded truncate px-1.5 py-0.5 max-w-[80px]"
                         >
                           {item.exif || item.location}
                         </span>
 
-                        <div className="flex items-center gap-1.5 shrink-0">
+                        <div className="flex items-center gap-1 sm:gap-1.5 w-full sm:w-auto justify-between sm:justify-end">
                           <button
                             type="button"
                             onClick={() => handleOpenEditModal(item)}
-                            className="cms-action-edit"
+                            className="cms-action-edit flex-1 sm:flex-none text-center"
                           >
                             Edit
                           </button>
@@ -1780,7 +1781,7 @@ export default function AdminDashboardPage() {
                             onClick={() =>
                               handleDeleteItem(item._id || item.id || "")
                             }
-                            className="cms-action-delete"
+                            className="cms-action-delete flex-1 sm:flex-none text-center"
                           >
                             Delete
                           </button>
@@ -1817,24 +1818,24 @@ export default function AdminDashboardPage() {
                 </span>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3.5">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-2 sm:gap-3.5">
                 {heroReelList.map((item, idx) => (
                   <div
                     key={item._id || item.frameCode || idx}
                     className="cms-card"
                   >
-                    <div className="relative aspect-[3/4] max-h-[220px] w-full bg-[#F1F5F9] overflow-hidden">
+                    <div className="relative aspect-[3/4] max-h-[190px] sm:max-h-[220px] w-full bg-[#F1F5F9] overflow-hidden">
                       <Image
                         src={item.src || (item as any).img || "/images/og-image.jpg"}
                         alt={item.title}
                         fill
                         className="object-cover"
-                        sizes="300px"
+                        sizes="(max-width: 640px) 50vw, 300px"
                         unoptimized
                         loading="lazy"
                       />
                       <div
-                        style={{ top: "8px", left: "8px" }}
+                        style={{ top: "6px", left: "6px" }}
                         className="cms-badge absolute bg-[#5D87FF] text-white shadow-xs"
                       >
                         {item.frameCode}
@@ -1847,8 +1848,8 @@ export default function AdminDashboardPage() {
                           {item.title}
                         </h3>
                         <p
-                          style={{ marginTop: "2px" }}
-                          className="font-mono text-[10.5px] text-[#7C8FAC]"
+                          style={{ marginTop: "1px" }}
+                          className="font-mono text-[9.5px] sm:text-[10.5px] text-[#7C8FAC] truncate"
                         >
                           {item.exif}
                         </p>
@@ -1857,8 +1858,8 @@ export default function AdminDashboardPage() {
                       <button
                         type="button"
                         onClick={() => handleOpenEditModal(item)}
-                        style={{ marginTop: "10px", width: "100%" }}
-                        className="cms-action-edit justify-center"
+                        style={{ marginTop: "8px", width: "100%" }}
+                        className="cms-action-edit justify-center text-center"
                       >
                         Change Frame
                       </button>
@@ -1894,7 +1895,7 @@ export default function AdminDashboardPage() {
                 </span>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3.5">
                 {pullInList.map((item, idx) => (
                   <div key={item._id || item.code || idx} className="cms-card">
                     <div className="relative aspect-[16/10] w-full bg-[#F1F5F9] overflow-hidden">
@@ -1903,12 +1904,12 @@ export default function AdminDashboardPage() {
                         alt={item.title}
                         fill
                         className="object-cover"
-                        sizes="400px"
+                        sizes="(max-width: 640px) 50vw, 400px"
                         unoptimized
                         loading="lazy"
                       />
                       <div
-                        style={{ top: "8px", left: "8px" }}
+                        style={{ top: "6px", left: "6px" }}
                         className="cms-badge absolute bg-[#5D87FF] text-white shadow-xs"
                       >
                         {item.code}
@@ -1917,34 +1918,34 @@ export default function AdminDashboardPage() {
 
                     <div className="cms-card-body">
                       <div>
-                        <h3 className="text-[13.5px] font-bold text-[#2A3547]">
+                        <h3 className="text-xs sm:text-[13.5px] font-bold text-[#2A3547] line-clamp-1 leading-snug">
                           {item.title}
                         </h3>
                         <p
-                          style={{ marginTop: "2px" }}
-                          className="text-[11.5px] font-semibold text-[#5D87FF]"
+                          style={{ marginTop: "1px" }}
+                          className="text-[10px] sm:text-[11.5px] font-semibold text-[#5D87FF] truncate"
                         >
                           {item.subTitle}
                         </p>
                         <p
-                          style={{ marginTop: "6px" }}
-                          className="text-[11px] text-[#7C8FAC] italic line-clamp-2"
+                          style={{ marginTop: "3px" }}
+                          className="text-[9.5px] sm:text-[11px] text-[#7C8FAC] italic line-clamp-1 sm:line-clamp-2 leading-tight"
                         >
                           &ldquo;{item.headline}&rdquo;
                         </p>
                       </div>
 
                       <div
-                        style={{ marginTop: "12px", paddingTop: "10px" }}
+                        style={{ marginTop: "8px", paddingTop: "6px" }}
                         className="border-t border-[#EAEFF4] flex items-center justify-between"
                       >
-                        <span className="font-mono text-[10.5px] text-[#7C8FAC]">
+                        <span className="hidden sm:inline-block font-mono text-[9px] sm:text-[10.5px] text-[#7C8FAC] truncate max-w-[80px]">
                           {item.exif}
                         </span>
                         <button
                           type="button"
                           onClick={() => handleOpenEditModal(item)}
-                          className="cms-action-edit"
+                          className="cms-action-edit w-full sm:w-auto text-center justify-center"
                         >
                           Edit
                         </button>
@@ -1960,7 +1961,7 @@ export default function AdminDashboardPage() {
               TAB 4: COMMITTEE ROSTER
               ============================================================ */}
           {activeTab === "committee" && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3.5">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 sm:gap-3.5">
               {committeeList
                 .filter((m) => {
                   if (!searchQuery) return true;
@@ -1979,12 +1980,12 @@ export default function AdminDashboardPage() {
                         alt={m.name}
                         fill
                         className="object-cover"
-                        sizes="300px"
+                        sizes="(max-width: 640px) 50vw, 300px"
                         unoptimized
                         loading="lazy"
                       />
                       <div
-                        style={{ top: "8px", left: "8px" }}
+                        style={{ top: "6px", left: "6px" }}
                         className="cms-badge absolute bg-white/95 text-[#5D87FF] shadow-xs"
                       >
                         {m.tier}
@@ -1993,19 +1994,19 @@ export default function AdminDashboardPage() {
 
                     <div className="cms-card-body">
                       <div>
-                        <h3 className="text-[13px] font-bold text-[#2A3547] line-clamp-1">
+                        <h3 className="text-xs sm:text-[13px] font-bold text-[#2A3547] line-clamp-1 leading-snug">
                           {m.name}
                         </h3>
                         <p
-                          style={{ marginTop: "2px" }}
-                          className="text-[11px] font-semibold text-[#5D87FF]"
+                          style={{ marginTop: "1px" }}
+                          className="text-[10px] sm:text-[11px] font-semibold text-[#5D87FF] truncate"
                         >
                           {m.role}
                         </p>
                         {m.dept && (
                           <p
-                            style={{ marginTop: "2px" }}
-                            className="text-[10px] text-[#7C8FAC] line-clamp-1"
+                            style={{ marginTop: "1px" }}
+                            className="text-[9px] sm:text-[10px] text-[#7C8FAC] line-clamp-1 truncate"
                           >
                             {m.dept}
                           </p>
@@ -2013,8 +2014,8 @@ export default function AdminDashboardPage() {
                       </div>
 
                       <div
-                        style={{ marginTop: "10px", paddingTop: "8px" }}
-                        className="border-t border-[#EAEFF4] flex items-center gap-1.5"
+                        style={{ marginTop: "8px", paddingTop: "6px" }}
+                        className="border-t border-[#EAEFF4] flex items-center gap-1 sm:gap-1.5"
                       >
                         <button
                           type="button"
@@ -2041,7 +2042,7 @@ export default function AdminDashboardPage() {
               TAB 5: ACTIVITIES & TIMELINE
               ============================================================ */}
           {activeTab === "activities" && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5">
+            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-3.5">
               {activityList
                 .filter((ev) => {
                   if (filterCategory !== "ALL" && ev.year !== filterCategory)
@@ -2063,31 +2064,31 @@ export default function AdminDashboardPage() {
                         alt={ev.title}
                         fill
                         className="object-cover"
-                        sizes="400px"
+                        sizes="(max-width: 640px) 50vw, 400px"
                         unoptimized
                         loading="lazy"
                       />
                       <div
-                        style={{ top: "8px", left: "8px" }}
-                        className="absolute flex items-center gap-1.5"
+                        style={{ top: "6px", left: "6px" }}
+                        className="absolute flex items-center gap-1"
                       >
                         <span className="cms-badge bg-white/95 text-[#5D87FF] shadow-xs">
                           {ev.category} · {ev.year}
                         </span>
                         {ev.isUpcoming && (
-                          <span className="cms-badge bg-[#E6FFFA] text-[#13DEB9] shadow-xs flex items-center gap-1">
+                          <span className="cms-badge bg-[#E6FFFA] text-[#13DEB9] shadow-xs hidden sm:inline-flex items-center gap-1">
                             <span className="w-1.5 h-1.5 rounded-full bg-[#13DEB9] animate-pulse" />
-                            UPCOMING
+                            LIVE
                           </span>
                         )}
                       </div>
                       <div
                         style={{
-                          bottom: "8px",
-                          right: "8px",
-                          padding: "3px 8px",
+                          bottom: "6px",
+                          right: "6px",
+                          padding: "2px 5px",
                         }}
-                        className="absolute rounded-md bg-white/95 text-[10px] font-bold text-[#2A3547] shadow-xs"
+                        className="absolute rounded bg-white/95 text-[8.5px] sm:text-[10px] font-bold text-[#2A3547] shadow-xs"
                       >
                         {ev.date}
                       </div>
@@ -2095,48 +2096,48 @@ export default function AdminDashboardPage() {
 
                     <div className="cms-card-body">
                       <div>
-                        <span className="text-[10px] tracking-wider text-[#7C8FAC] uppercase font-bold block">
+                        <span className="text-[8.5px] sm:text-[10px] tracking-wider text-[#7C8FAC] uppercase font-bold block truncate">
                           {ev.shortTitle}
                         </span>
                         <h3
-                          style={{ marginTop: "2px" }}
-                          className="text-[13.5px] font-bold text-[#2A3547]"
+                          style={{ marginTop: "1px" }}
+                          className="text-xs sm:text-[13.5px] font-bold text-[#2A3547] line-clamp-1 leading-snug"
                         >
                           {ev.title}
                         </h3>
                         <p
-                          style={{ marginTop: "2px" }}
-                          className="text-[11.5px] font-semibold text-[#5D87FF]"
+                          style={{ marginTop: "1px" }}
+                          className="text-[10px] sm:text-[11.5px] font-semibold text-[#5D87FF] truncate"
                         >
                           {ev.location}
                         </p>
                         <p
-                          style={{ marginTop: "6px" }}
-                          className="text-[11px] text-[#7C8FAC] line-clamp-2 leading-relaxed"
+                          style={{ marginTop: "3px" }}
+                          className="text-[9.5px] sm:text-[11px] text-[#7C8FAC] line-clamp-1 sm:line-clamp-2 leading-tight sm:leading-relaxed"
                         >
                           {ev.description}
                         </p>
                       </div>
 
                       <div
-                        style={{ marginTop: "12px", paddingTop: "10px" }}
-                        className="border-t border-[#EAEFF4] flex items-center justify-between"
+                        style={{ marginTop: "8px", paddingTop: "6px" }}
+                        className="border-t border-[#EAEFF4] flex items-center justify-between gap-1"
                       >
-                        <span className="font-mono text-[10.5px] text-[#7C8FAC]">
+                        <span className="hidden sm:inline-block font-mono text-[9px] sm:text-[10.5px] text-[#7C8FAC] truncate max-w-[80px]">
                           {ev.filmStock || ev.exif}
                         </span>
-                        <div className="flex items-center gap-1.5">
+                        <div className="flex items-center gap-1 sm:gap-1.5 w-full sm:w-auto justify-between sm:justify-end">
                           <button
                             type="button"
                             onClick={() => handleOpenEditModal(ev)}
-                            className="cms-action-edit"
+                            className="cms-action-edit flex-1 sm:flex-none text-center"
                           >
                             Edit
                           </button>
                           <button
                             type="button"
                             onClick={() => handleDeleteItem(ev._id || "")}
-                            className="cms-action-delete"
+                            className="cms-action-delete flex-1 sm:flex-none text-center"
                           >
                             Delete
                           </button>
@@ -2174,10 +2175,10 @@ export default function AdminDashboardPage() {
                 </span>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3.5">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-2 sm:gap-3.5">
                 {reelsList.map((reel, idx) => (
                   <div key={reel._id || idx} className="cms-card">
-                    <div className="relative aspect-[9/16] max-h-[250px] w-full bg-[#0F172A] flex items-center justify-center overflow-hidden">
+                    <div className="relative aspect-[9/16] max-h-[190px] sm:max-h-[250px] w-full bg-[#0F172A] flex items-center justify-center overflow-hidden">
                       <video
                         src={reel.videoSrc}
                         muted
@@ -2187,7 +2188,7 @@ export default function AdminDashboardPage() {
                         className="w-full h-full object-cover"
                       />
                       <div
-                        style={{ top: "8px", left: "8px" }}
+                        style={{ top: "6px", left: "6px" }}
                         className="cms-badge absolute bg-white/95 text-[#5D87FF] shadow-xs"
                       >
                         REEL #{idx + 1}
@@ -2196,20 +2197,20 @@ export default function AdminDashboardPage() {
 
                     <div className="cms-card-body">
                       <div>
-                        <p className="text-[9.5px] font-bold text-[#7C8FAC] uppercase">
+                        <p className="text-[8.5px] sm:text-[9.5px] font-bold text-[#7C8FAC] uppercase truncate">
                           Creator
                         </p>
                         <h3
-                          style={{ marginTop: "2px" }}
-                          className="text-xs font-bold text-[#2A3547] line-clamp-1"
+                          style={{ marginTop: "1px" }}
+                          className="text-xs font-bold text-[#2A3547] line-clamp-1 leading-snug"
                         >
                           {reel.photographer}
                         </h3>
                       </div>
 
                       <div
-                        style={{ marginTop: "10px", paddingTop: "8px" }}
-                        className="border-t border-[#EAEFF4] flex items-center gap-1.5"
+                        style={{ marginTop: "8px", paddingTop: "6px" }}
+                        className="border-t border-[#EAEFF4] flex items-center gap-1"
                       >
                         <button
                           type="button"
