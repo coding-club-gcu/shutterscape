@@ -10,117 +10,19 @@ import React, {
 } from "react";
 import Image from "next/image";
 import { MOBILE_HERO_MEDIA } from "@/config/mobileHeroMedia";
+import {
+  INITIAL_GALLERY,
+  INITIAL_ACTIVITIES,
+  INITIAL_COMMITTEE,
+  INITIAL_REELS,
+  INITIAL_SPOTLIGHT,
+} from "@/data/initialClubData";
 
 // ==========================================
-// FALLBACK DATASETS (Synced with Live APIs)
+// FALLBACK DATASETS (Synced with Live GCU Club Data)
 // ==========================================
-const FALLBACK_GALLERY = [
-  {
-    id: "g-01",
-    title: "Monsoon Over Brahmaputra",
-    category: "DOCUMENTARY",
-    photographer: "Riky",
-    location: "Brahmaputra Riverfront",
-    filmStock: "KODAK TRI-X 400",
-    exif: "35MM · F/2.0",
-    src: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=800&q=75",
-    description:
-      "Golden-hour riverfront documentation capturing ferry silhouettes along the Brahmaputra.",
-  },
-  {
-    id: "g-02",
-    title: "Chiaroscuro Gaze",
-    category: "PORTRAITURE",
-    photographer: "Pratyashi P. Das",
-    location: "GCU Studio Lab",
-    filmStock: "KODAK PORTRA 800",
-    exif: "85MM · F/1.4",
-    src: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=800&q=75",
-    description:
-      "High-contrast Xenon strobe portrait exploring deep tonal gradients.",
-  },
-  {
-    id: "g-03",
-    title: "Himalayan Alpenglow",
-    category: "LANDSCAPE",
-    photographer: "Akash Boro",
-    location: "Eastern Himalayan Ridge",
-    filmStock: "FUJIFILM VELVIA 50",
-    exif: "70MM · F/4.0",
-    src: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=75",
-    description:
-      "Dawn mountain exposure capturing atmospheric cloud compression.",
-  },
-  {
-    id: "g-04",
-    title: "Brutalist Geometry",
-    category: "ARCHITECTURE",
-    photographer: "Aparna Mishra",
-    location: "GCU Campus Complex",
-    filmStock: "ILFORD HP5 PLUS",
-    exif: "24MM · F/8.0",
-    src: "https://images.unsplash.com/photo-1449844908441-8829872d2607?w=800&q=75",
-    description:
-      "Architectural study dissecting concrete planes and warm afternoon shadows across campus.",
-  },
-  {
-    id: "g-05",
-    title: "Midnight Neon Drift",
-    category: "STREET",
-    photographer: "Tiku Sarkar",
-    location: "Paltan Bazaar By-lanes",
-    filmStock: "CINESTILL 800T",
-    exif: "50MM · F/1.4",
-    src: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=800&q=75",
-    description:
-      "Ambient night capture harnessing the tungsten halation of Cinestill.",
-  },
-  {
-    id: "g-06",
-    title: "Optics & Refraction",
-    category: "EXPERIMENTAL",
-    photographer: "Bituparna",
-    location: "GCU Optics Clinic",
-    filmStock: "KODAK EKTAR 100",
-    exif: "105MM · F/2.8",
-    src: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=75",
-    description:
-      "Extreme close-up examining manual lens aperture blades and glass elements.",
-  },
-];
-
-const FALLBACK_REELS = [
-  {
-    id: "01",
-    photographer: "World Photography Day",
-    videoSrc: "/api/media/6adf9397d782e64ad5ebca9a",
-  },
-  {
-    id: "02",
-    photographer: "Glimpse of Grooming Club’s Ramp Walk",
-    videoSrc: "/api/media/6ade6c0a40346d3181c85f3a",
-  },
-  {
-    id: "03",
-    photographer: "Wall Painting",
-    videoSrc: "/api/media/6adf48963c63e8ae4ff0a9d7",
-  },
-  {
-    id: "04",
-    photographer: "Photography Workshop ",
-    videoSrc: "/api/media/6adf48cd3c63e8ae4ff0a9d8",
-  },
-  {
-    id: "05",
-    photographer: "A New Beginning",
-    videoSrc: "/api/media/6adf8b6180149ddb913bffa9",
-  },
-  {
-    id: "06",
-    photographer: "Magic of Filmmaking",
-    videoSrc: "/api/media/6adf8b8e3b59d4ea46c821f6",
-  },
-];
+const FALLBACK_GALLERY = INITIAL_GALLERY;
+const FALLBACK_REELS = INITIAL_REELS;
 
 function getReelInitials(name: string) {
   if (!name) return "SS";
@@ -139,7 +41,7 @@ function getBaseLikes(idStr: string, idx: number, apiLikes?: number): number {
 }
 
 // Default Spotlight Data (Synced with Admin `/api/spotlight`)
-const FALLBACK_SPOTLIGHT = {
+const FALLBACK_SPOTLIGHT = (INITIAL_SPOTLIGHT as any) || {
   upcoming: {
     id: "SPOT-UPCOMING-01",
     title: "Brahmaputra Heritage Photowalk 4.0",
@@ -150,7 +52,7 @@ const FALLBACK_SPOTLIGHT = {
     ).toISOString(),
     location: "Riverfront, Guwahati",
     filmStock: "KODAK PORTRA 400",
-    img: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=75",
+    img: "/api/media/6ade74822b808e482f8eb5d7",
     description:
       "Golden-hour riverfront expedition capturing ferry silhouettes, heritage ghats, and twilight reflections with live framing critiques.",
     ctaText: "JOIN UPCOMING EVENT",
@@ -165,202 +67,15 @@ const FALLBACK_SPOTLIGHT = {
     ).toISOString(),
     location: "GCU Media Lab, Azara",
     filmStock: "GODEX AD600 PRO · 35MM",
-    img: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=75",
+    img: "/api/media/6ade74822b808e482f8eb5da",
     description:
       "Live hands-on studio session exploring high-speed Xenon flash choreography, Chiaroscuro portrait lighting, and manual optics.",
     ctaText: "JOIN LIVE SESSION NOW",
   },
 };
 
-const FALLBACK_ACTIVITIES = [
-  {
-    id: "ACT-26-01",
-    year: "2026",
-    shortTitle: "BRAHMAPUTRA 4.0",
-    title: "Brahmaputra Heritage Photowalk 4.0",
-    category: "PHOTOWALK",
-    date: "NOV 14, 2026",
-    duration: "1 DAY EXPEDITION",
-    location: "Riverfront, Guwahati",
-    exif: "35MM · F/2.0 · 1/1000S",
-    filmStock: "KODAK PORTRA 400",
-    img: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=75",
-    description:
-      "Golden-hour riverfront documentation exploring ferry silhouettes, old ghats, and twilight reflections along the Brahmaputra with live mentor framing critiques.",
-    isUpcoming: true,
-  },
-  {
-    id: "ACT-26-02",
-    year: "2026",
-    shortTitle: "XENON STROBE LAB",
-    title: "Mastering Manual Optics & Xenon Strobe",
-    category: "WORKSHOP",
-    date: "NOV 28, 2026",
-    duration: "2 DAYS LAB CLINIC",
-    location: "GCU Media Lab",
-    exif: "85MM · F/1.4 · 1/250S",
-    filmStock: "ILFORD HP5 PLUS",
-    img: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=75",
-    description:
-      "Hands-on technical clinic covering manual aperture control, high-speed sync Xenon flash choreography, and Chiaroscuro portrait lighting setups.",
-    isUpcoming: true,
-  },
-  {
-    id: "ACT-26-03",
-    year: "2026",
-    shortTitle: "FRAMES BEYOND TIME",
-    title: "Frames Beyond Time — Annual Exhibition",
-    category: "EXHIBITION",
-    date: "AUG 22, 2026",
-    duration: "3 DAYS SHOWCASE",
-    location: "GCU Central Atrium",
-    exif: "50MM · F/2.8 · 1/500S",
-    filmStock: "KODAK VISION3 500T",
-    img: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=800&q=75",
-    description:
-      "Curated physical print showcase featuring 60+ archival photographs, contact sheets, and visual essays captured by Girijananda Chowdhury University students.",
-    isUpcoming: false,
-  },
-  {
-    id: "ACT-25-01",
-    year: "2025",
-    shortTitle: "CAMPUS NOCTURNES",
-    title: "Campus Nocturnes — Night Photography",
-    category: "COMPETITION",
-    date: "DEC 12, 2025",
-    duration: "NIGHT MARATHON",
-    location: "GCU Main Campus",
-    exif: "14MM · F/2.8 · 15S",
-    filmStock: "KODAK EKTAR 100",
-    img: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&q=75",
-    description:
-      "Late-night practical challenge exploring long-exposure light trails, astrophotography framing, and tungsten architectural silhouettes across campus.",
-    isUpcoming: false,
-  },
-];
-
-const FALLBACK_COMMITTEE = [
-  {
-    name: "Dr. Sangeeta Das",
-    role: "Coordinator",
-    tier: "MENTOR",
-    dept: "Dept. of Mechanical Engineering",
-    bio: "Guides ShutterScape's annual exhibitions, inter-university visual symposia, and archival documentation initiatives across GCU.",
-    img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=75&w=600&auto=format&fit=crop",
-  },
-  {
-    name: "Dr. Barsha Chhetri",
-    role: "Co-Coordinator",
-    tier: "MENTOR",
-    dept: "Assistant Professor & Head (i/c) Dept. of Education",
-    bio: "Mentors student storytellers in visual literacy, cultural documentation, and curatorial ethics at Girijananda Chowdhury University.",
-    img: "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=75&w=600&auto=format&fit=crop",
-  },
-  {
-    name: "Uttama Purkayastha",
-    role: "President",
-    tier: "LEAD",
-    dept: "Executive Leadership · GCU",
-    bio: "Leads creative direction, campus-wide exhibitions, and visual archive curation for ShutterScape.",
-    img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=75&w=600&auto=format&fit=crop",
-  },
-  {
-    name: "Ikhyt De Neog",
-    role: "Vice-President",
-    tier: "LEAD",
-    dept: "Operations & Field Expeditions",
-    bio: "Coordinates outdoor heritage photowalks, technical lighting workshops, and inter-collegiate challenges.",
-    img: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=75&w=600&auto=format&fit=crop",
-  },
-  {
-    name: "Richita Sarma",
-    role: "Secretary",
-    tier: "LEAD",
-    dept: "Editorial & Archive Administration",
-    bio: "Oversees member onboarding, exhibition catalogs, and the preservation of student photographic plates.",
-    img: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=75&w=600&auto=format&fit=crop",
-  },
-  {
-    name: "Sohaib Hussain",
-    role: "Core Member",
-    tier: "CORE",
-    dept: "Documentary & Street Division",
-    bio: "Specializes in high-shutter action documentary and candid street narratives across Guwahati.",
-    img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=75&w=600&auto=format&fit=crop",
-  },
-  {
-    name: "Mahadananda Dutta",
-    role: "Core Member",
-    tier: "CORE",
-    dept: "Optics & Strobe Lead",
-    bio: "Focuses on studio strobe choreography, Chiaroscuro portraiture, and manual lens experimentation.",
-    img: "https://images.unsplash.com/photo-1488161628813-04466f872be2?q=75&w=600&auto=format&fit=crop",
-  },
-  {
-    name: "Manash Pratim Sarma",
-    role: "Core Member",
-    tier: "CORE",
-    dept: "Landscape & Expedition",
-    bio: "Documents alpine ridges, riverfront twilight, and ecological heritage throughout Assam.",
-    img: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=75&w=600&auto=format&fit=crop",
-  },
-  {
-    name: "Mubina Ahmed",
-    role: "Core Member",
-    tier: "CORE",
-    dept: "Curation & Print Design",
-    bio: "Manages exhibition sequencing, matte framing standards, and visual storytelling critiques.",
-    img: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=75&w=600&auto=format&fit=crop",
-  },
-  {
-    name: "Pratyush B. Choudhury",
-    role: "Core Member",
-    tier: "CORE",
-    dept: "Cinematography & Reels",
-    bio: "Directs vertical motion reels, color grading workflows, and behind-the-scenes event films.",
-    img: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=75&w=600&auto=format&fit=crop",
-  },
-  {
-    name: "Hiya Das",
-    role: "Core Member",
-    tier: "CORE",
-    dept: "Architectural & Spatial Study",
-    bio: "Explores brutalist geometry, symmetry, and natural shadow play across campus structures.",
-    img: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=75&w=600&auto=format&fit=crop",
-  },
-  {
-    name: "Dheemaan Deka",
-    role: "2023 // Co-Founder",
-    tier: "FOUNDER",
-    dept: "Founding Visionary",
-    bio: "Co-founded ShutterScape in 2023 to unite GCU's visual artists under a single creative collective.",
-    img: "https://images.unsplash.com/photo-1618077360395-f3068be8e001?q=75&w=600&auto=format&fit=crop",
-  },
-  {
-    name: "Subhrajyoti Goswami",
-    role: "2023 // Co-Founder",
-    tier: "FOUNDER",
-    dept: "Founding Architect",
-    bio: "Established the club's signature photowalk culture, darkroom critique sessions, and annual print exhibitions.",
-    img: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=75&w=600&auto=format&fit=crop",
-  },
-  {
-    name: "Gargi Medhi",
-    role: "Legacy Torchbearer",
-    tier: "LEGACY",
-    dept: "Alumni Mentorship Council",
-    bio: "Pioneered early portraiture symposia and continues to mentor incoming student photographers.",
-    img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=75&w=600&auto=format&fit=crop",
-  },
-  {
-    name: "Imran Farhat",
-    role: "Legacy Torchbearer",
-    tier: "LEGACY",
-    dept: "Nocturnal & Street Archive",
-    bio: "Known for low-light urban documentation and training junior members in manual exposure.",
-    img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=75&w=600&auto=format&fit=crop",
-  },
-];
+const FALLBACK_ACTIVITIES = INITIAL_ACTIVITIES;
+const FALLBACK_COMMITTEE = INITIAL_COMMITTEE;
 
 const MEMBER_CARD_BACKDROPS = [
   "#8CE99A", // Mint Studio Green
@@ -1111,10 +826,42 @@ const HalfWheelGalleryFan = React.memo(function HalfWheelGalleryFan({
 });
 
 export default function DesktopOilstainExperience() {
-  const [gallery, setGallery] = useState<any[]>(FALLBACK_GALLERY);
-  const [activities, setActivities] = useState<any[]>(FALLBACK_ACTIVITIES);
-  const [committee, setCommittee] = useState<any[]>(FALLBACK_COMMITTEE);
-  const [reels, setReels] = useState<any[]>(FALLBACK_REELS);
+  const [gallery, setGallery] = useState<any[]>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const cached = localStorage.getItem("ss_cache_gallery");
+        if (cached) return JSON.parse(cached);
+      } catch (e) {}
+    }
+    return FALLBACK_GALLERY;
+  });
+  const [activities, setActivities] = useState<any[]>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const cached = localStorage.getItem("ss_cache_activities");
+        if (cached) return JSON.parse(cached);
+      } catch (e) {}
+    }
+    return FALLBACK_ACTIVITIES;
+  });
+  const [committee, setCommittee] = useState<any[]>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const cached = localStorage.getItem("ss_cache_committee");
+        if (cached) return JSON.parse(cached);
+      } catch (e) {}
+    }
+    return FALLBACK_COMMITTEE;
+  });
+  const [reels, setReels] = useState<any[]>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const cached = localStorage.getItem("ss_cache_reels");
+        if (cached) return JSON.parse(cached);
+      } catch (e) {}
+    }
+    return FALLBACK_REELS;
+  });
   const [activeReelIdx, setActiveReelIdx] = useState<number>(0);
   const [activeAudioReelIdx, setActiveAudioReelIdx] = useState<number | null>(
     null
@@ -1499,10 +1246,12 @@ export default function DesktopOilstainExperience() {
     ]).then(([galRes, actRes, comRes, reelRes, spotRes]) => {
       if (galRes.status === "fulfilled" && galRes.value?.data?.length > 0) {
         setGallery(galRes.value.data);
+        try { localStorage.setItem("ss_cache_gallery", JSON.stringify(galRes.value.data)); } catch (e) {}
       }
       if (actRes.status === "fulfilled" && actRes.value?.data?.length > 0) {
         const actList = actRes.value.data;
         setActivities(actList);
+        try { localStorage.setItem("ss_cache_activities", JSON.stringify(actList)); } catch (e) {}
 
         const foundUpcoming = actList.find(
           (a: any) => a.spotlightType === "upcoming" || a.isUpcoming
@@ -1530,22 +1279,23 @@ export default function DesktopOilstainExperience() {
       }
       if (comRes.status === "fulfilled" && comRes.value?.data?.length > 0) {
         setCommittee(comRes.value.data);
+        try { localStorage.setItem("ss_cache_committee", JSON.stringify(comRes.value.data)); } catch (e) {}
       }
       if (reelRes.status === "fulfilled" && reelRes.value?.data?.length > 0) {
-        setReels(
-          reelRes.value.data.map((d: any, idx: number) => {
-            const def = FALLBACK_REELS[idx % FALLBACK_REELS.length];
-            const validSrc =
-              d.videoSrc && !d.videoSrc.startsWith("blob:")
-                ? d.videoSrc
-                : def.videoSrc;
-            return {
-              id: d._id || String(idx + 1).padStart(2, "0"),
-              photographer: d.photographer || def.photographer,
-              videoSrc: validSrc,
-            };
-          })
-        );
+        const mappedReels = reelRes.value.data.map((d: any, idx: number) => {
+          const def = FALLBACK_REELS[idx % FALLBACK_REELS.length];
+          const validSrc =
+            d.videoSrc && !d.videoSrc.startsWith("blob:")
+              ? d.videoSrc
+              : def.videoSrc;
+          return {
+            id: d._id || String(idx + 1).padStart(2, "0"),
+            photographer: d.photographer || def.photographer,
+            videoSrc: validSrc,
+          };
+        });
+        setReels(mappedReels);
+        try { localStorage.setItem("ss_cache_reels", JSON.stringify(mappedReels)); } catch (e) {}
       }
       if (spotRes.status === "fulfilled" && spotRes.value?.data) {
         const sData = spotRes.value.data;
@@ -2838,7 +2588,8 @@ export default function DesktopOilstainExperience() {
                   <img
                     src={
                       gallery[2]?.src ||
-                      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=75"
+                      FALLBACK_GALLERY[2]?.src ||
+                      "/api/media/6ade7bfe927760001b6fed1c"
                     }
                     alt="Polaroid 1"
                     className="w-full h-full object-cover saturate-[1.15]"
@@ -2871,7 +2622,8 @@ export default function DesktopOilstainExperience() {
                   <img
                     src={
                       gallery[0]?.src ||
-                      "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=800&q=75"
+                      FALLBACK_GALLERY[0]?.src ||
+                      "/api/media/6ade7b95927760001b6fed1b"
                     }
                     alt="Polaroid 2"
                     className="w-full h-full object-cover saturate-[1.15]"
@@ -2996,7 +2748,8 @@ export default function DesktopOilstainExperience() {
                     src={
                       gallery[1]?.src ||
                       gallery[0]?.src ||
-                      "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=800&q=75"
+                      FALLBACK_GALLERY[1]?.src ||
+                      "/api/media/6ade7c66d43c2f957e160ddd"
                     }
                     alt="Matted Print"
                     className="w-full h-full object-cover saturate-[1.12]"
@@ -3701,7 +3454,7 @@ export default function DesktopOilstainExperience() {
             src="/images/gcu-campus-sketch.jpg"
             onError={(e) => {
               (e.currentTarget as HTMLImageElement).src =
-                "https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=800&q=75";
+                "/api/media/6ade7c66d43c2f957e160ddd";
             }}
             alt="About ShutterScape"
             className="absolute inset-0 w-full h-full object-cover opacity-65"

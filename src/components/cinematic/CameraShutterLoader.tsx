@@ -18,9 +18,11 @@ const CRITICAL_IMAGE_ASSETS = [
   "/images/shutterscape-logo-cropped.png",
   "/images/gcu-logo-black-text.png",
   "/images/codenix-logo.png",
-  "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=800&q=75",
-  "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=75",
-  "https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=800&q=75",
+  "/api/media/6ade7b95927760001b6fed1b",
+  "/api/media/6ade7bfe927760001b6fed1c",
+  "/api/media/6ade7c66d43c2f957e160ddd",
+  "/api/media/6ade7dd4c134b1867ef53687",
+  "/api/media/6ade74822b808e482f8eb5d7",
 ];
 
 const CRITICAL_VIDEO_ASSETS = [
@@ -46,6 +48,19 @@ export default function CameraShutterLoader() {
 
   useEffect(() => {
     if (pathname?.startsWith("/admin")) return;
+
+    if (typeof window !== "undefined") {
+      try {
+        if (sessionStorage.getItem("shutter_loader_seen")) {
+          setDismissed(true);
+          (
+            window as unknown as { __shutterLoaderDismissed?: boolean }
+          ).__shutterLoaderDismissed = true;
+          window.dispatchEvent(new CustomEvent("shutterscape:loader-complete"));
+          return;
+        }
+      } catch {}
+    }
 
     // 0. Preload critical video & image assets in background while shutter is closed
     if (typeof window !== "undefined") {
@@ -121,6 +136,9 @@ export default function CameraShutterLoader() {
       onComplete: () => {
         setDismissed(true);
         if (typeof window !== "undefined") {
+          try {
+            sessionStorage.setItem("shutter_loader_seen", "1");
+          } catch {}
           (
             window as unknown as { __shutterLoaderDismissed?: boolean }
           ).__shutterLoaderDismissed = true;
@@ -317,7 +335,7 @@ export default function CameraShutterLoader() {
             src="/images/gcu-campus-sketch.jpg"
             onError={(e) => {
               (e.currentTarget as HTMLImageElement).src =
-                "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=800&q=75";
+                "/api/media/6ade7b95927760001b6fed1b";
             }}
             alt="Archive Frame Top"
             className="w-full h-full object-cover brightness-75"
@@ -368,7 +386,7 @@ export default function CameraShutterLoader() {
           className="relative overflow-hidden bg-[#111115] opacity-65 shrink-0"
         >
           <img
-            src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=75"
+            src="/api/media/6ade7bfe927760001b6fed1c"
             alt="Archive Frame Bottom"
             className="w-full h-full object-cover brightness-75"
           />

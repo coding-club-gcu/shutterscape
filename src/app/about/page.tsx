@@ -232,7 +232,7 @@ export default function AboutPage() {
       .then((r) => r.json())
       .then((res) => {
         if (res.data && res.data.length > 0) {
-          const cleanItem = (it: any, defaultImg = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800&auto=format&fit=crop") => ({
+          const cleanItem = (it: any, defaultImg = "/api/media/6ade6fad68a2619fc3bf056b") => ({
             ...it,
             img: it.img && !it.img.startsWith("blob:") ? it.img : defaultImg,
           });

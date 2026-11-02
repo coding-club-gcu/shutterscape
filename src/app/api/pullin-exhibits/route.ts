@@ -3,18 +3,10 @@ import { NextResponse } from "next/server";
 import mongoose from "mongoose";
 import { connectDB } from "@/lib/db";
 import { PullInExhibit } from "@/models/PullInExhibit";
+import { INITIAL_PULLIN } from "@/data/initialClubData";
 
-// Static fallback matching PullInScene.tsx
-const DEFAULT_EXHIBITS = [
-  { code: "EXHIBIT // 01A", title: "STREET & SHADOWS", subTitle: "Guwahati Dusk", src: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=85", exif: "f/2.8 · 1/500s · 35mm · ISO 400", focusDistance: "35MM // 1.2M", headline: "Capturing raw light.", subhead: "Spontaneous moments frozen in urban twilight.", order: 1 },
-  { code: "EXHIBIT // 02B", title: "BEHIND THE LENS", subTitle: "Human Portrait", src: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=800&q=85", exif: "f/1.4 · 1/1000s · 85mm · ISO 160", focusDistance: "85MM // 2.4M", headline: "Telling silent stories.", subhead: "The human gaze captured through vintage prime glass.", order: 2 },
-  { code: "EXHIBIT // 03C", title: "BRAHMAPUTRA MIST", subTitle: "Exhibition Landscape", src: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=800&q=85", exif: "f/4.0 · 1/250s · 24mm · ISO 100", focusDistance: "24MM // 3.8M", headline: "Chasing golden hours.", subhead: "Ethereal atmospheric depth along the river banks.", order: 3 },
-  { code: "EXHIBIT // 04D", title: "SILENT PEAKS", subTitle: "High Altitude", src: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&q=85", exif: "f/2.0 · 1/2000s · 50mm · ISO 200", focusDistance: "50MM // 5.0M", headline: "Reaching the heights.", subhead: "Towering silhouettes piercing morning cloud cover.", order: 4 },
-  { code: "EXHIBIT // 05E", title: "URBAN DRIFT", subTitle: "Street Monochrome", src: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=800&q=85", exif: "f/1.8 · 1/250s · 35mm · ISO 800", focusDistance: "35MM // 2.0M", headline: "Observing city cadence.", subhead: "High-contrast shadows cutting across crowded transit hubs.", order: 5 },
-  { code: "EXHIBIT // 06F", title: "ALPINE DAWN", subTitle: "Fine Art Landscape", src: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=85", exif: "f/5.6 · 1/125s · 70mm · ISO 64", focusDistance: "70MM // ∞", headline: "Waiting for first warmth.", subhead: "The razor line between pitch darkness and violet dawn.", order: 6 },
-  { code: "EXHIBIT // 07G", title: "RACK FOCUS CLINIC", subTitle: "Darkroom Studio", src: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=85", exif: "f/1.4 · 1/800s · 85mm · ISO 100", focusDistance: "85MM // 1.5M", headline: "Isolating the emotion.", subhead: "Deliberate shallow depth turning urban clutter into velvet bokeh.", order: 7 },
-  { code: "EXHIBIT // 08H", title: "MONOCHROME RIVERS", subTitle: "Archive Retrospective", src: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&q=85", exif: "f/8.0 · 1/60s · 20mm · ISO 50", focusDistance: "20MM // 0.8M", headline: "Freezing living heritage.", subhead: "Archival silver gelatin prints documenting Assam's river lifeline.", order: 8 },
-];
+// Synced with Live GCU Club Data (Instantaneous 0ms initial render)
+const DEFAULT_EXHIBITS = INITIAL_PULLIN;
 
 export async function GET() {
   try {

@@ -44,7 +44,7 @@ export default function UniversalFooter() {
         className="pointer-events-none absolute inset-0 z-0 overflow-hidden select-none opacity-[0.16] mix-blend-multiply filter blur-[2px] scale-105"
         style={{
           backgroundImage:
-            "url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1600&q=80')",
+            "url('/images/gcu-campus-anime.jpg')",
           backgroundSize: "cover",
           backgroundPosition: "center 65%",
           transform: "translate3d(0, 0, 0)",

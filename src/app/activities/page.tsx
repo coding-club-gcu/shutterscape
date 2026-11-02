@@ -7,6 +7,7 @@ import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import SmoothScroller from "@/components/cinematic/SmoothScroller";
+import { INITIAL_ACTIVITIES } from "@/data/initialClubData";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -39,361 +40,7 @@ interface ArchiveEvent {
   isUpcoming?: boolean;
 }
 
-const ARCHIVE_DATA: ArchiveEvent[] = [
-  // ==========================================
-  // WORKS '26 (2026 COLLECTION — 12 WORKS)
-  // ==========================================
-  {
-    id: "ACT-26-01",
-    year: "2026",
-    shortTitle: "BEYOND THE CLASSROOM",
-    title: "Beyond the Classroom — Shutterscape Photography Session",
-    category: "WORKSHOP",
-    date: "XXXX, 2026",
-    location: "College Classroom",
-    description:
-      "Step beyond the classroom and discover the art of photography, creativity, and visual storytelling. Connect with like-minded people, capture meaningful moments, and let your creative journey begin with Shutterscape.",
-    exif: "35MM · F/2.0 · 1/1000S",
-    filmStock: "KODAK PORTRA 400",
-    img: "/api/media/6ade723381e180affa193019",
-    isUpcoming: true,
-  },
-  {
-    id: "ACT-26-02",
-    year: "2026",
-    shortTitle: "WORLD PHOTOGRAPHY DAY",
-    title: "World Photography Day Exhibition 2026",
-    category: "EXHIBITION",
-    date: "XXXX 2026",
-    location: "College Campus",
-    description:
-      "Celebrating the art of seeing the world differently through the lens of photography. Explore inspiring captures, creative perspectives, and visual stories brought to life by passionate photographers at Shutterscape’s World Photography Day Exhibition 2026.",
-    exif: "85MM · F/1.4 · 1/250S",
-    filmStock: "ILFORD HP5 PLUS",
-    img: "/api/media/6ade724a83870de2ac5f3cf2",
-    isUpcoming: false,
-  },
-  {
-    id: "ACT-26-03",
-    year: "2026",
-    shortTitle: "EUPHUISM 2026",
-    title: "Euphuism Photography Event — Artsy's Lens",
-    category: "EXHIBITION",
-    date: "XXXX, 2026",
-    location: "College Campus",
-    description:
-      "A celebration of photography, creativity, and artistic expression through the lens of passionate photographers. Artsy's Lens brings together visual stories, unique perspectives, and a community united by the power of images.",
-    exif: "24MM · F/8.0 · 1/125S",
-    filmStock: "FUJIFILM VELVIA 50",
-    img: "/api/media/6ade73037d65124fe732c4ae",
-    isUpcoming: false,
-  },
-  {
-    id: "ACT-26-04",
-    year: "2026",
-    shortTitle: "FIRST SHUTTERSCAPE CHALLENGE",
-    title: "Your First Shutterscape Challenge",
-    category: "PHOTOWALK",
-    date: "XXXX, 2026",
-    location: "College Campus",
-    description:
-      "Explore the campus, embrace your assigned colour, and capture the world through your lens in this exciting 30-minute photography challenge. Team up, get creative, and showcase your best shots with Shutterscape!",
-    exif: "50MM · F/1.8 · 1/500S",
-    filmStock: "KODAK TRI-X 400",
-    img: "/api/media/6ade734e7d65124fe732c4af",
-    isUpcoming: false,
-  },
-  {
-    id: "ACT-26-05",
-    year: "2026",
-    shortTitle: "SMARTPHONE PHOTOGRAPHY WORKSHOP",
-    title: "Creative Smartphone Photography Workshop",
-    category: "WORKSHOP",
-    date: "XXXX 2026",
-    location: "Girijananda Chowdhury University, Guwahati",
-    description:
-      "Discover the art of smartphone photography through hands-on activities exploring light, composition, framing, and visual storytelling. Learn to see the world differently and turn everyday moments into creative photographs using the camera in your pocket.",
-    exif: "400MM · F/4.5 · 1/2000S",
-    filmStock: "KODAK EKTAR 100",
-    img: "/api/media/6ade73c583870de2ac5f3cf3",
-    isUpcoming: false,
-  },
-  {
-    id: "ACT-26-06",
-    year: "2026",
-    shortTitle: "CHIAROSCURO '26",
-    title: "Chiaroscuro — National Street Challenge",
-    category: "COMPETITION",
-    date: "APR 18, 2026",
-    location: "Inter-University Circuit",
-    description:
-      "48-hour visual storytelling challenge celebrating high-contrast urban geometry and human emotion. GCU took 1st place overall.",
-    exif: "24MM · F/4.0 · 1/1250S",
-    filmStock: "CINESTILL 800T",
-    img: "https://images.unsplash.com/photo-1449844908441-8829872d2607?w=1200&q=85",
-  },
-  {
-    id: "ACT-26-07",
-    year: "2026",
-    shortTitle: "AVIAN OPTICS STUDY",
-    title: "Mist, Avian Optics & Telephoto Study",
-    category: "PHOTOWALK",
-    date: "FEB 09, 2026",
-    location: "Deepor Beel Sanctuary",
-    description:
-      "Dawn expedition focusing on long-focal tracking, atmospheric compression, and conservation storytelling in Assam's wetlands.",
-    exif: "200MM · F/2.8 · 1/2000S",
-    filmStock: "FUJIFILM VELVIA 50",
-    img: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1200&q=85",
-  },
-  {
-    id: "ACT-26-08",
-    year: "2026",
-    shortTitle: "ALPENGLOW EXPEDITION",
-    title: "Eastern Himalayan Alpenglow Field Study",
-    category: "PHOTOWALK",
-    date: "NOV 28, 2026",
-    location: "Tawang High Ridge",
-    description:
-      "High-altitude winter documentation studying glacial light refraction, sub-zero battery endurance, and medium-format landscape framing.",
-    exif: "70MM · F/4.0 · 1/500S",
-    filmStock: "FUJIFILM PROVIA 100F",
-    img: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=85",
-    isUpcoming: true,
-  },
-  {
-    id: "ACT-26-09",
-    year: "2026",
-    shortTitle: "NEON RAIN DRIFT",
-    title: "Nocturnal Neon & Rain Reflections Clinic",
-    category: "WORKSHOP",
-    date: "SEP 19, 2026",
-    location: "Paltan Bazaar By-lanes",
-    description:
-      "Evening street clinic exploring tungsten halation, puddle symmetry, and fast-prime manual focusing under monsoon streetlights.",
-    exif: "35MM · F/1.4 · 1/60S",
-    filmStock: "CINESTILL 800T",
-    img: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=1200&q=85",
-  },
-  {
-    id: "ACT-26-10",
-    year: "2026",
-    shortTitle: "MONSOON SILHOUETTES",
-    title: "Monsoon Over Brahmaputra — Print Salon",
-    category: "EXHIBITION",
-    date: "JUL 11, 2026",
-    location: "GCU Art Gallery",
-    description:
-      "Mid-year documentary showcase highlighting life along the river islands, hand-printed on archival matte cotton rag.",
-    exif: "50MM · F/2.0 · 1/1000S",
-    filmStock: "KODAK TRI-X 400",
-    img: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=1200&q=85",
-  },
-  {
-    id: "ACT-26-11",
-    year: "2026",
-    shortTitle: "PRISM & DISPERSION",
-    title: "Vintage Uncoated Optics & Flare Lab",
-    category: "WORKSHOP",
-    date: "DEC 05, 2026",
-    location: "Darkroom Studio 02",
-    description:
-      "Experimental optical session testing 1960s Helios and Takumar prime lenses against direct studio backlighting.",
-    exif: "58MM · F/2.0 · 1/2000S",
-    filmStock: "CINESTILL 50D",
-    img: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1200&q=85",
-    isUpcoming: true,
-  },
-  {
-    id: "ACT-26-12",
-    year: "2026",
-    shortTitle: "UMANANDA TWILIGHT",
-    title: "Umananda Ghat Ferry Documentary Walk",
-    category: "PHOTOWALK",
-    date: "DEC 18, 2026",
-    location: "Umananda Ghat, Guwahati",
-    description:
-      "Winter dusk photowalk tracing commuter stories and golden horizon reflections aboard the last wooden river ferries.",
-    exif: "35MM · F/2.0 · 1/800S",
-    filmStock: "KODAK GOLD 200",
-    img: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1200&q=85",
-    isUpcoming: true,
-  },
-
-  // ==========================================
-  // WORKS '25 (2025 COLLECTION — 12 WORKS)
-  // ==========================================
-  {
-    id: "ACT-25-01",
-    year: "2025",
-    shortTitle: "CAMPUS NOCTURNES",
-    title: "Campus Nocturnes — Night Photography",
-    category: "WORKSHOP",
-    date: "DEC 12, 2025",
-    location: "GCU Main Campus",
-    description:
-      "Late-night practical session exploring long-exposure light trails, tripod stability, and low-light sensor performance.",
-    exif: "14MM · F/2.8 · 15S",
-    filmStock: "KODAK EKTAR 100",
-    img: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1200&q=85",
-  },
-  {
-    id: "ACT-25-02",
-    year: "2025",
-    shortTitle: "EMULSION DARKROOM",
-    title: "Monsoon Emulsion Lab & Darkroom Print",
-    category: "WORKSHOP",
-    date: "OCT 15, 2025",
-    location: "GCU Darkroom Studio",
-    description:
-      "Traditional silver-halide gelatin printing workshop with stop bath, fixer chemistry, and fiber paper development.",
-    exif: "50MM · F/1.8 · 1/125S",
-    filmStock: "ILFORD DELTA 100",
-    img: "https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=1200&q=85",
-    isUpcoming: true,
-  },
-  {
-    id: "ACT-25-03",
-    year: "2025",
-    shortTitle: "ECHOES OF VALLEY",
-    title: "Echoes of the Valley — Photo Marathon",
-    category: "COMPETITION",
-    date: "OCT 19, 2025",
-    location: "Kamrup Rural Circuit",
-    description:
-      "24-hour sprint capturing authentic rural landscapes, indigenous crafts, and artisan heritage along the Brahmaputra banks.",
-    exif: "28MM · F/2.8 · 1/800S",
-    filmStock: "KODAK TRI-X 400",
-    img: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1200&q=85",
-  },
-  {
-    id: "ACT-25-04",
-    year: "2025",
-    shortTitle: "CYANOTYPE SOLAR",
-    title: "Cyanotype & Sun-Printing Explorations",
-    category: "WORKSHOP",
-    date: "AUG 14, 2025",
-    location: "GCU Botanical Gardens",
-    description:
-      "Alternative photographic process workshop harnessing UV solar exposure on Prussian blue watercolor paper emulsion.",
-    exif: "35MM · F/4.0 · 1/500S",
-    filmStock: "CYANOTYPE EMULSION",
-    img: "https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?w=1200&q=85",
-  },
-  {
-    id: "ACT-25-05",
-    year: "2025",
-    shortTitle: "GAZE OF ASSAM",
-    title: "Gaze of Assam — Portraiture Symposium",
-    category: "EXHIBITION",
-    date: "MAY 05, 2025",
-    location: "Srimanta Kalakshetra",
-    description:
-      "Statewide inter-college exhibition presenting 80 curated environmental portraits capturing local luminaries and everyday heroes.",
-    exif: "85MM · F/1.2 · 1/1600S",
-    filmStock: "KODAK PORTRA 160",
-    img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=1200&q=85",
-  },
-  {
-    id: "ACT-25-06",
-    year: "2025",
-    shortTitle: "TEA ESTATE MIST",
-    title: "Upper Assam Tea Garden Dawn Walk",
-    category: "PHOTOWALK",
-    date: "NOV 08, 2025",
-    location: "Jorhat Heritage Estates",
-    description:
-      "Early-morning documentary walk through rolling emerald tea terraces enveloped in winter valley fog.",
-    exif: "24MM · F/5.6 · 1/400S",
-    filmStock: "FUJIFILM VELVIA 50",
-    img: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=1200&q=85",
-  },
-  {
-    id: "ACT-25-07",
-    year: "2025",
-    shortTitle: "URBAN SOLITUDE '25",
-    title: "Urban Solitude — Monsoon Street Salon",
-    category: "EXHIBITION",
-    date: "SEP 02, 2025",
-    location: "Panbazar Heritage Hub",
-    description:
-      "Black-and-white street photography exhibition examining quiet human moments amidst bustling evening traffic.",
-    exif: "50MM · F/1.8 · 1/125S",
-    filmStock: "ILFORD DELTA 3200",
-    img: "https://images.unsplash.com/photo-1477959858617-67f30bc75b82?w=1200&q=85",
-  },
-  {
-    id: "ACT-25-08",
-    year: "2025",
-    shortTitle: "SPIRAL SYMMETRY",
-    title: "Geometry in Motion — Architecture Sprint",
-    category: "COMPETITION",
-    date: "JUL 21, 2025",
-    location: "Central Library Wing",
-    description:
-      " architectural perspective challenge focusing on leading lines, spiral staircases, and minimalist negative space.",
-    exif: "16MM · F/4.0 · 1/200S",
-    filmStock: "ILFORD HP5 PLUS",
-    img: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=1200&q=85",
-  },
-  {
-    id: "ACT-25-09",
-    year: "2025",
-    shortTitle: "FESTIVAL OF COLORS",
-    title: "High-Speed Shutter & Color Study",
-    category: "PHOTOWALK",
-    date: "MAR 18, 2025",
-    location: "GCU Main Courtyard",
-    description:
-      "Action photography walk freezing airborne pigments and candid expressions at 1/4000s shutter speeds.",
-    exif: "35MM · F/2.8 · 1/4000S",
-    filmStock: "KODAK EKTAR 100",
-    img: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=1200&q=85",
-  },
-  {
-    id: "ACT-25-10",
-    year: "2025",
-    shortTitle: "SILVER HALIDE SALON",
-    title: "Founders' Archival Contact Sheet Exhibition",
-    category: "EXHIBITION",
-    date: "APR 10, 2025",
-    location: "GCU Seminar Hall",
-    description:
-      "Retrospective showcase displaying original 35mm contact sheets, red grease-pencil crop marks, and test strips.",
-    exif: "50MM · F/2.0 · 1/500S",
-    filmStock: "KODAK TRI-X 400",
-    img: "https://images.unsplash.com/photo-1488161628813-04466f872be2?w=1200&q=85",
-  },
-  {
-    id: "ACT-25-11",
-    year: "2025",
-    shortTitle: "SILK LOOM HERITAGE",
-    title: "Sualkuchi Handloom Documentary Walk",
-    category: "EXHIBITION",
-    date: "FEB 14, 2025",
-    location: "Sualkuchi Weaving Cluster",
-    description:
-      "Visual anthology documenting master Muga silk weavers, bamboo shuttles, and shafts of morning light inside traditional looms.",
-    exif: "35MM · F/1.4 · 1/250S",
-    filmStock: "KODAK PORTRA 400",
-    img: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=1200&q=85",
-    isUpcoming: true,
-  },
-  {
-    id: "ACT-25-12",
-    year: "2025",
-    shortTitle: "MONOCHROME SPRINT",
-    title: "24-Hour Monochrome Street Championship",
-    category: "COMPETITION",
-    date: "JAN 25, 2025",
-    location: "Fancy Bazaar Circuit",
-    description:
-      "Single-roll 36-exposure discipline challenge where participants shoot strictly in black-and-white with zero digital previews.",
-    exif: "28MM · F/5.6 · 1/1000S",
-    filmStock: "ILFORD HP5 PLUS",
-    img: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=1200&q=85",
-  },
-];
+const ARCHIVE_DATA: ArchiveEvent[] = INITIAL_ACTIVITIES as unknown as ArchiveEvent[];
 
 const FILTERS: { label: string; value: FilterKey }[] = [
   { label: "ALL", value: "ALL" },
@@ -469,7 +116,15 @@ export default function ActivitiesPage() {
   const leftTitleWrapRef = useRef<HTMLDivElement>(null);
   const stRef = useRef<ScrollTrigger | null>(null);
 
-  const [archiveData, setArchiveData] = useState<ArchiveEvent[]>(ARCHIVE_DATA);
+  const [archiveData, setArchiveData] = useState<ArchiveEvent[]>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const cached = localStorage.getItem("ss_cache_activities");
+        if (cached) return JSON.parse(cached);
+      } catch (e) {}
+    }
+    return ARCHIVE_DATA;
+  });
   const [activeFilter, setActiveFilter] = useState<FilterKey>("ALL");
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const [isCylinderPhase, setIsCylinderPhase] = useState<boolean>(false);
@@ -503,6 +158,9 @@ export default function ActivitiesPage() {
             isUpcoming: Boolean(item.isUpcoming),
           }));
           setArchiveData(mapped);
+          try {
+            localStorage.setItem("ss_cache_activities", JSON.stringify(mapped));
+          } catch (e) {}
         }
       } catch (err) {
         console.error("Failed to load activities from API, using fallback:", err);

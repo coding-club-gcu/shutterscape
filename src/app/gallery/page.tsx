@@ -7,6 +7,7 @@ import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import SmoothScroller from "@/components/cinematic/SmoothScroller";
+import { INITIAL_GALLERY } from "@/data/initialClubData";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -31,33 +32,7 @@ interface GalleryItem {
   location: string;
 }
 
-const GALLERY_COLLECTION: GalleryItem[] = [
-  { id: "g-01", title: "The Ride — Best Alumni Photograph", category: "STREET", photographer: "Tiku Sarkar", location: "GCU Campus", filmStock: "CINESTILL 800T", exif: "50MM · F/1.4", src: "/api/media/6ade7b95927760001b6fed1b", description: "Award-winning alumni photograph captured on campus." },
-  { id: "g-02", title: "A Peaceful Evening on Campus", category: "LANDSCAPE", photographer: "Akash Boro", location: "GCU Campus Grounds", filmStock: "FUJIFILM VELVIA 50", exif: "70MM · F/4.0", src: "/api/media/6ade7bfe927760001b6fed1c", description: "Tranquil evening light washing over the campus trees." },
-  { id: "g-03", title: "A Cinematic Campus View", category: "ARCHITECTURE", photographer: "Aparna Mishra", location: "GCU Main Building", filmStock: "ILFORD HP5 PLUS", exif: "24MM · F/8.0", src: "/api/media/6ade7c66d43c2f957e160ddd", description: "Dramatic wide-angle perspective of the academic complex." },
-  { id: "g-04", title: "Golden Hour in the Classroom", category: "DOCUMENTARY", photographer: "Riky", location: "Academic Block", filmStock: "KODAK TRI-X 400", exif: "35MM · F/2.0", src: "/api/media/6ade7dd4c134b1867ef53687", description: "Warm afternoon light piercing through classroom windows." },
-  { id: "g-05", title: "The Beauty of GCU", category: "LANDSCAPE", photographer: "Arjun Talukdar", location: "Campus Gardens", filmStock: "FUJIFILM PROVIA 100F", exif: "85MM · F/1.4", src: "/api/media/6ade7e369f1d84c2a8f7333f", description: "Vibrant natural surroundings framing the university." },
-  { id: "g-06", title: "GCU in the Fog", category: "DOCUMENTARY", photographer: "Priyanka Kalita", location: "Azara Campus", filmStock: "KODAK GOLD 200", exif: "35MM · F/2.0", src: "/api/media/6ade7f1e9a20af3def9426b4", description: "Atmospheric winter fog blanketing the morning corridors." },
-  { id: "g-07", title: "The Spirit of the Game", category: "STREET", photographer: "Nayan Jyoti", location: "GCU Sports Ground", filmStock: "ILFORD DELTA 3200", exif: "50MM · F/1.8", src: "/api/media/6ade8301e5cd8ce357920b5c", description: "Action and camaraderie captured under stadium lights." },
-  { id: "g-08", title: "Golden Horizon Ferry", category: "DOCUMENTARY", photographer: "Priyanka Kalita", location: "Umananda Ghat", filmStock: "KODAK GOLD 200", exif: "35MM · F/2.0", src: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=1000&q=80", description: "Commuters boarding the wooden river ferry in golden twilight." },
-  { id: "g-09", title: "Urban Solitude", category: "STREET", photographer: "Nayan Jyoti", location: "Panbazar Commercial Zone", filmStock: "ILFORD DELTA 3200", exif: "50MM · F/1.8", src: "https://images.unsplash.com/photo-1514565131-fce0801e5785?w=1200&q=85", description: "Quiet contemplative moment amidst evening monsoon traffic." },
-  { id: "g-10", title: "Studio Xenon Strobe", category: "PORTRAITURE", photographer: "Meghna Barman", location: "GCU Creative Studio", filmStock: "KODAK PORTRA 400", exif: "85MM · F/2.8", src: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=1000&q=80", description: "Crisp architectural studio portrait with razor-sharp catchlights." },
-  { id: "g-11", title: "Cantilever Shadows", category: "ARCHITECTURE", photographer: "Debashish Roy", location: "GCU Auditorium Wing", filmStock: "KODAK TRI-X 400", exif: "28MM · F/11", src: "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1000&q=80", description: "Geometric play of shadow and light dissecting the concrete louvers." },
-  { id: "g-12", title: "Lens Flare Dispersion", category: "EXPERIMENTAL", photographer: "Kunal Saikia", location: "Darkroom Studio 02", filmStock: "CINESTILL 50D", exif: "50MM · F/1.2", src: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1000&q=80", description: "Prismatic spectral dispersion captured with an uncoated prime lens." },
-  { id: "g-13", title: "The Tea Garden Mist", category: "LANDSCAPE", photographer: "Manash Pratim", location: "Upper Assam Estates", filmStock: "FUJIFILM VELVIA 50", exif: "24MM · F/5.6", src: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=1000&q=80", description: "Rolling emerald hills of the tea estates caught in the fog." },
-  { id: "g-14", title: "Festival of Colors", category: "DOCUMENTARY", photographer: "Sohaib Hussain", location: "GCU Main Courtyard", filmStock: "KODAK EKTAR 100", exif: "35MM · F/2.8", src: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=1000&q=80", description: "Vibrant explosion of gulal captured at high shutter speeds." },
-  { id: "g-15", title: "Symmetry in Motion", category: "ARCHITECTURE", photographer: "Hiya Das", location: "Library Spiral Staircase", filmStock: "ILFORD HP5 PLUS", exif: "16MM · F/4.0", src: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=1000&q=80", description: "A vertiginous top-down perspective of the brutalist spiral staircase." },
-  { id: "g-16", title: "Midnight Rain Reflections", category: "STREET", photographer: "Imran Farhat", location: "GS Road, Guwahati", filmStock: "CINESTILL 800T", exif: "50MM · F/1.4", src: "https://images.unsplash.com/photo-1488161628813-04466f872be2?w=1000&q=80", description: "Cinematic puddle reflection capturing headlights and neon signs." },
-  { id: "g-17", title: "Analog Chemistry", category: "EXPERIMENTAL", photographer: "Rupankar", location: "Darkroom Studio 01", filmStock: "ILFORD MULTIGRADE", exif: "50MM · F/4.0", src: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=1000&q=80", description: "Silver particles developing in fixer under safe-light red." },
-  { id: "g-18", title: "Monsoon Silhouette", category: "PORTRAITURE", photographer: "Sneha Kalita", location: "GCU Campus Corridors", filmStock: "KODAK GOLD 200", exif: "50MM · F/2.0", src: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=1000&q=80", description: "A quiet moment framed by the brutalist campus architecture." },
-  { id: "g-19", title: "Market Chaos", category: "DOCUMENTARY", photographer: "Riky", location: "Fancy Bazaar", filmStock: "KODAK PORTRA 400", exif: "35MM · F/5.6", src: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=1000&q=80", description: "The beautiful, overwhelming chaos of the Sunday morning market." },
-  { id: "g-20", title: "Glacial Melt", category: "LANDSCAPE", photographer: "Akash Boro", location: "Tawang Valley", filmStock: "FUJIFILM PROVIA", exif: "16MM · F/8.0", src: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1000&q=80", description: "High altitude rivers carving through the rocky moraine." },
-  { id: "g-21", title: "Neon Rain", category: "STREET", photographer: "Tiku Sarkar", location: "Christian Basti", filmStock: "CINESTILL 800T", exif: "85MM · F/1.4", src: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=1000&q=80", description: "A lone figure illuminated by the glow of a pharmacy sign in the rain." },
-  { id: "g-22", title: "Concrete Ribs", category: "ARCHITECTURE", photographer: "Debashish Roy", location: "Admin Block", filmStock: "ILFORD HP5 PLUS", exif: "24MM · F/8.0", src: "https://images.unsplash.com/photo-1449844908441-8829872d2607?w=1000&q=80", description: "The skeletal structure of the unfinished new academic wing." },
-  { id: "g-23", title: "Abstract Motion", category: "EXPERIMENTAL", photographer: "Bituparna", location: "Highway 37", filmStock: "KODAK EKTAR", exif: "50MM · 2S", src: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1000&q=80", description: "Intentional camera movement (ICM) creating a canvas of light streaks." },
-  { id: "g-24", title: "Valley of the Sun", category: "LANDSCAPE", photographer: "Arjun Talukdar", location: "Meghalaya Border", filmStock: "FUJIFILM VELVIA 50", exif: "35MM · F/11", src: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1000&q=80", description: "The sun piercing through the dense canopy of the living root bridges." },
-  { id: "g-25", title: "Final Exposure", category: "DOCUMENTARY", photographer: "ShutterScape Archive", location: "Assam, India", filmStock: "VARIOUS EMULSIONS", exif: "VARIOUS", src: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=1000&q=80", description: "The culmination of a year of storytelling through the lens." },
-];
+const GALLERY_COLLECTION: GalleryItem[] = INITIAL_GALLERY as unknown as GalleryItem[];
 
 const CATEGORIES = [
   "ALL",
@@ -79,22 +54,32 @@ export default function CinematicGalleryPage() {
   const [isRibbonFocused, setIsRibbonFocused] = useState<boolean>(false);
   const [activeLightboxItem, setActiveLightboxItem] =
     useState<GalleryItem | null>(null);
-  const [collection, setCollection] = useState<GalleryItem[]>(GALLERY_COLLECTION);
+  const [collection, setCollection] = useState<GalleryItem[]>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const cached = localStorage.getItem("ss_cache_gallery");
+        if (cached) return JSON.parse(cached);
+      } catch (e) {}
+    }
+    return GALLERY_COLLECTION;
+  });
 
   useEffect(() => {
     fetch("/api/gallery")
       .then((r) => r.json())
       .then((res) => {
         if (res.data && res.data.length > 0) {
-          setCollection(
-            res.data.map((item: any, idx: number) => ({
-              ...item,
-              src:
-                item.src && !item.src.startsWith("blob:")
-                  ? item.src
-                  : GALLERY_COLLECTION[idx % GALLERY_COLLECTION.length].src,
-            }))
-          );
+          const fresh = res.data.map((item: any, idx: number) => ({
+            ...item,
+            src:
+              item.src && !item.src.startsWith("blob:")
+                ? item.src
+                : GALLERY_COLLECTION[idx % GALLERY_COLLECTION.length].src,
+          }));
+          setCollection(fresh);
+          try {
+            localStorage.setItem("ss_cache_gallery", JSON.stringify(fresh));
+          } catch (e) {}
         }
       })
       .catch(() => {});

@@ -3,16 +3,10 @@ import { NextResponse } from "next/server";
 import mongoose from "mongoose";
 import { connectDB } from "@/lib/db";
 import { MomentsReel } from "@/models/MomentsReel";
+import { INITIAL_REELS } from "@/data/initialClubData";
 
-// Default Reels matching FramesOfMoments.tsx
-const DEFAULT_REELS = [
-  { id: "reel-01", _id: "reel-01", photographer: "Parambrata Sarkar", videoSrc: "/videos/reel-1.mp4", order: 1 },
-  { id: "reel-02", _id: "reel-02", photographer: "Sayan Saha", videoSrc: "/videos/reel-2.mp4", order: 2 },
-  { id: "reel-03", _id: "reel-03", photographer: "Aman Baha", videoSrc: "/videos/reel-3.mp4", order: 3 },
-  { id: "reel-04", _id: "reel-04", photographer: "Sampad Dutta", videoSrc: "/videos/reel-4.mp4", order: 4 },
-  { id: "reel-05", _id: "reel-05", photographer: "Bituparna", videoSrc: "/videos/reel-5.mp4", order: 5 },
-  { id: "reel-06", _id: "reel-06", photographer: "Sohan Chandra", videoSrc: "/videos/reel-6.mp4", order: 6 },
-];
+// Synced with Live GCU Club Data (Instantaneous 0ms initial render)
+const DEFAULT_REELS = INITIAL_REELS;
 
 const globalForMomentsReels = globalThis as unknown as {
   __shutterMomentsReelsStore?: any[];

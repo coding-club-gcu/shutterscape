@@ -2,41 +2,12 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import { Spotlight } from "@/models/Spotlight";
+import { INITIAL_SPOTLIGHT } from "@/data/initialClubData";
 
 // In-memory fallback store
 const defaultSpotlightStore = {
-  upcoming: {
-    id: "SPOT-UPCOMING-01",
-    title: "Brahmaputra Heritage Photowalk 4.0",
-    category: "PHOTOWALK",
-    date: "NOV 14, 2026",
-    targetDate: new Date(
-      Date.now() + (14 * 86400 + 6 * 3600 + 45 * 60) * 1000
-    ).toISOString(),
-    location: "Riverfront, Guwahati",
-    filmStock: "KODAK PORTRA 400",
-    img: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=75",
-    description:
-      "Golden-hour riverfront expedition capturing ferry silhouettes, heritage ghats, and twilight reflections with live framing critiques.",
-    ctaText: "JOIN UPCOMING EVENT",
-    isActive: true,
-  },
-  live: {
-    id: "SPOT-LIVE-01",
-    title: "Campus Nocturnes & Strobe Light Lab",
-    category: "LIVE WORKSHOP",
-    date: "HAPPENING NOW",
-    targetDate: new Date(
-      Date.now() + (4 * 3600 + 38 * 60 + 25) * 1000
-    ).toISOString(),
-    location: "GCU Media Lab, Azara",
-    filmStock: "GODEX AD600 PRO · 35MM",
-    img: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&q=75",
-    description:
-      "Live hands-on studio session exploring high-speed Xenon flash choreography, Chiaroscuro portrait lighting, and manual optics.",
-    ctaText: "JOIN LIVE SESSION NOW",
-    isActive: true,
-  },
+  upcoming: INITIAL_SPOTLIGHT.upcoming,
+  live: INITIAL_SPOTLIGHT.live,
 };
 
 const globalForSpotlight = globalThis as unknown as {

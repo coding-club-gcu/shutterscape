@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import { UploadMedia } from "@/models/UploadMedia";
 import mongoose from "mongoose";
+import fs from "fs";
+import path from "path";
 
 // In-memory hot cache for instantaneous sub-millisecond serving
 const cache = new Map<string, { buffer: Buffer; mimeType: string }>();
@@ -96,7 +98,36 @@ export async function GET(
       return buildMediaStreamResponse(cached.buffer, cached.mimeType, range);
     }
 
-    // 2. Fetch from DB
+    // 2. Check local disk in public/media (served in < 0.2ms without database network roundtrip!)
+    try {
+      let diskPath = path.join(process.cwd(), "public", "media", id);
+      if (!fs.existsSync(diskPath)) {
+        if (fs.existsSync(diskPath + ".webp")) {
+          diskPath = diskPath + ".webp";
+        } else if (fs.existsSync(diskPath + ".mp4")) {
+          diskPath = diskPath + ".mp4";
+        }
+      }
+      if (fs.existsSync(diskPath)) {
+        const rawBuffer = fs.readFileSync(diskPath);
+        const isVideo =
+          (rawBuffer.length > 8 &&
+            rawBuffer.toString("ascii", 4, 8) === "ftyp") ||
+          rawBuffer.slice(0, 4).toString("hex") === "00000018";
+        const mimeType = isVideo ? "video/mp4" : "image/webp";
+
+        if (cache.size > 100) {
+          const firstKey = cache.keys().next().value;
+          if (firstKey) cache.delete(firstKey);
+        }
+        cache.set(id, { buffer: rawBuffer, mimeType });
+        return buildMediaStreamResponse(rawBuffer, mimeType, range);
+      }
+    } catch (diskErr) {
+      console.warn("Disk read error, falling back to database:", diskErr);
+    }
+
+    // 3. Fallback to DB
     const conn = await connectDB();
     if (!conn) {
       return new NextResponse("Database unavailable", { status: 503 });
