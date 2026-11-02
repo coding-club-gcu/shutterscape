@@ -3327,7 +3327,7 @@ export default function MobileOilstainExperience() {
       <footer
         id="mobile-global-footer"
         style={{
-          padding: "24px 16px 148px 16px",
+          padding: "24px 14px 148px 14px",
           backgroundColor: "#FAF9F5",
           color: "#0A0A0C",
         }}
@@ -3366,37 +3366,37 @@ export default function MobileOilstainExperience() {
             className="w-full flex flex-col gap-3 border-b border-black/[0.08]"
           >
             {/* Top Brand Identity Bar */}
-            <div className="w-full flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2.5 shrink-0">
+            <div className="w-full flex items-center justify-between gap-2 flex-wrap sm:flex-nowrap">
+              <div className="flex items-center gap-2 shrink-0">
                 <div
-                  style={{ width: "72px", height: "20px" }}
+                  style={{ width: "62px", height: "18px" }}
                   className="relative shrink-0"
                 >
                   <Image
                     src="/images/shutterscape-logo-cropped.png"
                     alt="ShutterScape"
                     fill
-                    sizes="72px"
+                    sizes="62px"
                     unoptimized
                     className="object-contain object-left"
                   />
                 </div>
 
-                <span className="h-3.5 w-[1px] bg-black/15 shrink-0" />
+                <span className="h-3 w-[1px] bg-black/15 shrink-0" />
 
                 <a
                   href="https://gcu.ac.in"
                   target="_blank"
                   rel="noopener noreferrer"
                   title="Girijananda Chowdhury University"
-                  style={{ width: "82px", height: "20px" }}
+                  style={{ width: "70px", height: "18px" }}
                   className="relative opacity-95 hover:opacity-100 transition-opacity shrink-0 flex items-center"
                 >
                   <Image
                     src="/images/gcu-logo-black-text.png"
                     alt="GCU"
                     fill
-                    sizes="82px"
+                    sizes="70px"
                     unoptimized
                     className="object-contain object-left"
                   />
@@ -3409,12 +3409,12 @@ export default function MobileOilstainExperience() {
                   href="https://www.instagram.com/shutterscape_gcu"
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ padding: "5px 10px" }}
-                  className="rounded-full bg-black/[0.05] hover:bg-[#111111] text-[#111111] hover:text-white font-sans text-[10px] font-semibold tracking-tight flex items-center gap-1.5 transition-colors whitespace-nowrap shadow-2xs"
+                  style={{ padding: "4px 8px" }}
+                  className="rounded-full bg-black/[0.05] hover:bg-[#111111] text-[#111111] hover:text-white font-sans text-[9px] font-semibold tracking-tight flex items-center gap-1 transition-colors whitespace-nowrap shadow-2xs"
                 >
                   <svg
-                    width="12"
-                    height="12"
+                    width="11"
+                    height="11"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
@@ -3427,18 +3427,18 @@ export default function MobileOilstainExperience() {
                     <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
                   </svg>
                   <span>Instagram</span>
-                  <span className="text-[8.5px] opacity-60">↗</span>
+                  <span className="text-[7.5px] opacity-60">↗</span>
                 </a>
                 <a
                   href="https://chat.whatsapp.com/Hs71BicR1Xj3PmOyPJ5wdc?s=sw&p=a&mlu=4&ilr=4"
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ padding: "5px 10px" }}
-                  className="rounded-full bg-[#111111] hover:bg-[#25D366] text-white hover:text-[#050505] font-sans text-[10px] font-semibold tracking-tight flex items-center gap-1.5 transition-colors whitespace-nowrap shadow-2xs"
+                  style={{ padding: "4px 8px" }}
+                  className="rounded-full bg-[#111111] hover:bg-[#25D366] text-white hover:text-[#050505] font-sans text-[9px] font-semibold tracking-tight flex items-center gap-1 transition-colors whitespace-nowrap shadow-2xs"
                 >
                   <svg
-                    width="12"
-                    height="12"
+                    width="11"
+                    height="11"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
@@ -3450,7 +3450,7 @@ export default function MobileOilstainExperience() {
                     <path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1a5 5 0 0 0 5 5h1a.5.5 0 0 0 0-1h-1a.5.5 0 0 0 0 1" />
                   </svg>
                   <span>WhatsApp</span>
-                  <span className="text-[8.5px] text-[#FFE066]">↗</span>
+                  <span className="text-[7.5px] text-[#FFE066]">↗</span>
                 </a>
               </div>
             </div>
