@@ -54,18 +54,15 @@ export async function connectDB(): Promise<typeof mongoose | null> {
   uri = normalizeMongoUri(uri);
 
   // Fast path: if already connected and active, return in 0ms without re-handshaking
-  if (mongoose.connection.readyState === 1) {
+  if ((mongoose.connection.readyState as number) === 1) {
     return mongoose;
   }
 
   // CRITICAL FIX FOR CLOUDFLARE WORKERS:
-  // If connection is in a stale/disconnected state (0, 2, or 3), purge cache.
-  // Never return cached.conn when readyState !== 1, otherwise queries hang permanently
-  // waiting for an open event, causing Cloudflare to cancel with "Worker code had hung".
-  if (mongoose.connection.readyState !== 1) {
-    cached.conn = null;
-    cached.promise = null;
-  }
+  // If we reach here, we are not connected. Purge any stale cached instances
+  // so we never attempt queries on a dead socket.
+  cached.conn = null;
+  cached.promise = null;
 
   if (!cached.promise) {
     const opts: mongoose.ConnectOptions = {
@@ -96,7 +93,8 @@ export async function connectDB(): Promise<typeof mongoose | null> {
 
   try {
     const conn = await cached.promise;
-    if (mongoose.connection.readyState !== 1) {
+    const isConnected = (mongoose.connection.readyState as number) === 1;
+    if (!conn || !isConnected) {
       cached.conn = null;
       cached.promise = null;
       return null;
