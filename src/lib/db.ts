@@ -5,7 +5,7 @@ const MONGODB_URI = process.env.MONGODB_URI;
 
 interface MongooseCache {
   conn: typeof mongoose | null;
-  promise: Promise<typeof mongoose> | null;
+  promise: Promise<typeof mongoose | null> | null;
 }
 
 declare global {
@@ -42,7 +42,8 @@ function normalizeMongoUri(uri: string): string {
 
 /**
  * Connect to MongoDB Atlas with connection caching across serverless invocations.
- * Returns null if MONGODB_URI is not configured, allowing seamless static fallback.
+ * Returns null if MONGODB_URI is not configured or if connection times out,
+ * allowing seamless static/memory fallback without hanging the worker.
  */
 export async function connectDB(): Promise<typeof mongoose | null> {
   let uri = process.env.MONGODB_URI || MONGODB_URI;
@@ -52,13 +53,18 @@ export async function connectDB(): Promise<typeof mongoose | null> {
 
   uri = normalizeMongoUri(uri);
 
-  // Fast path: if already connected, return in 0ms without re-handshaking
+  // Fast path: if already connected and active, return in 0ms without re-handshaking
   if (mongoose.connection.readyState === 1) {
     return mongoose;
   }
 
-  if (cached.conn) {
-    return cached.conn;
+  // CRITICAL FIX FOR CLOUDFLARE WORKERS:
+  // If connection is in a stale/disconnected state (0, 2, or 3), purge cache.
+  // Never return cached.conn when readyState !== 1, otherwise queries hang permanently
+  // waiting for an open event, causing Cloudflare to cancel with "Worker code had hung".
+  if (mongoose.connection.readyState !== 1) {
+    cached.conn = null;
+    cached.promise = null;
   }
 
   if (!cached.promise) {
@@ -66,24 +72,41 @@ export async function connectDB(): Promise<typeof mongoose | null> {
       bufferCommands: false, // Do not buffer queries in serverless edge
       maxPoolSize: 1,        // Limit pool size per worker isolate to prevent connection exhaustion
       minPoolSize: 0,        // Do not keep idle persistent sockets across isolate sleep
-      serverSelectionTimeoutMS: 10000, // 10s to allow cold-start TLS handshake
-      socketTimeoutMS: 45000,
+      serverSelectionTimeoutMS: 3000, // 3s fail-fast: prevents Worker runtime timeout
+      connectTimeoutMS: 3000,
+      socketTimeoutMS: 15000,
+      family: 4,             // Force IPv4 to avoid IPv6 dual-stack resolution hangs
     };
 
-    cached.promise = mongoose.connect(uri, opts).then((mongooseInstance) => {
+    const connectPromise = mongoose.connect(uri, opts).then((mongooseInstance) => {
       cached.conn = mongooseInstance;
       return mongooseInstance;
     });
+
+    // Hard 3.5s failsafe timeout: guarantees execution never hangs indefinitely in workerd
+    const timeoutPromise = new Promise<null>((_, reject) =>
+      setTimeout(
+        () => reject(new Error("MongoDB connection timed out (3500ms limit reached)")),
+        3500
+      )
+    );
+
+    cached.promise = Promise.race([connectPromise, timeoutPromise]);
   }
 
   try {
-    cached.conn = await cached.promise;
+    const conn = await cached.promise;
+    if (mongoose.connection.readyState !== 1) {
+      cached.conn = null;
+      cached.promise = null;
+      return null;
+    }
+    cached.conn = conn;
     return cached.conn;
   } catch (e) {
     cached.promise = null;
     cached.conn = null;
-    console.error("MongoDB Atlas Connection Error:", e);
+    console.warn("MongoDB Atlas Connection Error (falling back to memory):", e);
     return null;
   }
 }
-
