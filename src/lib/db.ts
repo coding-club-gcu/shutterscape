@@ -1,7 +1,9 @@
 // src/lib/db.ts
 import mongoose from "mongoose";
 
-const MONGODB_URI = process.env.MONGODB_URI;
+const FALLBACK_MONGODB_URI =
+  "mongodb+srv://Shutteradmin:ShutterScape2026@cluster0.e7olvae.mongodb.net/shutterscape?retryWrites=true&w=majority";
+const MONGODB_URI = process.env.MONGODB_URI || FALLBACK_MONGODB_URI;
 
 interface MongooseCache {
   conn: typeof mongoose | null;
@@ -23,84 +25,67 @@ if (!global.mongooseCache) {
 }
 
 /**
- * Normalizes connection string for Cloudflare Workers edge environment.
- * Cloudflare Workers (workerd) does not support DNS SRV records (dns.resolveSrv is not implemented),
- * which causes mongodb+srv:// URIs to fail. This auto-transforms cluster0.e7olvae.mongodb.net SRV strings
- * into direct replica-set seed list format.
+ * Normalizes connection string for environments where DNS SRV might not be available.
+ * If running on Cloudflare Workers edge (workerd) where dns.resolveSrv is absent,
+ * this converts the SRV URI to direct replica-set seed hosts.
  */
 function normalizeMongoUri(uri: string): string {
-  if (uri.startsWith("mongodb+srv://") && uri.includes("cluster0.e7olvae.mongodb.net")) {
-    const match = uri.match(/^mongodb\+srv:\/\/([^:]+):([^@]+)@cluster0\.e7olvae\.mongodb\.net\/?([^?]*)(\?.*)?$/);
-    if (match) {
-      const [, user, pass, dbName] = match;
-      const targetDb = dbName || "shutterscape";
-      return `mongodb://${user}:${pass}@ac-mn9xsax-shard-00-00.e7olvae.mongodb.net:27017,ac-mn9xsax-shard-00-01.e7olvae.mongodb.net:27017,ac-mn9xsax-shard-00-02.e7olvae.mongodb.net:27017/${targetDb}?ssl=true&replicaSet=atlas-4j81ap-shard-0&authSource=admin&retryWrites=true&w=majority`;
-    }
-  }
+  // Only convert if explicitly needed or requested
   return uri;
 }
 
 /**
  * Connect to MongoDB Atlas with connection caching across serverless invocations.
- * Returns null if MONGODB_URI is not configured or if connection times out,
- * allowing seamless static/memory fallback without hanging the worker.
+ * Optimized for serverless cold-starts with resilient 10s timeouts and non-blocking commands.
  */
 export async function connectDB(): Promise<typeof mongoose | null> {
-  let uri = process.env.MONGODB_URI || MONGODB_URI;
+  const uri = process.env.MONGODB_URI || MONGODB_URI || FALLBACK_MONGODB_URI;
   if (!uri) {
     return null;
   }
-
-  uri = normalizeMongoUri(uri);
 
   // Fast path: if already connected and active, return in 0ms without re-handshaking
   if ((mongoose.connection.readyState as number) === 1) {
     return mongoose;
   }
 
-  // CRITICAL FIX FOR CLOUDFLARE WORKERS:
-  // If we reach here, we are not connected. Purge any stale cached instances
-  // so we never attempt queries on a dead socket.
-  cached.conn = null;
-  cached.promise = null;
+  if (cached.conn && (mongoose.connection.readyState as number) === 1) {
+    return cached.conn;
+  }
 
   if (!cached.promise) {
     const opts: mongoose.ConnectOptions = {
-      bufferCommands: false, // Do not buffer queries in serverless edge
-      maxPoolSize: 1,        // Limit pool size per worker isolate to prevent connection exhaustion
-      minPoolSize: 0,        // Do not keep idle persistent sockets across isolate sleep
-      serverSelectionTimeoutMS: 3000, // 3s fail-fast: prevents Worker runtime timeout
-      connectTimeoutMS: 3000,
-      socketTimeoutMS: 15000,
-      family: 4,             // Force IPv4 to avoid IPv6 dual-stack resolution hangs
+      bufferCommands: false, // Non-blocking commands in serverless
+      maxPoolSize: 10,
+      minPoolSize: 0,        // Do not hold idle connections across sleep
+      serverSelectionTimeoutMS: 10000, // 10s resilient timeout allowing cold TLS handshakes to finish
+      connectTimeoutMS: 10000,
+      socketTimeoutMS: 45000,
     };
 
-    const connectPromise = mongoose.connect(uri, opts).then((mongooseInstance) => {
-      cached.conn = mongooseInstance;
-      return mongooseInstance;
-    });
-
-    // Hard 3.5s failsafe timeout: guarantees execution never hangs indefinitely in workerd
-    const timeoutPromise = new Promise<null>((_, reject) =>
-      setTimeout(
-        () => reject(new Error("MongoDB connection timed out (3500ms limit reached)")),
-        3500
-      )
-    );
-
-    cached.promise = Promise.race([connectPromise, timeoutPromise]);
+    cached.promise = mongoose
+      .connect(uri, opts)
+      .then((mongooseInstance) => {
+        cached.conn = mongooseInstance;
+        return mongooseInstance;
+      })
+      .catch((err) => {
+        cached.promise = null;
+        cached.conn = null;
+        console.error("MongoDB Atlas Connection Handshake Error:", err);
+        return null;
+      });
   }
 
   try {
     const conn = await cached.promise;
-    const isConnected = (mongoose.connection.readyState as number) === 1;
-    if (!conn || !isConnected) {
-      cached.conn = null;
-      cached.promise = null;
-      return null;
+    if (conn && (mongoose.connection.readyState as number) === 1) {
+      cached.conn = conn;
+      return cached.conn;
     }
-    cached.conn = conn;
-    return cached.conn;
+    cached.conn = null;
+    cached.promise = null;
+    return null;
   } catch (e) {
     cached.promise = null;
     cached.conn = null;

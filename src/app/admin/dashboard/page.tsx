@@ -6,6 +6,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import FileUploadZone from "@/components/admin/FileUploadZone";
+import {
+  INITIAL_GALLERY,
+  INITIAL_ACTIVITIES,
+  INITIAL_COMMITTEE,
+  INITIAL_HERO_REEL,
+  INITIAL_PULLIN,
+  INITIAL_REELS,
+  INITIAL_SPOTLIGHT,
+} from "@/data/initialClubData";
 
 // Model interfaces matching database schemas
 interface HeroReelItem {
@@ -290,13 +299,13 @@ export default function AdminDashboardPage() {
     type: "success" | "error";
   } | null>(null);
 
-  // Collection Data States
-  const [galleryList, setGalleryList] = useState<GalleryItem[]>([]);
-  const [activityList, setActivityList] = useState<ActivityEventItem[]>([]);
-  const [committeeList, setCommitteeList] = useState<CommitteeMemberItem[]>([]);
-  const [heroReelList, setHeroReelList] = useState<HeroReelItem[]>([]);
-  const [pullInList, setPullInList] = useState<PullInExhibitItem[]>([]);
-  const [reelsList, setReelsList] = useState<MomentsReelItem[]>([]);
+  // Collection Data States — pre-populated with instant local club data for 0ms initial render
+  const [galleryList, setGalleryList] = useState<GalleryItem[]>(INITIAL_GALLERY as any);
+  const [activityList, setActivityList] = useState<ActivityEventItem[]>(INITIAL_ACTIVITIES as any);
+  const [committeeList, setCommitteeList] = useState<CommitteeMemberItem[]>(INITIAL_COMMITTEE as any);
+  const [heroReelList, setHeroReelList] = useState<HeroReelItem[]>(INITIAL_HERO_REEL as any);
+  const [pullInList, setPullInList] = useState<PullInExhibitItem[]>(INITIAL_PULLIN as any);
+  const [reelsList, setReelsList] = useState<MomentsReelItem[]>(INITIAL_REELS as any);
 
   // Spotlight Admin State
   const [spotlightAdminData, setSpotlightAdminData] = useState<{
@@ -376,6 +385,35 @@ export default function AdminDashboardPage() {
   const refreshAllData = useCallback(async () => {
     try {
       setLoading(true);
+      // Fast single-trip bootstrap: 1 connection, 0 thundering herd
+      const bootRes = await fetch("/api/admin/bootstrap").catch(() => null);
+      if (bootRes && bootRes.ok) {
+        const d = await bootRes.json();
+        if (d.success && d.data) {
+          if (d.data.gallery) setGalleryList(d.data.gallery);
+          if (d.data.activities) setActivityList(d.data.activities);
+          if (d.data.committee) setCommitteeList(d.data.committee);
+          if (d.data.heroReel) setHeroReelList(d.data.heroReel);
+          if (d.data.pullIn) setPullInList(d.data.pullIn);
+          if (d.data.reels) setReelsList(d.data.reels);
+          if (d.data.spotlight) {
+            setSpotlightAdminData((prev) => ({
+              upcoming: d.data.spotlight.upcoming
+                ? { ...prev.upcoming, ...d.data.spotlight.upcoming }
+                : prev.upcoming,
+              live: d.data.spotlight.live
+                ? { ...prev.live, ...d.data.spotlight.live }
+                : prev.live,
+            }));
+          }
+          if (d.source === "database") {
+            setDbSource("database");
+          }
+          return;
+        }
+      }
+
+      // Fallback: Individual endpoints if bootstrap is unavailable
       const responses = await Promise.allSettled([
         fetch("/api/gallery"),
         fetch("/api/activities"),
