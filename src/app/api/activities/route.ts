@@ -10,6 +10,7 @@ const DEFAULT_ACTIVITIES = INITIAL_ACTIVITIES;
 
 const globalForActivities = globalThis as unknown as {
   __shutterActivitiesStore?: any[];
+  __shutterActivitiesCache?: { data: any[]; timestamp: number };
 };
 
 if (!globalForActivities.__shutterActivitiesStore) {
@@ -22,6 +23,19 @@ export async function GET(request: Request) {
     const year = searchParams.get("year");
     const category = searchParams.get("category");
     const upcoming = searchParams.get("upcoming");
+    const isUnfiltered = !year && (!category || category === "ALL") && !upcoming;
+
+    // Fast-path: serve in-memory cached DB results (< 60s old) in 0.05ms
+    if (
+      isUnfiltered &&
+      globalForActivities.__shutterActivitiesCache &&
+      Date.now() - globalForActivities.__shutterActivitiesCache.timestamp < 60000
+    ) {
+      return NextResponse.json(
+        { success: true, data: globalForActivities.__shutterActivitiesCache.data, source: "cache" },
+        { headers: { "Cache-Control": "public, s-maxage=30, stale-while-revalidate=120" } }
+      );
+    }
 
     try {
       const conn = await connectDB();
@@ -31,9 +45,16 @@ export async function GET(request: Request) {
         if (category && category !== "ALL") query.category = category;
         if (upcoming === "true") query.isUpcoming = true;
 
-        const items = await ActivityEvent.find(query).sort({ order: 1 });
+        const items = await ActivityEvent.find(query).sort({ order: 1 }).lean();
         if (items && items.length > 0) {
-          return NextResponse.json({ success: true, data: items, source: "database" });
+          if (isUnfiltered) {
+            globalForActivities.__shutterActivitiesCache = { data: items, timestamp: Date.now() };
+            globalForActivities.__shutterActivitiesStore = items;
+          }
+          return NextResponse.json(
+            { success: true, data: items, source: "database" },
+            { headers: { "Cache-Control": "public, s-maxage=30, stale-while-revalidate=120" } }
+          );
         }
       }
     } catch (dbErr) {
@@ -45,7 +66,10 @@ export async function GET(request: Request) {
     if (category && category !== "ALL") filtered = filtered.filter((ev: any) => ev.category === category);
     if (upcoming === "true") filtered = filtered.filter((ev: any) => ev.isUpcoming);
 
-    return NextResponse.json({ success: true, data: filtered, source: "memory" });
+    return NextResponse.json(
+      { success: true, data: filtered, source: "memory" },
+      { headers: { "Cache-Control": "public, s-maxage=10, stale-while-revalidate=60" } }
+    );
   } catch (error) {
     console.error("GET /api/activities error:", error);
     return NextResponse.json({ success: true, data: DEFAULT_ACTIVITIES, source: "fallback" });
@@ -54,6 +78,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    globalForActivities.__shutterActivitiesCache = undefined;
     const body = await request.json();
     const newId = body.id || `act-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
     const newEvent = {
@@ -90,6 +115,7 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   try {
+    globalForActivities.__shutterActivitiesCache = undefined;
     const body = await request.json();
     const { id, _id, ...updates } = body;
     const targetId = _id || id;
@@ -154,6 +180,7 @@ export async function PUT(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
+    globalForActivities.__shutterActivitiesCache = undefined;
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 

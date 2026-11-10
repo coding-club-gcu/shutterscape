@@ -10,6 +10,7 @@ const DEFAULT_REELS = INITIAL_REELS;
 
 const globalForMomentsReels = globalThis as unknown as {
   __shutterMomentsReelsStore?: any[];
+  __shutterMomentsReelsCache?: { data: any[]; timestamp: number };
 };
 
 if (!globalForMomentsReels.__shutterMomentsReelsStore) {
@@ -18,23 +19,42 @@ if (!globalForMomentsReels.__shutterMomentsReelsStore) {
 
 export async function GET() {
   try {
+    // Fast-path: serve in-memory cached DB results (< 60s old) in 0.05ms
+    if (
+      globalForMomentsReels.__shutterMomentsReelsCache &&
+      Date.now() - globalForMomentsReels.__shutterMomentsReelsCache.timestamp < 60000
+    ) {
+      return NextResponse.json(
+        { success: true, data: globalForMomentsReels.__shutterMomentsReelsCache.data, source: "cache" },
+        { headers: { "Cache-Control": "public, s-maxage=30, stale-while-revalidate=120" } }
+      );
+    }
+
     try {
       const conn = await connectDB();
       if (conn) {
-        const items = await MomentsReel.find().sort({ order: 1 });
+        const items = await MomentsReel.find().sort({ order: 1 }).lean();
         if (items && items.length > 0) {
-          return NextResponse.json({ success: true, data: items, source: "database" });
+          globalForMomentsReels.__shutterMomentsReelsCache = { data: items, timestamp: Date.now() };
+          globalForMomentsReels.__shutterMomentsReelsStore = items;
+          return NextResponse.json(
+            { success: true, data: items, source: "database" },
+            { headers: { "Cache-Control": "public, s-maxage=30, stale-while-revalidate=120" } }
+          );
         }
       }
     } catch (dbErr) {
       console.warn("MongoDB moments reels fetch error, falling back to memory store:", dbErr);
     }
 
-    return NextResponse.json({
-      success: true,
-      data: globalForMomentsReels.__shutterMomentsReelsStore || DEFAULT_REELS,
-      source: "memory",
-    });
+    return NextResponse.json(
+      {
+        success: true,
+        data: globalForMomentsReels.__shutterMomentsReelsStore || DEFAULT_REELS,
+        source: "memory",
+      },
+      { headers: { "Cache-Control": "public, s-maxage=10, stale-while-revalidate=60" } }
+    );
   } catch (error) {
     console.error("GET /api/moments-reels error:", error);
     return NextResponse.json({ success: true, data: DEFAULT_REELS, source: "fallback" });
@@ -43,6 +63,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    globalForMomentsReels.__shutterMomentsReelsCache = undefined;
     const body = await request.json();
     const newId = body.id || `reel-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
     const newReel = {
@@ -79,6 +100,7 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   try {
+    globalForMomentsReels.__shutterMomentsReelsCache = undefined;
     const body = await request.json();
     const { id, _id, ...updates } = body;
     const targetId = _id || id;
@@ -143,6 +165,7 @@ export async function PUT(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
+    globalForMomentsReels.__shutterMomentsReelsCache = undefined;
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 

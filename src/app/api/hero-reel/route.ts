@@ -8,19 +8,37 @@ import { INITIAL_HERO_REEL } from "@/data/initialClubData";
 // Synced with Live GCU Club Data (Instantaneous 0ms initial render)
 const DEFAULT_HERO_REEL = INITIAL_HERO_REEL;
 
+const globalForHero = globalThis as unknown as {
+  __shutterHeroCache?: { data: any[]; timestamp: number };
+};
+
 export async function GET() {
   try {
+    if (
+      globalForHero.__shutterHeroCache &&
+      Date.now() - globalForHero.__shutterHeroCache.timestamp < 60000
+    ) {
+      return NextResponse.json(
+        { success: true, data: globalForHero.__shutterHeroCache.data, source: "cache" },
+        { headers: { "Cache-Control": "public, s-maxage=30, stale-while-revalidate=120" } }
+      );
+    }
+
     const conn = await connectDB();
     if (!conn) {
       return NextResponse.json({ success: true, data: DEFAULT_HERO_REEL, source: "fallback" });
     }
 
-    const items = await HeroReel.find().sort({ order: 1 });
+    const items = await HeroReel.find().sort({ order: 1 }).lean();
     if (!items || items.length === 0) {
       return NextResponse.json({ success: true, data: DEFAULT_HERO_REEL, source: "default" });
     }
 
-    return NextResponse.json({ success: true, data: items, source: "database" });
+    globalForHero.__shutterHeroCache = { data: items, timestamp: Date.now() };
+    return NextResponse.json(
+      { success: true, data: items, source: "database" },
+      { headers: { "Cache-Control": "public, s-maxage=30, stale-while-revalidate=120" } }
+    );
   } catch (error) {
     console.error("GET /api/hero-reel error:", error);
     return NextResponse.json({ success: true, data: DEFAULT_HERO_REEL, source: "fallback" });
@@ -29,7 +47,12 @@ export async function GET() {
 
 export async function PUT(request: Request) {
   try {
-    const conn = await connectDB();
+    globalForHero.__shutterHeroCache = undefined;
+    let conn = await connectDB();
+    if (!conn) {
+      await new Promise((r) => setTimeout(r, 800));
+      conn = await connectDB();
+    }
     if (!conn) {
       return NextResponse.json({ error: "Database not connected" }, { status: 503 });
     }

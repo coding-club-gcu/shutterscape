@@ -1,0 +1,14 @@
+{
+  // ...
+  "vars": {
+    "ADMIN_INIT_PASSWORD": "ShutterScape2026!",
+    "ADMIN_INIT_USERNAME": "admin",
+    "AUTH_SECRET": "shutterscape-super-secure-darkroom-vault-secret-key-2026",
+    "CLOUDINARY_API_KEY": "714712349444987",
+    "CLOUDINARY_API_SECRET": "h3uXXuPY4lOolmj-a--ABhpe1Ow",
+    "CLOUDINARY_CLOUD_NAME": "tkpmm1pj",
+    "CLOUDINARY_URL": "cloudinary://714712349444987:h3uXXuPY4lOolmj-a--ABhpe1Ow@tkpmm1pj",
+    "MONGODB_URI": "mongodb+srv://Shutteradmin:ShutterScape2026@cluster0.e7olvae.mongodb.net/shutterscape?retryWrites=true&w=majority"
+  },
+  // ...
+}

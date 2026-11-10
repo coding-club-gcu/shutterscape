@@ -10,6 +10,7 @@ const DEFAULT_COMMITTEE = INITIAL_COMMITTEE;
 
 const globalForCommittee = globalThis as unknown as {
   __shutterCommitteeStore?: any[];
+  __shutterCommitteeCache?: { data: any[]; timestamp: number };
 };
 
 if (!globalForCommittee.__shutterCommitteeStore) {
@@ -20,6 +21,19 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const tier = searchParams.get("tier");
+    const isUnfiltered = !tier;
+
+    // Fast-path: serve in-memory cached DB results (< 60s old) in 0.05ms
+    if (
+      isUnfiltered &&
+      globalForCommittee.__shutterCommitteeCache &&
+      Date.now() - globalForCommittee.__shutterCommitteeCache.timestamp < 60000
+    ) {
+      return NextResponse.json(
+        { success: true, data: globalForCommittee.__shutterCommitteeCache.data, source: "cache" },
+        { headers: { "Cache-Control": "public, s-maxage=30, stale-while-revalidate=120" } }
+      );
+    }
 
     try {
       const conn = await connectDB();
@@ -27,9 +41,16 @@ export async function GET(request: Request) {
         const query: Record<string, unknown> = {};
         if (tier) query.tier = tier;
 
-        const items = await CommitteeMember.find(query).sort({ order: 1 });
+        const items = await CommitteeMember.find(query).sort({ order: 1 }).lean();
         if (items && items.length > 0) {
-          return NextResponse.json({ success: true, data: items, source: "database" });
+          if (isUnfiltered) {
+            globalForCommittee.__shutterCommitteeCache = { data: items, timestamp: Date.now() };
+            globalForCommittee.__shutterCommitteeStore = items;
+          }
+          return NextResponse.json(
+            { success: true, data: items, source: "database" },
+            { headers: { "Cache-Control": "public, s-maxage=30, stale-while-revalidate=120" } }
+          );
         }
       }
     } catch (dbErr) {
@@ -41,7 +62,10 @@ export async function GET(request: Request) {
       filtered = filtered.filter((m: any) => m.tier === tier);
     }
 
-    return NextResponse.json({ success: true, data: filtered, source: "memory" });
+    return NextResponse.json(
+      { success: true, data: filtered, source: "memory" },
+      { headers: { "Cache-Control": "public, s-maxage=10, stale-while-revalidate=60" } }
+    );
   } catch (error) {
     console.error("GET /api/committee error:", error);
     return NextResponse.json({ success: true, data: DEFAULT_COMMITTEE, source: "fallback" });
@@ -50,6 +74,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    globalForCommittee.__shutterCommitteeCache = undefined;
     const body = await request.json();
     const newId = body.id || `com-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
     const newMember = {
@@ -86,6 +111,7 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   try {
+    globalForCommittee.__shutterCommitteeCache = undefined;
     const body = await request.json();
     const { id, _id, ...updates } = body;
     const targetId = _id || id;
@@ -150,6 +176,7 @@ export async function PUT(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
+    globalForCommittee.__shutterCommitteeCache = undefined;
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 

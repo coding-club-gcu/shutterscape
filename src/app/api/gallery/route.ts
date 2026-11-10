@@ -10,6 +10,7 @@ const DEFAULT_GALLERY = INITIAL_GALLERY;
 
 const globalForGallery = globalThis as unknown as {
   __shutterGalleryStore?: any[];
+  __shutterGalleryCache?: { data: any[]; timestamp: number };
 };
 
 if (!globalForGallery.__shutterGalleryStore) {
@@ -20,6 +21,19 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const category = searchParams.get("category");
+    const isUnfiltered = !category || category === "ALL";
+
+    // Fast-path: serve in-memory cached DB results (< 60s old) in 0.05ms
+    if (
+      isUnfiltered &&
+      globalForGallery.__shutterGalleryCache &&
+      Date.now() - globalForGallery.__shutterGalleryCache.timestamp < 60000
+    ) {
+      return NextResponse.json(
+        { success: true, data: globalForGallery.__shutterGalleryCache.data, source: "cache" },
+        { headers: { "Cache-Control": "public, s-maxage=30, stale-while-revalidate=120" } }
+      );
+    }
 
     try {
       const conn = await connectDB();
@@ -29,9 +43,16 @@ export async function GET(request: Request) {
           query.category = category;
         }
 
-        const items = await GalleryFrame.find(query).sort({ order: 1 });
+        const items = await GalleryFrame.find(query).sort({ order: 1 }).lean();
         if (items && items.length > 0) {
-          return NextResponse.json({ success: true, data: items, source: "database" });
+          if (isUnfiltered) {
+            globalForGallery.__shutterGalleryCache = { data: items, timestamp: Date.now() };
+            globalForGallery.__shutterGalleryStore = items;
+          }
+          return NextResponse.json(
+            { success: true, data: items, source: "database" },
+            { headers: { "Cache-Control": "public, s-maxage=30, stale-while-revalidate=120" } }
+          );
         }
       }
     } catch (dbErr) {
@@ -43,7 +64,10 @@ export async function GET(request: Request) {
       filtered = filtered.filter((it: any) => it.category === category);
     }
 
-    return NextResponse.json({ success: true, data: filtered, source: "memory" });
+    return NextResponse.json(
+      { success: true, data: filtered, source: "memory" },
+      { headers: { "Cache-Control": "public, s-maxage=10, stale-while-revalidate=60" } }
+    );
   } catch (error) {
     console.error("GET /api/gallery error:", error);
     return NextResponse.json({ success: true, data: DEFAULT_GALLERY, source: "fallback" });
@@ -52,6 +76,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    globalForGallery.__shutterGalleryCache = undefined;
     const body = await request.json();
     const newId = body.id || `g-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
     const newFrame = {
@@ -88,6 +113,7 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   try {
+    globalForGallery.__shutterGalleryCache = undefined;
     const body = await request.json();
     const { id, _id, ...updates } = body;
     const targetId = _id || id;
@@ -152,6 +178,7 @@ export async function PUT(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
+    globalForGallery.__shutterGalleryCache = undefined;
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
