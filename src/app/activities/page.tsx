@@ -116,15 +116,7 @@ export default function ActivitiesPage() {
   const leftTitleWrapRef = useRef<HTMLDivElement>(null);
   const stRef = useRef<ScrollTrigger | null>(null);
 
-  const [archiveData, setArchiveData] = useState<ArchiveEvent[]>(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const cached = localStorage.getItem("ss_cache_activities");
-        if (cached) return JSON.parse(cached);
-      } catch (e) {}
-    }
-    return ARCHIVE_DATA;
-  });
+  const [archiveData, setArchiveData] = useState<ArchiveEvent[]>(ARCHIVE_DATA);
   const [activeFilter, setActiveFilter] = useState<FilterKey>("ALL");
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const [isCylinderPhase, setIsCylinderPhase] = useState<boolean>(false);
@@ -133,6 +125,14 @@ export default function ActivitiesPage() {
   );
 
   useEffect(() => {
+    try {
+      const cached = localStorage.getItem("ss_cache_activities");
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) setArchiveData(parsed);
+      }
+    } catch (e) {}
+
     let isMounted = true;
     async function fetchActivities() {
       try {
