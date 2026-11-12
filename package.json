@@ -10,7 +10,7 @@
     "create-admin": "tsx scripts/create-admin.ts",
     "seed-db": "tsx scripts/seed-database.ts",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview ",
-    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy --keep-vars",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy -- --keep-vars",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
   },
   "dependencies": {

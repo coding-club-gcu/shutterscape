@@ -292,12 +292,6 @@ export default function UniversalFooter() {
         >
           <span>© 2026 SHUTTERSCAPE · GIRIJANANDA CHOWDHURY UNIVERSITY</span>
 
-          {/* Personal Touch: Designed and made with love by Krishnayan */}
-          <span className="text-black/80 font-medium inline-flex items-center gap-1.5 normal-case tracking-normal font-sans text-xs">
-            <span>Designed and made with</span>
-            <span className="text-[#EF4444] text-sm animate-pulse inline-block" title="love">❤</span>
-            <span>by <strong className="font-bold text-black">Krishnayan</strong></span>
-          </span>
 
           {/* Codénix Maintenance Link */}
           <a
