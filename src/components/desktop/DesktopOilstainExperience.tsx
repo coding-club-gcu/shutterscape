@@ -4193,12 +4193,9 @@ export default function DesktopOilstainExperience() {
 
             <div className="flex items-center gap-1.5 text-xs text-black/65 whitespace-nowrap">
               <span>
-                Crafted by{" "}
-                <strong className="font-semibold text-[#111111]">
-                  Krishnayan
-                </strong>
+                Developed by{" "}
+                
               </span>
-              <span className="text-black/25">·</span>
               <a
                 href="https://codingclub.gcuniversity.ac.in"
                 target="_blank"
