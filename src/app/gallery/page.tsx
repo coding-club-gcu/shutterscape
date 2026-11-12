@@ -54,17 +54,17 @@ export default function CinematicGalleryPage() {
   const [isRibbonFocused, setIsRibbonFocused] = useState<boolean>(false);
   const [activeLightboxItem, setActiveLightboxItem] =
     useState<GalleryItem | null>(null);
-  const [collection, setCollection] = useState<GalleryItem[]>(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const cached = localStorage.getItem("ss_cache_gallery");
-        if (cached) return JSON.parse(cached);
-      } catch (e) {}
-    }
-    return GALLERY_COLLECTION;
-  });
+  const [collection, setCollection] = useState<GalleryItem[]>(GALLERY_COLLECTION);
 
   useEffect(() => {
+    try {
+      const cached = localStorage.getItem("ss_cache_gallery");
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) setCollection(parsed);
+      }
+    } catch (e) {}
+
     fetch("/api/gallery")
       .then((r) => r.json())
       .then((res) => {

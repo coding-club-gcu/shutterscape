@@ -53,7 +53,7 @@ export async function connectDB(): Promise<typeof mongoose | null> {
   if (mongoose.connection.readyState === 2 && cached.promise) {
     try {
       const conn = await cached.promise;
-      if (conn && mongoose.connection.readyState === 1) {
+      if (conn && (mongoose.connection.readyState as number) === 1) {
         return conn;
       }
     } catch {
@@ -87,7 +87,7 @@ export async function connectDB(): Promise<typeof mongoose | null> {
 
   try {
     const conn = await cached.promise;
-    if (conn && mongoose.connection.readyState === 1) {
+    if (conn && (mongoose.connection.readyState as number) === 1) {
       cached.conn = conn;
       return cached.conn;
     }

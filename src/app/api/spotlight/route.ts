@@ -11,7 +11,7 @@ const defaultSpotlightStore = {
 };
 
 const globalForSpotlight = globalThis as unknown as {
-  __shutterSpotlightStore?: typeof defaultSpotlightStore;
+  __shutterSpotlightStore?: any;
   __shutterSpotlightCache?: { data: any; timestamp: number };
 };
 

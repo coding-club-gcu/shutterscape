@@ -826,42 +826,10 @@ const HalfWheelGalleryFan = React.memo(function HalfWheelGalleryFan({
 });
 
 export default function DesktopOilstainExperience() {
-  const [gallery, setGallery] = useState<any[]>(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const cached = localStorage.getItem("ss_cache_gallery");
-        if (cached) return JSON.parse(cached);
-      } catch (e) {}
-    }
-    return FALLBACK_GALLERY;
-  });
-  const [activities, setActivities] = useState<any[]>(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const cached = localStorage.getItem("ss_cache_activities");
-        if (cached) return JSON.parse(cached);
-      } catch (e) {}
-    }
-    return FALLBACK_ACTIVITIES;
-  });
-  const [committee, setCommittee] = useState<any[]>(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const cached = localStorage.getItem("ss_cache_committee");
-        if (cached) return JSON.parse(cached);
-      } catch (e) {}
-    }
-    return FALLBACK_COMMITTEE;
-  });
-  const [reels, setReels] = useState<any[]>(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const cached = localStorage.getItem("ss_cache_reels");
-        if (cached) return JSON.parse(cached);
-      } catch (e) {}
-    }
-    return FALLBACK_REELS;
-  });
+  const [gallery, setGallery] = useState<any[]>(FALLBACK_GALLERY);
+  const [activities, setActivities] = useState<any[]>(FALLBACK_ACTIVITIES);
+  const [committee, setCommittee] = useState<any[]>(FALLBACK_COMMITTEE);
+  const [reels, setReels] = useState<any[]>(FALLBACK_REELS);
   const [activeReelIdx, setActiveReelIdx] = useState<number>(0);
   const [activeAudioReelIdx, setActiveAudioReelIdx] = useState<number | null>(
     null
@@ -1237,6 +1205,30 @@ export default function DesktopOilstainExperience() {
 
   // Fetch Live Club Data from ShutterScape APIs (Including `/api/spotlight`)
   useEffect(() => {
+    // Safely hydrate from localStorage on the client without SSR mismatch
+    try {
+      const cachedGallery = localStorage.getItem("ss_cache_gallery");
+      if (cachedGallery) {
+        const parsed = JSON.parse(cachedGallery);
+        if (Array.isArray(parsed) && parsed.length > 0) setGallery(parsed);
+      }
+      const cachedActivities = localStorage.getItem("ss_cache_activities");
+      if (cachedActivities) {
+        const parsed = JSON.parse(cachedActivities);
+        if (Array.isArray(parsed) && parsed.length > 0) setActivities(parsed);
+      }
+      const cachedCommittee = localStorage.getItem("ss_cache_committee");
+      if (cachedCommittee) {
+        const parsed = JSON.parse(cachedCommittee);
+        if (Array.isArray(parsed) && parsed.length > 0) setCommittee(parsed);
+      }
+      const cachedReels = localStorage.getItem("ss_cache_reels");
+      if (cachedReels) {
+        const parsed = JSON.parse(cachedReels);
+        if (Array.isArray(parsed) && parsed.length > 0) setReels(parsed);
+      }
+    } catch (e) {}
+
     Promise.allSettled([
       fetch("/api/gallery").then((r) => r.json()),
       fetch("/api/activities").then((r) => r.json()),
