@@ -2,8 +2,10 @@
 import { SignJWT, jwtVerify } from "jose";
 import bcrypt from "bcryptjs";
 
-const JWT_SECRET = process.env.AUTH_SECRET || "shutterscape-default-dev-secret-change-me-32chars";
-const encodedKey = new TextEncoder().encode(JWT_SECRET);
+function getJwtKey(): Uint8Array {
+  const secret = process.env.AUTH_SECRET || "shutterscape-default-dev-secret-change-me-32chars";
+  return new TextEncoder().encode(secret);
+}
 
 export const SESSION_COOKIE_NAME = "shutterscape_session_token";
 
@@ -40,7 +42,7 @@ export async function signSessionToken(payload: {
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("7d")
-    .sign(encodedKey);
+    .sign(getJwtKey());
 }
 
 /**
@@ -48,7 +50,7 @@ export async function signSessionToken(payload: {
  */
 export async function verifySessionToken(token: string): Promise<SessionPayload | null> {
   try {
-    const { payload } = await jwtVerify(token, encodedKey, {
+    const { payload } = await jwtVerify(token, getJwtKey(), {
       algorithms: ["HS256"],
     });
     return payload as unknown as SessionPayload;

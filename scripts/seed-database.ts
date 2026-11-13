@@ -6,7 +6,7 @@ import * as dotenv from "dotenv";
 dotenv.config({ path: ".env.local" });
 dotenv.config();
 
-const MONGODB_URI = process.env.MONGODB_URI;
+const MONGODB_URI = process.env.MONGODB_URI as string;
 
 // Schemas
 const HeroReel = mongoose.models.HeroReel || mongoose.model("HeroReel", new mongoose.Schema({
