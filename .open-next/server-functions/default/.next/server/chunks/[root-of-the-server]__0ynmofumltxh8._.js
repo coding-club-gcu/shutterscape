@@ -1,0 +1,3 @@
+module.exports=[22734,(e,r,t)=>{r.exports=e.x("fs",()=>require("fs"))},87731,e=>{"use strict";var r=e.i(64328);let t=new r.default.Schema({filename:{type:String,required:!0},mimeType:{type:String,required:!0},size:{type:Number,required:!0},data:{type:String,required:!0}},{timestamps:!0}),i=r.default.models.UploadMedia||r.default.model("UploadMedia",t);e.s(["f",0,i])}];
+
+//# sourceMappingURL=%5Broot-of-the-server%5D__0ynmofumltxh8._.js.map

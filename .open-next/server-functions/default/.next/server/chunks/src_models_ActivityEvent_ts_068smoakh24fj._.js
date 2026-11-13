@@ -1,0 +1,3 @@
+module.exports=[9724,e=>{"use strict";var t=e.i(64328);let i=new t.Schema({id:{type:String},shortTitle:{type:String,required:!0},title:{type:String,required:!0},category:{type:String,required:!0,enum:["PHOTOWALK","WORKSHOP","EXHIBITION","COMPETITION"]},year:{type:String,required:!0,enum:["2026","2025"]},date:{type:String,required:!0},location:{type:String,default:""},description:{type:String,default:""},exif:{type:String,default:""},filmStock:{type:String,default:"KODAK PORTRA 400"},img:{type:String,required:!0},isUpcoming:{type:Boolean,default:!1},order:{type:Number,default:0}},{timestamps:!0}),r=t.default.models.ActivityEvent||t.default.model("ActivityEvent",i);e.s(["f",0,r])}];
+
+//# sourceMappingURL=src_models_ActivityEvent_ts_068smoakh24fj._.js.map

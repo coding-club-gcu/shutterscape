@@ -1,0 +1,3 @@
+module.exports=[98660,t=>{"use strict";var e=t.i(64328);let i=new e.Schema({id:{type:String},title:{type:String,default:""},category:{type:String,default:""},date:{type:String,default:""},targetDate:{type:String,default:""},location:{type:String,default:""},filmStock:{type:String,default:""},img:{type:String,default:""},description:{type:String,default:""},ctaText:{type:String,default:""},isActive:{type:Boolean,default:!0}},{_id:!1}),a=new e.Schema({upcoming:{type:i,required:!0},live:{type:i,required:!0}},{timestamps:!0}),l=e.default.models.Spotlight||e.default.model("Spotlight",a);t.s(["f",0,l])}];
+
+//# sourceMappingURL=src_models_Spotlight_ts_07hxgn1ba36d1._.js.map
