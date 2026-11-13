@@ -48,11 +48,7 @@ export async function GET() {
 export async function PUT(request: Request) {
   try {
     globalForPullIn.__shutterPullInCache = undefined;
-    let conn = await connectDB();
-    if (!conn) {
-      await new Promise((r) => setTimeout(r, 800));
-      conn = await connectDB();
-    }
+    const conn = await connectDB();
     if (!conn) {
       return NextResponse.json({ error: "Database not connected" }, { status: 503 });
     }

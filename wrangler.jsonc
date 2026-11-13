@@ -15,6 +15,16 @@
     "binding": "ASSETS",
     "directory": ".open-next/assets"
   },
+  "vars": {
+    "MONGODB_URI": "mongodb+srv://Shutteradmin:ShutterScape2026@cluster0.e7olvae.mongodb.net/shutterscape?retryWrites=true&w=majority",
+    "CLOUDINARY_CLOUD_NAME": "bfqxq9jy",
+    "CLOUDINARY_API_KEY": "924527629675682",
+    "CLOUDINARY_API_SECRET": "hi4mexBNJJhO0EZUQgpqcuUOGQM",
+    "CLOUDINARY_URL": "cloudinary://924527629675682:hi4mexBNJJhO0EZUQgpqcuUOGQM@bfqxq9jy",
+    "AUTH_SECRET": "shutterscape-super-secure-darkroom-vault-secret-key-2026",
+    "ADMIN_INIT_USERNAME": "admin",
+    "ADMIN_INIT_PASSWORD": "ShutterScape2026!"
+  },
   "services": [
     {
       "binding": "WORKER_SELF_REFERENCE",

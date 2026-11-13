@@ -6,21 +6,16 @@ import mongoose from "mongoose";
 import fs from "fs";
 import path from "path";
 
-// Persistent global memory cache across Next.js invocations
+// In-memory cache for fast lookups
 const globalForMedia = globalThis as unknown as {
   __shutterMediaCache?: Map<string, { buffer: Buffer; mimeType: string }>;
-  __shutterInFlightMedia?: Map<string, Promise<{ buffer: Buffer; mimeType: string } | null>>;
 };
 
 if (!globalForMedia.__shutterMediaCache) {
   globalForMedia.__shutterMediaCache = new Map();
 }
-if (!globalForMedia.__shutterInFlightMedia) {
-  globalForMedia.__shutterInFlightMedia = new Map();
-}
 
 const memoryCache = globalForMedia.__shutterMediaCache;
-const inFlightFetches = globalForMedia.__shutterInFlightMedia;
 
 function getDiskFilePath(id: string): string | null {
   try {
@@ -31,7 +26,7 @@ function getDiskFilePath(id: string): string | null {
     if (fs.existsSync(directPath + ".mp4")) return directPath + ".mp4";
     if (fs.existsSync(directPath + ".jpg")) return directPath + ".jpg";
   } catch {
-    // Disk access error
+    // Disk access not available in edge environment
   }
   return null;
 }
@@ -45,8 +40,8 @@ function saveToDiskCache(id: string, rawBuffer: Buffer, mimeType: string) {
     const ext = mimeType.startsWith("video/") ? ".mp4" : ".webp";
     const filePath = path.join(mediaDir, id + ext);
     fs.writeFileSync(filePath, rawBuffer);
-  } catch (err) {
-    // Read-only filesystem or disk write error; in-memory cache remains active
+  } catch {
+    // Read-only filesystem in workers; memory cache remains active
   }
 }
 
@@ -57,13 +52,12 @@ function buildMediaStreamResponse(
 ) {
   const totalSize = rawBuffer.length;
 
-  // 1. Video streaming: allow full status 200 caching on initial load (start === 0)
+  // 1. Video streaming: handle 206 partial content when seeking
   if (mimeType.startsWith("video/")) {
     if (rangeHeader) {
       const parts = rangeHeader.replace(/bytes=/, "").split("-");
       const start = parseInt(parts[0], 10);
 
-      // Only return 206 slice if client is explicitly seeking past byte 0
       if (!isNaN(start) && start > 0) {
         const maxChunk = 2 * 1024 * 1024;
         const end = parts[1]
@@ -81,15 +75,13 @@ function buildMediaStreamResponse(
             "Content-Type": mimeType,
             "Cache-Control":
               "public, max-age=31536000, s-maxage=31536000, stale-while-revalidate=86400, immutable",
-            "CDN-Cache-Control": "public, max-age=31536000, immutable",
-            "Vercel-CDN-Cache-Control": "public, max-age=31536000, immutable",
             "Access-Control-Allow-Origin": "*",
           },
         });
       }
     }
 
-    // Full video 200 response
+    // Full video response
     return new NextResponse(new Uint8Array(rawBuffer), {
       status: 200,
       headers: {
@@ -98,14 +90,12 @@ function buildMediaStreamResponse(
         "Accept-Ranges": "bytes",
         "Cache-Control":
           "public, max-age=31536000, s-maxage=31536000, stale-while-revalidate=86400, immutable",
-        "CDN-Cache-Control": "public, max-age=31536000, immutable",
-        "Vercel-CDN-Cache-Control": "public, max-age=31536000, immutable",
         "Access-Control-Allow-Origin": "*",
       },
     });
   }
 
-  // 2. Images & non-video
+  // 2. Images & other media
   return new NextResponse(new Uint8Array(rawBuffer), {
     status: 200,
     headers: {
@@ -113,8 +103,6 @@ function buildMediaStreamResponse(
       "Content-Length": totalSize.toString(),
       "Cache-Control":
         "public, max-age=31536000, s-maxage=31536000, stale-while-revalidate=86400, immutable",
-      "CDN-Cache-Control": "public, max-age=31536000, immutable",
-      "Vercel-CDN-Cache-Control": "public, max-age=31536000, immutable",
       "Access-Control-Allow-Origin": "*",
     },
   });
@@ -145,13 +133,48 @@ export async function GET(
 
     const range = request.headers.get("range");
 
-    // 1. Check in-memory global hot cache (served in < 0.1ms)
+    // 1. Check in-memory hot cache
     const hotCached = memoryCache.get(id);
     if (hotCached) {
       return buildMediaStreamResponse(hotCached.buffer, hotCached.mimeType, range);
     }
 
-    // 2. Check local disk cache (served in < 0.2ms without database network roundtrip!)
+    // 2. Check Cloudflare Workers ASSETS binding (0ms edge delivery for bundled assets)
+    try {
+      const { getCloudflareContext } = await import("@opennextjs/cloudflare");
+      const cfCtx = getCloudflareContext();
+      const assets = cfCtx?.env?.ASSETS as { fetch: (req: Request | URL | string) => Promise<Response> } | undefined;
+      if (assets && typeof assets.fetch === "function") {
+        const candidates = [
+          `/media/${id}`,
+          `/media/${id}.webp`,
+          `/media/${id}.mp4`,
+          `/media/${id}.jpg`,
+        ];
+        for (const candidate of candidates) {
+          const assetUrl = new URL(candidate, request.url);
+          const assetRes = await assets.fetch(new Request(assetUrl.toString(), {
+            headers: request.headers,
+          }));
+          if (assetRes && assetRes.status === 200) {
+            const resHeaders = new Headers(assetRes.headers);
+            resHeaders.set(
+              "Cache-Control",
+              "public, max-age=31536000, s-maxage=31536000, stale-while-revalidate=86400, immutable"
+            );
+            resHeaders.set("Access-Control-Allow-Origin", "*");
+            return new Response(assetRes.body, {
+              status: assetRes.status,
+              headers: resHeaders,
+            });
+          }
+        }
+      }
+    } catch {
+      // Outside Cloudflare Workers runtime; continue to local disk/database
+    }
+
+    // 3. Check local disk cache (for Node.js dev server)
     const diskPath = getDiskFilePath(id);
     if (diskPath) {
       try {
@@ -168,64 +191,35 @@ export async function GET(
         }
         memoryCache.set(id, { buffer: rawBuffer, mimeType });
         return buildMediaStreamResponse(rawBuffer, mimeType, range);
-      } catch (diskErr) {
-        console.warn("Disk read error, falling back to database:", diskErr);
+      } catch {
+        // Disk read error, fall through to database
       }
     }
 
-    // 3. Deduplicate in-flight concurrent requests for the same media ID
-    let fetchPromise = inFlightFetches.get(id);
-    if (!fetchPromise) {
-      fetchPromise = (async () => {
-        try {
-          // Connect to MongoDB Atlas with automatic retry
-          let conn = await connectDB();
-          if (!conn) {
-            await new Promise((r) => setTimeout(r, 800));
-            conn = await connectDB();
-          }
-
-          if (!conn) {
-            console.warn(`[media-api] DB not connected for media ${id}`);
-            return null;
-          }
-
-          const media = await UploadMedia.findById(id).lean();
-          if (!media || !media.data) {
-            return null;
-          }
-
+    // 4. Query MongoDB database for dynamic/admin-uploaded media
+    try {
+      const conn = await connectDB();
+      if (conn) {
+        const media = await UploadMedia.findById(id).lean();
+        if (media && media.data) {
           const rawBuffer = Buffer.from(media.data, "base64");
           const mimeType = media.mimeType || "image/webp";
 
-          // Save to memory cache (LRU up to 200 entries)
           if (memoryCache.size > 200) {
             const firstKey = memoryCache.keys().next().value;
             if (firstKey) memoryCache.delete(firstKey);
           }
           memoryCache.set(id, { buffer: rawBuffer, mimeType });
-
-          // Persist to disk asynchronously for future 0ms reads
           saveToDiskCache(id, rawBuffer, mimeType);
 
-          return { buffer: rawBuffer, mimeType };
-        } catch (dbErr) {
-          console.error(`[media-api] Error fetching media ${id}:`, dbErr);
-          return null;
-        } finally {
-          inFlightFetches.delete(id);
+          return buildMediaStreamResponse(rawBuffer, mimeType, range);
         }
-      })();
-
-      inFlightFetches.set(id, fetchPromise);
+      }
+    } catch (dbErr) {
+      console.warn(`[media-api] Database query failed for ${id}:`, dbErr);
     }
 
-    const result = await fetchPromise;
-    if (result) {
-      return buildMediaStreamResponse(result.buffer, result.mimeType, range);
-    }
-
-    // 4. Return clean placeholder instead of 503 so frontend renders smoothly without crashing
+    // 5. Clean fallback placeholder if not found
     return getFallbackPlaceholder(id);
   } catch (error) {
     console.error("GET /api/media/[id] error:", error);
