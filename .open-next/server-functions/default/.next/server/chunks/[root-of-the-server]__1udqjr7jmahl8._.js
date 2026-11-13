@@ -1,0 +1,3 @@
+module.exports=[22734,(e,r,t)=>{r.exports=e.x("fs",()=>require("fs"))},98723,e=>{e.v(r=>Promise.all(["server/chunks/node_modules_@opennextjs_cloudflare_dist_api_index_0ttjp4q_elrr5.js"].map(r=>e.l(r))).then(()=>r(30113)))},87731,e=>{"use strict";var r=e.i(64328);let t=new r.default.Schema({filename:{type:String,required:!0},mimeType:{type:String,required:!0},size:{type:Number,required:!0},data:{type:String,required:!0}},{timestamps:!0}),d=r.default.models.UploadMedia||r.default.model("UploadMedia",t);e.s(["f",0,d])}];
+
+//# sourceMappingURL=%5Broot-of-the-server%5D__1udqjr7jmahl8._.js.map

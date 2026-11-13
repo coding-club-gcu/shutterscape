@@ -1,0 +1,3 @@
+module.exports=[59720,e=>{"use strict";var t=e.i(64328);let i=new t.Schema({code:{type:String,required:!0},title:{type:String,required:!0},subTitle:{type:String,default:""},src:{type:String,required:!0},exif:{type:String,default:""},focusDistance:{type:String,default:""},headline:{type:String,required:!0},subhead:{type:String,default:""},order:{type:Number,default:0}},{timestamps:!0}),r=t.default.models.PullInExhibit||t.default.model("PullInExhibit",i);e.s(["f",0,r])}];
+
+//# sourceMappingURL=src_models_PullInExhibit_ts_0uz03-zsc0px-._.js.map

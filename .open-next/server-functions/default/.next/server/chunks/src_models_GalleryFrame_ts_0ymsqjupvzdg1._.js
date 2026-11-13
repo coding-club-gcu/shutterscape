@@ -1,0 +1,3 @@
+module.exports=[89606,e=>{"use strict";var t=e.i(64328);let r=new t.Schema({id:{type:String},title:{type:String,required:!0},category:{type:String,required:!0,enum:["DOCUMENTARY","PORTRAITURE","LANDSCAPE","ARCHITECTURE","STREET","EXPERIMENTAL"]},photographer:{type:String,required:!0},filmStock:{type:String,default:"KODAK PORTRA 400"},exif:{type:String,default:""},src:{type:String,required:!0},description:{type:String,default:""},location:{type:String,default:""},order:{type:Number,default:0}},{timestamps:!0}),i=t.default.models.GalleryFrame||t.default.model("GalleryFrame",r);e.s(["f",0,i])}];
+
+//# sourceMappingURL=src_models_GalleryFrame_ts_0ymsqjupvzdg1._.js.map

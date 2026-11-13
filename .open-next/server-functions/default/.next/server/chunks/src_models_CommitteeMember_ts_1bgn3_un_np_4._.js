@@ -1,0 +1,3 @@
+module.exports=[80800,e=>{"use strict";var t=e.i(64328);let r=new t.Schema({id:{type:String},name:{type:String,required:!0},role:{type:String,required:!0},tier:{type:String,required:!0,enum:["MENTOR","LEAD","CORE","FOUNDER","LEGACY"]},dept:{type:String,default:""},img:{type:String,required:!0},order:{type:Number,default:0}},{timestamps:!0}),i=t.default.models.CommitteeMember||t.default.model("CommitteeMember",r);e.s(["f",0,i])}];
+
+//# sourceMappingURL=src_models_CommitteeMember_ts_1bgn3_un_np_4._.js.map
